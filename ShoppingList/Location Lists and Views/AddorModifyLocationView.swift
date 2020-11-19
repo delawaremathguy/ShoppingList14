@@ -15,8 +15,8 @@ struct AddorModifyLocationView: View {
 	
 	// editableLocation is either a Location to edit, or nil to signify
 	// that we're creating a new Location in for the viewModel.
-	var editableLocation: Location?
-	var viewModel: LocationsListViewModel
+	var editableLocation: Location? = nil
+	//var viewModel: LocationsListViewModel
 	
 	// we use a specialized form of a ShoppingListViewModel in this View to
 	// drive the list of items at this location.  it must be an observed object
@@ -39,8 +39,8 @@ struct AddorModifyLocationView: View {
 	// we use an init, so the ShoppingListViewModel for the shopping items at this
 	// location gets initialized properly with the location as associated data for
 	// the type locationSpecificShoppingList
-	init(viewModel: LocationsListViewModel, at location: Location? = nil) {
-		self.viewModel = viewModel
+	init(at location: Location? = nil) {
+		//self.viewModel = viewModel
 		self.editableLocation = location
 		shoppingItemsViewModel = ShoppingListViewModel(type: .locationSpecificShoppingList(location))
 	}
@@ -129,7 +129,7 @@ struct AddorModifyLocationView: View {
 		if let location = editableLocation {
 			presentationMode.wrappedValue.dismiss()
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) { // seems to want more time in simulator
-				self.viewModel.delete(location: location)
+				Location.delete(location)
 			}
 		}
 	}
@@ -137,7 +137,7 @@ struct AddorModifyLocationView: View {
 	func commitData() {
 		presentationMode.wrappedValue.dismiss()
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-			self.viewModel.updateData(for: self.editableLocation, using: self.editableData)
+			Location.updateData(for: self.editableLocation, using: self.editableData)
 		}
 	}
 

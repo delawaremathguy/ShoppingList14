@@ -28,8 +28,8 @@ class LocationsListViewModel: ObservableObject {
 	init() {
 		// sign us up for several change operations that could have an effect on the
 		// LocationsTabView that we assist.  these are obviously any changes to locations
-		NotificationCenter.default.addObserver(self, selector: #selector(locationAdded),
-																					 name: .locationAdded, object: nil)
+//		NotificationCenter.default.addObserver(self, selector: #selector(locationAdded),
+//																					 name: .locationAdded, object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(locationEdited),
 																					 name: .locationEdited, object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(locationWillBeDeleted),
@@ -56,15 +56,15 @@ class LocationsListViewModel: ObservableObject {
 
 	// MARK: - Responses to changes in Location objects
 
-	@objc func locationAdded(_ notification: Notification) {
-		// the notification has a reference to the location that will be added.
-		// if we don't have it, now's the time to add it to the locations array.
-		guard let location = notification.object as? Location else { return }
-		if !locations.contains(location) {
-			locations.append(location)
-			locations.sort(by: <)
-		}
-	}
+//	@objc func locationAdded(_ notification: Notification) {
+//		// the notification has a reference to the location that will be added.
+//		// if we don't have it, now's the time to add it to the locations array.
+//		guard let location = notification.object as? Location else { return }
+//		if !locations.contains(location) {
+//			locations.append(location)
+//			locations.sort(by: <)
+//		}
+//	}
 	
 	@objc func locationEdited(_ notification: Notification) {
 		// the notification has a reference to the location that was edited.
@@ -102,7 +102,7 @@ class LocationsListViewModel: ObservableObject {
 	@objc func shoppingItemEdited(_ notification: Notification) {
 		// this is a little tricky.  if we changed the location of a shopping item, there will
 		// be two entries in the LocationsTabView list that are wrong: the item for the location
-		// where it was, and the item for the location where it is now.  just blasy out a change!
+		// where it was, and the item for the location where it is now.  just blast out a change!
 		objectWillChange.send()
 	}
 
@@ -117,7 +117,7 @@ class LocationsListViewModel: ObservableObject {
 	}
 
 	func delete(location: Location) {
-		Location.delete(location: location, saveChanges: true)
+		Location.delete(location, saveChanges: true)
 	}
 	
 	func updateData(for location: Location?, using editableData: EditableLocationData) {
@@ -132,7 +132,7 @@ class LocationsListViewModel: ObservableObject {
 		} else {
 			let newLocation = Location.addNewLocation()
 			newLocation.updateValues(from: editableData)
-			NotificationCenter.default.post(name: .locationAdded, object: newLocation)
+//			NotificationCenter.default.post(name: .locationAdded, object: newLocation)
 		}
 		
 		Location.saveChanges()

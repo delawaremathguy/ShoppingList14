@@ -32,16 +32,3 @@ struct EditableLocationData {
 	
 }
 
-// MARK: - Location Convenience Extension
-
-extension Location {
-	
-	func updateValues(from editableData: EditableLocationData) {
-		name = editableData.locationName
-		visitationOrder = Int32(editableData.visitationOrder)
-		red = editableData.red
-		green = editableData.green
-		blue = editableData.blue
-		opacity = editableData.opacity
-	}
-}

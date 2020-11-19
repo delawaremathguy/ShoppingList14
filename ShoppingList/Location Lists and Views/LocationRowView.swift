@@ -28,6 +28,7 @@ struct LocationRowData {
 
 struct LocationRowView: View {
 	 var rowData: LocationRowData
+
 	
 	var body: some View {
 		HStack {

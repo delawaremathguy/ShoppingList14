@@ -26,7 +26,7 @@ extension Notification.Name {
 
 	// for changes to locations.  the user should pass the relevant Location
 	// along as the object when posting these notifications
-	static let locationAdded = Notification.Name(rawValue: "locationAdded")
+//	static let locationAdded = Notification.Name(rawValue: "locationAdded")
 	static let locationEdited = Notification.Name(rawValue: "locationEdited")
 	static let locationWillBeDeleted = Notification.Name(rawValue: "locationWillBeDeleted")
 	

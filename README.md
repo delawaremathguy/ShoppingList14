@@ -1,21 +1,31 @@
 #  About "ShoppingList14"
 
-This is a simple, iOS project to process a shopping list that you can take to the grocery store with you, and move items off the list as you pick them up.  It persists data in CoreData.  This uses an MVVM-style architecture along with SwiftUI, and should be compiled with XCode 12.2 or later and run on iOS14.2 or later.
+This is a simple, iOS project to process a shopping list that you can take to the grocery store with you, and move items off the list as you pick them up.  It persists data in CoreData.  The project uses an MVVM-style architecture along with SwiftUI, and should be compiled with XCode 12.2 or later and run on iOS14.2 or later.
 
 * An [earlier version of this project](https://github.com/delawaremathguy/ShoppingList) is available that works with **XCode 11.7/iOS 13.7**.  If you have not yet made the move to XCode 12.2 and iOS 14.2, you should use this earlier project.
 
 Feel free to use this as is, to develop further,  to completely ignore, or even just to inspect and then send me a note to tell me I am doing this all wrong.  
 
 
-## Last Update of Note: November, 2020
+## First Public Update for iOS 14: November, 2020
 
 
-Now that XCode 12 has finally stabilized, I feel it safe to make some refinements and use features of iOS 14 in this project.  This repository was put together using XCode 12.2 and will run under iOS 14.2.  
+Now that XCode 12 has finally stabilized, I feel it safe to make some refinements and possibly use features of iOS 14 in this project.  This repository has  been put together using XCode 12.2 and is intended to run under iOS 14.2.  
 
-Some things have changed [since the previous release of this project](https://github.com/delawaremathguy/ShoppingList) for XCode 11 that was titled, simply, **ShoppingList**.  Although this project is "ShoppingList14," it retains the same signature as the previous project; and despite some changes to the Core Data model, will properly migrate date from the earlier project to the new model of this project.
+Please be sure to read the What's New in ShoppingList14 section below, primarily for implementation and code-level changes.
 
-* The AppDelegate-SceneDelegate application structure has been replaced by to more simplified App-Scene structure introduced for XCode 12/iOS 14.
-* The Purchased items tab has been slightly re-worked so that shopping items that were purchased "today" appear in the first section of the list.  This makes it easy to locate items you purchased once you get home.
+
+
+## What's New in ShoppingList14
+
+Things have changed [since the previous release of this project](https://github.com/delawaremathguy/ShoppingList) for XCode 11 that was titled, simply, **ShoppingList**.  Although this project is called "ShoppingList14," it retains the same signature as the previous project; and despite some changes to the Core Data model, will properly migrate date from the earlier project to the new model of this project.
+
+Here are some of those code-level changes:
+
+* The AppDelegate-SceneDelegate application structure has been replaced by the more simplified App-Scene-WindowGroup structure introduced for XCode 12/iOS 14.
+* The three primary tabs (Shopping List, Purchased, and Locations) now use a Form presentation, rather than a List presentation.
+* Each ShoppingItem now keeps a "dateLastPurchased," which is reset to "today" whenever you move an item off the shopping list.
+* The Purchased items tab has been slightly re-worked so that shopping items that were purchased "today" appear in the first section of the list.  This makes it easy to review the list of today's purchases, and to quickly locate any item that you may have accidentally tapped off the Shopping List so you can put it back on the list.
 * Many code changes have been made or simplified and comments throughout the code.
 
 ## General App Structure
@@ -34,7 +44,7 @@ The main screen is a TabView, to show
 
 The CoreData model has only two entities named "ShoppingItem" and "Location," with every ShoppingItem having a to-one relationship to a Location (the inverse is to-many).
 
-* `ShoppingItem`s have an id (UUID), a name, a quantity, a boolean "onList" that indicates whether the item is on the list for today's shopping exercise, or not on the list (and so available in the purchased list for future promotion to the shopping list), and also an "isAvailable" boolean that provides a strike-through appearance for the item when false (sometimes an item is on the list, but not available today, and I want to remember that when planning the future shopping list).    ShoppingItems originally had a visitationOrder that mirrored the visitationOrder of the Location to which they were assigned, but the current version of the code does not read or write  the value of this field (i.e., feel free to delete it from the Core Data model if you have not already built out a large database using previous versions of the code).
+* `ShoppingItem`s have an id (UUID), a name, a quantity, a boolean "onList" that indicates whether the item is on the list for today's shopping exercise, or not on the list (and so available in the purchased list for future promotion to the shopping list), and also an "isAvailable" boolean that provides a strike-through appearance for the item when false (sometimes an item is on the list, but not available today, and I want to remember that when planning the future shopping list).  New to this project is the addition of a dateLastPurchsed for a ShoppingItem.
 
 * `Location`s have an id (UUID), a name, a visitationOrder (an integer, as in, go to the dairy first, then the deli, then the canned vegetables, etc), and then values red, green, blue, opacity to define a color that is used to color every item listed in the shopping list. 
 

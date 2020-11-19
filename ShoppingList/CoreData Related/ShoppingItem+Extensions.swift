@@ -12,7 +12,7 @@ import UIKit
 
 extension ShoppingItem {
 	
-	// MARK: - Added Properties
+	// MARK: - Convenience Properties
 	
 	// the color associated with a ShoppingItem is the same as that of its location's color
 	var backgroundColor: UIColor {
@@ -67,11 +67,7 @@ extension ShoppingItem {
 	static func currentShoppingList(onList: Bool) -> [ShoppingItem] {
 		let context = PersistentStore.shared.context
 		let fetchRequest: NSFetchRequest<ShoppingItem> = ShoppingItem.fetchRequest()
-		if onList {
-			fetchRequest.predicate = NSPredicate(format: "onList == true")
-		} else {
-			fetchRequest.predicate = NSPredicate(format: "onList == false")
-		}
+		fetchRequest.predicate = NSPredicate(format: "onList == %d", onList)
 		do {
 			let items = try context.fetch(fetchRequest)
 			return items
@@ -108,6 +104,18 @@ extension ShoppingItem {
 			Self.saveChanges()
 		}
 	}
+	
+	func updateValues(from editableData: EditableShoppingItemData) {
+		name = editableData.itemName
+		quantity = Int32(editableData.itemQuantity)
+		onList = editableData.onList
+		isAvailable = editableData.isAvailable
+		// if we are currently associated with a Location, break that association
+		// and then set new location
+		location?.removeFromItems(self)
+		location = editableData.location
+	}
+
 	
 }
 

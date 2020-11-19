@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 
-final class PersistentStore {
+final class PersistentStore: ObservableObject {
 	
 	private(set) static var shared = PersistentStore()
 	

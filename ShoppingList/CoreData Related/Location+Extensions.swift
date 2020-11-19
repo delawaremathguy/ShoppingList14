@@ -90,14 +90,19 @@ extension Location: Comparable {
 		return nil
 	}
 	
-	static func delete(location: Location, saveChanges: Bool = false) {
+	// the default status on a delete is to always save changes out to disk
+	// the only time not to do this (saveChanges = false) is if you delete a bunch
+	// of locations all at the same time.
+	static func delete(_ location: Location, saveChanges: Bool = true) {
 		// you cannot delete the unknownLocation
 		guard location.visitationOrder != kUnknownLocationVisitationOrder else { return }
 
 		// OK, announce what's about to happen
 		NotificationCenter.default.post(name: .locationWillBeDeleted, object: location)
 
-		// retrieve all items for this location so we can work with them
+		// retrieve the context of this Location and get a list of
+		// all items for this location so we can work with them
+		let context = location.managedObjectContext
 		let itemsAtThisLocation = location.items as? Set<ShoppingItem> ?? Set<ShoppingItem>()
 		
 		// remove all shopping items associated with this location from the Location's
@@ -107,11 +112,40 @@ extension Location: Comparable {
 			item.location?.removeFromItems(item)
 			item.location = theUnknownLocation
 		}
-		// and finish the deletion
-		location.managedObjectContext?.delete(location)
+		// and finish the deletion and make sure the context has gets cleaned up.
+		context?.delete(location)
+		context?.processPendingChanges()
+		// save to disk if requested
 		if saveChanges {
 			PersistentStore.shared.saveContext()
 		}
+	}
+	
+	static func updateData(for location: Location?, using editableData: EditableLocationData) {
+		// if the incoming item is not nil, then this is just a straight update.
+		// otherwise, we must create the new Location here and add it to
+		// our list of locations
+		
+		// if location is nil, it's a signal to add a new item with the packaged data
+		if let location = location {
+			location.updateValues(from: editableData)
+			NotificationCenter.default.post(name: .locationEdited, object: location)
+		} else {
+			let newLocation = Location.addNewLocation()
+			newLocation.updateValues(from: editableData)
+//			NotificationCenter.default.post(name: .locationAdded, object: newLocation)
+		}
+		
+		saveChanges()
+	}
+	
+	func updateValues(from editableData: EditableLocationData) {
+		name = editableData.locationName
+		visitationOrder = Int32(editableData.visitationOrder)
+		red = editableData.red
+		green = editableData.green
+		blue = editableData.blue
+		opacity = editableData.opacity
 	}
 
 	static func saveChanges() {

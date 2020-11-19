@@ -47,20 +47,3 @@ struct EditableShoppingItemData {
 	
 	var canBeSaved: Bool { itemName.count > 0 }
 }
-
-// MARK: - ShoppingItem Convenience Extension
-
-extension ShoppingItem {
-	
-	func updateValues(from editableData: EditableShoppingItemData) {
-		name = editableData.itemName
-		quantity = Int32(editableData.itemQuantity)
-		onList = editableData.onList
-		isAvailable = editableData.isAvailable
-		// if we are currently associated with a Location, break that association
-		// and then set new location
-		location?.removeFromItems(self)
-		location = editableData.location
-	}
-}
-

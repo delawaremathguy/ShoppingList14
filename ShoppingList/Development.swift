@@ -141,7 +141,7 @@ func insertNewLocations(from codableLocations: [LocationCodable]) {
 		newLocation.green = codableLocation.green
 		newLocation.blue = codableLocation.blue
 		newLocation.opacity = codableLocation.opacity
-		NotificationCenter.default.post(name: .locationAdded, object: newLocation)
+//		NotificationCenter.default.post(name: .locationAdded, object: newLocation)
 	}
 }
 
@@ -156,7 +156,7 @@ func deleteAllData() {
 	
 	let locations = Location.allLocations(userLocationsOnly: true)
 	for location in locations {
-		Location.delete(location: location)
+		Location.delete(location)
 	}
 	
 	Location.saveChanges()

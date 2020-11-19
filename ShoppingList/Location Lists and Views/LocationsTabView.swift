@@ -10,7 +10,11 @@ import SwiftUI
 
 struct LocationsTabView: View {
 	
-	@ObservedObject var viewModel = LocationsListViewModel()
+	//@ObservedObject var viewModel = LocationsListViewModel()
+	
+	@FetchRequest(entity: Location.entity(),
+								sortDescriptors: [NSSortDescriptor(keyPath: \Location.visitationOrder, ascending: true)])
+	private var locations: FetchedResults<Location>
 	
 	@State private var isAddNewLocationSheetShowing = false
 	
@@ -33,7 +37,7 @@ struct LocationsTabView: View {
 					
 				.sheet(isPresented: $isAddNewLocationSheetShowing) {
 					NavigationView {
-						AddorModifyLocationView(viewModel: self.viewModel)
+						AddorModifyLocationView()
 					}
 				}
 				
@@ -45,9 +49,9 @@ struct LocationsTabView: View {
 				
 				// 2. then the list of locations
 				Form {
-					Section(header: Text("Locations Listed: \(viewModel.locationCount)").textCase(.none)) {
-						ForEach(viewModel.locations) { location in
-							NavigationLink(destination: AddorModifyLocationView(viewModel: self.viewModel, at: location)) {
+					Section(header: Text("Locations Listed: \(Location.count())").textCase(.none)) {
+						ForEach(locations) { location in
+							NavigationLink(destination: AddorModifyLocationView(at: location)) {
 								LocationRowView(rowData: LocationRowData(location: location))
 									.contextMenu {
 										Button(action: {
@@ -78,7 +82,7 @@ struct LocationsTabView: View {
 			.toolbar { toolbarButton() }
 				.onAppear {
 					print("LocationsTabView appear")
-					self.viewModel.loadLocations()
+					//self.viewModel.loadLocations()
 				}
 			
 		} // end of NavigationView
@@ -94,7 +98,7 @@ struct LocationsTabView: View {
 	}
 	func deleteSelectedLocation() {
 		if let location = locationToDelete {
-			viewModel.delete(location: location)
+			Location.delete(location)
 		}
 	}
 		
