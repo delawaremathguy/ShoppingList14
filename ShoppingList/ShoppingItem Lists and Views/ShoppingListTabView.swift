@@ -113,6 +113,7 @@ invoked on an item in the list
 
 			
 		} // end of NavigationView
+		.navigationViewStyle(StackNavigationViewStyle())
 			.onAppear {
 				print("ShoppingListTabView appear")
 				viewModel.loadItems()

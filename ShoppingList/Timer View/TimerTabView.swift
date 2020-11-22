@@ -52,6 +52,7 @@ struct TimerTabView: View {
 			}
 			.navigationBarTitle("In-Store Timer")
 		} // end of NavigationView
+		.navigationViewStyle(StackNavigationViewStyle())
 			.onAppear { print("TimerTabView appear") }
 			.onDisappear { print("TimerTabView disappear") }
 

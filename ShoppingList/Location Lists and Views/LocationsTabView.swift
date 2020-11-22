@@ -86,6 +86,7 @@ struct LocationsTabView: View {
 				}
 			
 		} // end of NavigationView
+		.navigationViewStyle(StackNavigationViewStyle())
 			.onDisappear { print("LocationsTabView disappear") }
 	} // end of var body: some View
 	

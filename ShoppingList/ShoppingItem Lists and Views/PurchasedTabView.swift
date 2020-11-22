@@ -106,6 +106,7 @@ struct PurchasedTabView: View {
 			//					)
 			
 		} // end of NavigationView
+		.navigationViewStyle(StackNavigationViewStyle())
 		.onAppear {
 			print("PurchasedTabView appear")
 			self.searchText = ""

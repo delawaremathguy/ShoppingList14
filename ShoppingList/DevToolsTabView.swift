@@ -90,8 +90,9 @@ struct DevToolsTabView: View {
 		} // end of VStack
 			.navigationBarTitle("Dev Tools")
 		} // end of NavigationView
-			.onAppear { print("DevToolsTabView appear") }
-			.onDisappear { print("DevToolsTabView disappear") }
+		.navigationViewStyle(StackNavigationViewStyle())
+		.onAppear { print("DevToolsTabView appear") }
+		.onDisappear { print("DevToolsTabView disappear") }
 	} // end of body
 	
 }

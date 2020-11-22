@@ -216,7 +216,9 @@ class ShoppingListViewModel: ObservableObject {
 	// changes onList status for a single item
 	func moveToOtherList(item: ShoppingItem) {
 		item.onList.toggle()
-		item.dateLastPurchased = Date()
+		if !item.onList { // just moved off list, so record date
+			item.dateLastPurchased = Date()
+		}
 		NotificationCenter.default.post(name: .shoppingItemEdited, object: item)
 		ShoppingItem.saveChanges()
 	}
@@ -225,16 +227,22 @@ class ShoppingListViewModel: ObservableObject {
 	func moveToOtherList(items: [ShoppingItem]) {
 		for item in items {
 			item.onList.toggle()
+			if !item.onList { // just moved off list, so record date
+				item.dateLastPurchased = Date()
+			}
 			NotificationCenter.default.post(name: .shoppingItemEdited, object: item)
 		}
 		ShoppingItem.saveChanges()
 	}
 	
 	// moves all items off the current list.  that means our array
-	// will shrink down to the empty array
+	// will shrink down to the empty array.
 	func moveAllItemsToOtherList() {
 		for item in items {
 			item.onList.toggle()
+			if !item.onList { // just moved off list, so record date
+				item.dateLastPurchased = Date()
+			}
 			NotificationCenter.default.post(name: .shoppingItemEdited, object: item)
 		}
 		ShoppingItem.saveChanges()

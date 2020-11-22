@@ -114,6 +114,8 @@ extension ShoppingItem {
 		// and then set new location
 		location?.removeFromItems(self)
 		location = editableData.location
+		// last thing: the associated Location may want to know about this
+		//location?.objectWillChange.send()
 	}
 
 	
