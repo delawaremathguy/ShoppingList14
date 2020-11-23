@@ -71,11 +71,11 @@ Here are some of those code-level changes:
 * Each ShoppingItem now has a "dateLastPurchased" property which is reset to "today" whenever you move an item off the shopping list.
 * The Purchased items tab has been slightly re-worked so that shopping items that were purchased "today" appear in the first section of the list.  This makes it easy to review the list of today's purchases, and to quickly locate any item that you may have accidentally tapped off the Shopping List so you can put it back on the list.
 * Many code changes have been made or simplified and comments throughout the code. 
-* The basic architecture of the app has been simplified.  What started out as more of an MVVM-style architecture has morphed into a hybrid style:
+* The basic architecture of the app has been simplified.  What started out as more of a strict MVVM-style architecture has morphed into a hybrid style:
 
  - Views can effect changes to ShoppingItems by calling ShoppingItem functions directly ("user intents"), which then are handled appropriately in the ShoppingItem class, and for which notifications are then posted as to what happened. 
  - There is no longer a LocationsListViewModel.  The LocationsTabView is such a simple view that it is now driven by a @Fetchrequest.
- - The ShoppingListViewModel has now become exclusively an array manager that serves only the functions that the @FetchRequest it replaces would handle, and does not carry out user-intent requests. 
+ - The ShoppingListViewModel has now serves only two purposes: it manages an array of ShoppingItems (it is a replacement for @FetchRequest in this regard, although we can see and understand how this works), and provides some simple services to views such as sectioning the items when the ShoppingList is shown in multi-section style and providing information that makes it easy to split the PurchasedItemTabView into "Today" and "All the others.""
 
 
 ## App Architecture Comment

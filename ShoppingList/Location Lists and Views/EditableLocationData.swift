@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct EditableLocationData {
 	// all of the values here provide suitable defaults for a new Location
@@ -25,6 +26,15 @@ struct EditableLocationData {
 		green = location.green
 		blue = location.blue
 		opacity = location.opacity
+	}
+	
+	mutating func updateColor(from color: Color) {
+		if let components = color.cgColor?.components {
+			red = Double(components[0])
+			green = Double(components[1])
+			blue = Double(components[2])
+			opacity = Double(components[3])
+		}
 	}
 	
 	// provides simple, default init with values specified above

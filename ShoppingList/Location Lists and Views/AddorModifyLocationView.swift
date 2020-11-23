@@ -36,6 +36,9 @@ struct AddorModifyLocationView: View {
 	// to confirm deletion of a Location
 	@State private var showDeleteConfirmation: Bool = false
 	
+	// state to translate RGB-A into a Color used by the ColorPicker
+	@State private var editableColor: Color = .black
+	
 	// we use an init, so the ShoppingListViewModel for the shopping items at this
 	// location gets initialized properly with the location as associated data for
 	// the type locationSpecificShoppingList
@@ -62,21 +65,8 @@ struct AddorModifyLocationView: View {
 						}
 					}
 				}
-
-				HStack {
-					SLFormLabelText(labelText: "Composite Color: ")
-					Spacer()
-					Capsule()
-						.fill(rgbColor())
-						.frame(width: 200)
-						.overlay(Capsule().stroke(Color.black, lineWidth: 1))
-				}
-
-				SLSliderControl(title: "Red: ", amount: $editableData.red)
-				SLSliderControl(title: "Green: ", amount: $editableData.green)
-				SLSliderControl(title: "Blue: ", amount: $editableData.blue)
-				SLSliderControl(title: "Opacity: ", amount: $editableData.opacity)
-
+				
+				ColorPicker("Location Color", selection: $editableColor)
 			} // end of Section 1
 			
 			// Section 2: Delete button, if present (must be editing a user location)
@@ -137,6 +127,7 @@ struct AddorModifyLocationView: View {
 	func commitData() {
 		presentationMode.wrappedValue.dismiss()
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+			self.editableData.updateColor(from: editableColor)
 			Location.updateData(for: self.editableLocation, using: self.editableData)
 		}
 	}
@@ -148,6 +139,7 @@ struct AddorModifyLocationView: View {
 			if let location = editableLocation {
 				editableData = EditableLocationData(location: location)
 				shoppingItemsViewModel.loadItems()
+				editableColor = Color(.sRGB, red: location.red, green: location.green, blue: location.blue, opacity: location.opacity)
 			} // else we already have default, editable data set up right
 			dataHasBeenLoaded = true
 		}
