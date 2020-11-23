@@ -23,18 +23,14 @@ import SwiftUI
 /// - Parameter deletionTrigger: a closure to call to set state variables and put up an "Are you sure?" alert before allowing deletion of the item
 /// - Returns: Void
 @ViewBuilder
-func shoppingItemContextMenu(viewModel: ShoppingListViewModel, for item: ShoppingItem,
+func shoppingItemContextMenu(item: ShoppingItem,
 														 deletionTrigger: @escaping () -> Void) -> some View {
-	Button(action: {
-		viewModel.moveToOtherList(item: item)
-	}) {
+	Button(action: { item.toggleOnListStatus() }) {
 		Text(item.onList ? "Move to Purchased" : "Move to ShoppingList")
 		Image(systemName: item.onList ? "purchased" : "cart")
 	}
 	
-	Button(action: {
-		viewModel.toggleAvailableStatus(for: item)
-	}) {
+	Button(action: { item.toggleAvailableStatus() }) {
 		Text(item.isAvailable ? "Mark as Unavailable" : "Mark as Available")
 		Image(systemName: item.isAvailable ? "pencil.slash" : "pencil")
 	}

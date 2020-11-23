@@ -16,6 +16,9 @@ import Foundation
 // on ShoppingItem to copy this data back to a ShoppingItem.
 
 struct EditableShoppingItemData {
+	// the ShoppingItem, if any, associated with this data collection
+	// (nil if data for a new item that does not yet exist)
+	var shoppingItemID: UUID? = nil
 	// all of the values here provide suitable defaults for a new shopping item
 	var itemName: String = ""
 	var itemQuantity: Int = 1
@@ -32,6 +35,7 @@ struct EditableShoppingItemData {
 	// with how SwiftUI updates views and its interaction with a @FetchRequest.  this is the
 	// one, remaining issue with SwiftUI i hope to understand real soon.
 	init(shoppingItem: ShoppingItem) {
+		shoppingItemID = shoppingItem.id!
 		itemName = shoppingItem.name
 		itemQuantity = Int(shoppingItem.quantity)
 		location = shoppingItem.location!

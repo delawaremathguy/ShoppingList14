@@ -1,8 +1,8 @@
 #  About "ShoppingList14"
 
-This is a simple, iOS project to process a shopping list that you can take to the grocery store with you, and move items off the list as you pick them up.  It persists data in CoreData.  The project uses an MVVM-style architecture along with SwiftUI, and should be compiled with XCode 12.2 or later and run on iOS14.2 or later.
+This is a simple, iOS project to process a shopping list that you can take to the grocery store with you, and move items off the list as you pick them up.  It persists data in CoreData.  The project should be compiled with XCode 12.2 or later to run on iOS14.2 or later.
 
-* An [earlier version of this project](https://github.com/delawaremathguy/ShoppingList) is available that works with **XCode 11.7/iOS 13.7**.  If you have not yet made the move to XCode 12.2 and iOS 14.2, you should use this earlier project.
+* An [earlier version of this project](https://github.com/delawaremathguy/ShoppingList) is available that works with **XCode 11.7/iOS 13.7**.  If you have not yet made the move to XCode 12.2 and iOS 14.2, you should use this earlier project instead.
 
 Feel free to use this as is, to develop further,  to completely ignore, or even just to inspect and then send me a note to tell me I am doing this all wrong.  
 
@@ -10,23 +10,12 @@ Feel free to use this as is, to develop further,  to completely ignore, or even 
 ## First Public Update for iOS 14: November, 2020
 
 
-Now that XCode 12 has finally stabilized, I feel it safe to make some refinements and possibly use features of iOS 14 in this project.  This repository has  been put together using XCode 12.2 and is intended to run under iOS 14.2.  
+Now that XCode 12 has finally stabilized, I feel it safe to make some refinements and possibly use features of iOS 14 in this project.  This repository has been put together using XCode 12.2 (release version) and is intended to run under iOS 14.2 
 
 Please be sure to read the What's New in ShoppingList14 section below, primarily for implementation and code-level changes.
 
 
 
-## What's New in ShoppingList14
-
-Things have changed [since the previous release of this project](https://github.com/delawaremathguy/ShoppingList) for XCode 11 that was titled, simply, **ShoppingList**.  Although this project is called "ShoppingList14," it retains the same signature as the previous project; and despite some changes to the Core Data model, will properly migrate date from the earlier project to the new model of this project.
-
-Here are some of those code-level changes:
-
-* The AppDelegate-SceneDelegate application structure has been replaced by the more simplified App-Scene-WindowGroup structure introduced for XCode 12/iOS 14.
-* The three primary tabs (Shopping List, Purchased, and Locations) now use a Form presentation, rather than a List presentation.
-* Each ShoppingItem now keeps a "dateLastPurchased," which is reset to "today" whenever you move an item off the shopping list.
-* The Purchased items tab has been slightly re-worked so that shopping items that were purchased "today" appear in the first section of the list.  This makes it easy to review the list of today's purchases, and to quickly locate any item that you may have accidentally tapped off the Shopping List so you can put it back on the list.
-* Many code changes have been made or simplified and comments throughout the code.
 
 ## General App Structure
 
@@ -70,6 +59,23 @@ So,
 * **If you plan to use this app**, the app will start with an empty shopping list and an almost-empty location list (it will contain the special "Unknown Location"); from there you can create your own shopping items and locations associated with those items.  
 
 * **If you plan to play with or just test out this app**, go straight to the Dev Tools tab and tap the "Load Sample Data" button.  Now you can play with the app, and eventually delete the data (also from the Dev Tools tab) when you're finished.
+
+## What's New in ShoppingList14
+
+Things have changed [since the previous release of this project](https://github.com/delawaremathguy/ShoppingList) for XCode 11 that was titled, simply, **ShoppingList**.  Although this project is called "ShoppingList14," it retains the same signature as the previous project; and despite some changes to the Core Data model, *should* properly migrate data from the earlier project to the new model of this project -- however, I *cannot guarantee this based on my own experience*.
+
+Here are some of those code-level changes:
+
+* The AppDelegate-SceneDelegate application structure has been replaced by the more simplified App-Scene-WindowGroup structure introduced for XCode 12/iOS 14.
+* The three primary tabs (Shopping List, Purchased, and Locations) now use a Form presentation, rather than a List presentation.
+* Each ShoppingItem now has a "dateLastPurchased" property which is reset to "today" whenever you move an item off the shopping list.
+* The Purchased items tab has been slightly re-worked so that shopping items that were purchased "today" appear in the first section of the list.  This makes it easy to review the list of today's purchases, and to quickly locate any item that you may have accidentally tapped off the Shopping List so you can put it back on the list.
+* Many code changes have been made or simplified and comments throughout the code. 
+* The basic architecture of the app has been simplified.  What started out as more of an MVVM-style architecture has morphed into a hybrid style:
+
+- Views can effect changes to ShoppingItems by calling ShoppingItem functions directly ("user intents"), which then are handled appropriately in the ShoppingItem class, and for which notifications are then posted as to what happened. 
+- There is no longer a LocationsListViewModel.  The LocationsTabView is such a simple view that it is now driven by a @Fetchrequest.
+- The ShoppingListViewModel has now become exclusively an array manager that serves only the functions that the @FetchRequest it replaces would handle, and does not carry out user-intent requests. 
 
 
 ## App Architecture Comment

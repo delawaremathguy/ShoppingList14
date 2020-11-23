@@ -42,7 +42,7 @@ struct PurchasedTabView: View {
 				}
 				.sheet(isPresented: $isAddNewItemSheetShowing) {
 					NavigationView {
-						AddorModifyShoppingItemView(viewModel: self.viewModel, addItemToShoppingList: false)
+						AddorModifyShoppingItemView(addItemToShoppingList: false)
 					}
 				}
 				
@@ -59,11 +59,10 @@ struct PurchasedTabView: View {
 						if viewModel.hasItemsForToday(containing: searchText) {
 							Section(header: Text("Purchased Today").textCase(.none)) {
 								ForEach(viewModel.itemsForToday(containing: searchText)) { item in
-									NavigationLink(destination: AddorModifyShoppingItemView(viewModel: self.viewModel, editableItem: item)) {
+									NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
 										SelectableShoppingItemRowView(item: item, viewModel: viewModel, selected: itemsChecked.contains(item), respondToTapOnSelector: handleItemTapped)
 												.contextMenu {
-													shoppingItemContextMenu(viewModel: viewModel,
-																									for: item, deletionTrigger: {
+													shoppingItemContextMenu(item: item, deletionTrigger: {
 																										itemToDelete = item
 																										isDeleteItemAlertShowing = true
 																									})
@@ -76,11 +75,11 @@ struct PurchasedTabView: View {
 						// 2. all items purchased earlier
 						Section(header: Text("Purchased Yesterday or Earlier").textCase(.none)) {
 							ForEach(viewModel.itemsEarlierThanToday(containing: searchText)) { item in
-								NavigationLink(destination: AddorModifyShoppingItemView(viewModel: self.viewModel, editableItem: item)) {
+								NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
 									SelectableShoppingItemRowView(item: item, viewModel: viewModel, selected: itemsChecked.contains(item), respondToTapOnSelector: handleItemTapped)
 										.contextMenu {
-											shoppingItemContextMenu(viewModel: self.viewModel,
-																							for: item, deletionTrigger: {
+											shoppingItemContextMenu(item: item,
+																							deletionTrigger: {
 																								self.itemToDelete = item
 																								self.isDeleteItemAlertShowing = true
 																							})
@@ -127,7 +126,7 @@ struct PurchasedTabView: View {
 		if !itemsChecked.contains(item) {
 			itemsChecked.append(item)
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-				self.viewModel.moveToOtherList(item: item)
+				item.toggleOnListStatus()
 				self.itemsChecked.removeAll(where: { $0 == item })
 			}
 		}
@@ -135,7 +134,7 @@ struct PurchasedTabView: View {
 	
 	func deleteSelectedItem() {
 		if let item = itemToDelete {
-			viewModel.delete(item: item)
+			ShoppingItem.delete(item: item, saveChanges: true)
 		}
 	}
 	

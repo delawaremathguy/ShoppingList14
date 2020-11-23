@@ -105,6 +105,30 @@ extension ShoppingItem {
 		}
 	}
 	
+	// changes availability flag for an item
+	func toggleAvailableStatus() {
+		isAvailable.toggle()
+		NotificationCenter.default.post(name: .shoppingItemEdited, object: self)
+		ShoppingItem.saveChanges()
+	}
+
+	// changes onList flag for an item
+	func toggleOnListStatus() {
+		onList.toggle()
+		if !onList { // just moved off list, so record date
+			dateLastPurchased = Date()
+		}
+		NotificationCenter.default.post(name: .shoppingItemEdited, object: self)
+		ShoppingItem.saveChanges()
+	}
+
+	func markAvailable() {
+		isAvailable = true
+		NotificationCenter.default.post(name: .shoppingItemEdited, object: self)
+		ShoppingItem.saveChanges()
+	}
+
+	
 	func updateValues(from editableData: EditableShoppingItemData) {
 		name = editableData.itemName
 		quantity = Int32(editableData.itemQuantity)
@@ -116,6 +140,23 @@ extension ShoppingItem {
 		location = editableData.location
 		// last thing: the associated Location may want to know about this
 		//location?.objectWillChange.send()
+	}
+
+	// updates data for a ShoppingItem that the user has directed from an Add or Modify View.
+	// if the incoming data is not assoicated with an item, we need to create it first
+	static func update(using editableData: EditableShoppingItemData) {
+		
+		// if we can find a ShoppingItem with the right id, use it, else create one
+		if let item = allShoppingItems().first(where: { $0.id == editableData.shoppingItemID }) {
+			item.updateValues(from: editableData)
+			NotificationCenter.default.post(name: .shoppingItemEdited, object: item)
+		} else {
+			let newItem = ShoppingItem.addNewItem()
+			newItem.updateValues(from: editableData)
+			NotificationCenter.default.post(name: .shoppingItemAdded, object: newItem)
+		}
+		
+		ShoppingItem.saveChanges()
 	}
 
 	

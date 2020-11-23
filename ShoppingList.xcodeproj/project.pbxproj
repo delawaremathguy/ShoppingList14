@@ -32,7 +32,6 @@
 		D65A50A225657EDC00D43229 /* SelectableShoppingItemRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65A50A125657EDC00D43229 /* SelectableShoppingItemRowView.swift */; };
 		D65B206C2493005600DB55F1 /* SLSliderControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65B206B2493005600DB55F1 /* SLSliderControl.swift */; };
 		D65C931824C5DC9B003E6EB7 /* GlobalTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65C931724C5DC9B003E6EB7 /* GlobalTimer.swift */; };
-		D65E0E3B24D35B3A000167B2 /* LocationsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65E0E3A24D35B3A000167B2 /* LocationsListViewModel.swift */; };
 		D66FF35424926B6400B3ABC8 /* DevToolsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66FF35324926B6400B3ABC8 /* DevToolsTabView.swift */; };
 		D66FF3562492E67100B3ABC8 /* SLCenteredButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66FF3552492E67100B3ABC8 /* SLCenteredButton.swift */; };
 		D677946224D58F34006EB9CF /* EditableLocationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D677946124D58F34006EB9CF /* EditableLocationData.swift */; };
@@ -83,7 +82,6 @@
 		D65A50A125657EDC00D43229 /* SelectableShoppingItemRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableShoppingItemRowView.swift; sourceTree = "<group>"; };
 		D65B206B2493005600DB55F1 /* SLSliderControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLSliderControl.swift; sourceTree = "<group>"; };
 		D65C931724C5DC9B003E6EB7 /* GlobalTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalTimer.swift; sourceTree = "<group>"; };
-		D65E0E3A24D35B3A000167B2 /* LocationsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationsListViewModel.swift; sourceTree = "<group>"; };
 		D6661E0A25645D2200BA47E9 /* ShoppingList 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "ShoppingList 2.xcdatamodel"; sourceTree = "<group>"; };
 		D66FF35324926B6400B3ABC8 /* DevToolsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevToolsTabView.swift; sourceTree = "<group>"; };
 		D66FF3552492E67100B3ABC8 /* SLCenteredButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLCenteredButton.swift; sourceTree = "<group>"; };
@@ -212,7 +210,6 @@
 		D6618D9C24D9B043003523B5 /* Location Lists and Views */ = {
 			isa = PBXGroup;
 			children = (
-				D65E0E3A24D35B3A000167B2 /* LocationsListViewModel.swift */,
 				D6B8A9552463693D005F8EF2 /* LocationsTabView.swift */,
 				D6F375D52485593D005559E6 /* LocationRowView.swift */,
 				D65721B22464591700E4AAAF /* AddorModifyLocationView.swift */,
@@ -335,7 +332,6 @@
 				D60F14A924686D710077AD3F /* LocationCodable.swift in Sources */,
 				D62B882B2451162D0051A7CE /* AppDelegate.swift in Sources */,
 				D62B88322451162D0051A7CE /* ShoppingListTabView.swift in Sources */,
-				D65E0E3B24D35B3A000167B2 /* LocationsListViewModel.swift in Sources */,
 				D60631F3252E42830032CC47 /* SelectionIndicatorView.swift in Sources */,
 				D6AE3643246F035400F7A237 /* Bundle+Extensions.swift in Sources */,
 				D63C05562566B9DE000A63FC /* ShoppingListApp.swift in Sources */,

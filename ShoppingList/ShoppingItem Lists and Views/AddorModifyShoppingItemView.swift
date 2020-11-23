@@ -13,8 +13,6 @@ struct AddorModifyShoppingItemView: View {
 	// in a NavigationLink)
 	@Environment(\.presentationMode) var presentationMode
 
-	// this is the viewModel within which we're doing Add/Edit
-	var viewModel: ShoppingListViewModel
 	// editableItem is either a ShoppingItem to edit, or nil to signify
 	// that we're creating a new ShoppingItem in this View.
 	var editableItem: ShoppingItem? = nil
@@ -27,8 +25,8 @@ struct AddorModifyShoppingItemView: View {
 	
 	// this editableData stuct contains all of the fields of a ShoppingItem that
 	// can be edited here, so that we're not doing a "live edit" on the ShoppingItem
-	// itself.  this will be defaulted properly in .onAppear()
-	@State private var editableData = EditableShoppingItemData()
+	// it  this will be defaulted properly in .onAppear()
+	@State var editableData = EditableShoppingItemData()
 
 	// this indicates whether the editableData has been initialized from an incoming
 	// editableItem and it will be flipped to true once .onAppear() has been called
@@ -84,7 +82,7 @@ struct AddorModifyShoppingItemView: View {
 			if editableItem != nil {
 				Section(header: SLSectionHeaderView(title: "Shopping Item Management")) {
 					SLCenteredButton(title: "Delete This Shopping Item",
-													 action: { self.showDeleteConfirmation = true })
+													 action: { showDeleteConfirmation = true })
 						.foregroundColor(Color.red)
 				}
 			} // end of Section
@@ -95,11 +93,11 @@ struct AddorModifyShoppingItemView: View {
 			.navigationBarBackButtonHidden(true)
 			.navigationBarItems(
 				leading:
-					Button(action : { self.presentationMode.wrappedValue.dismiss() }){
+					Button(action : { presentationMode.wrappedValue.dismiss() }){
 						Text("Cancel")
 					},
 				trailing:
-					Button(action : { self.commitDataEntry() }){
+					Button(action : { commitDataEntry() }){
 						Text("Save")
 							.disabled(!editableData.canBeSaved)
 				})
@@ -134,13 +132,13 @@ struct AddorModifyShoppingItemView: View {
 		}
 	}
 	
-	// called when you tap the Save button.  we dismiss() and then tell the viewModel
-	// to make the update fo us, with a slight delay.  see comment below on deleteItem.
+	// called when you tap the Save button.  we dismiss() and then tell the ShoppingItem
+	// class to make the update fo us, with a slight delay.  see comment below on deleteItem.
 	func commitDataEntry() {
 		guard editableData.canBeSaved else { return }
 		presentationMode.wrappedValue.dismiss()
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-			self.viewModel.updateData(for: self.editableItem, using: self.editableData)
+			ShoppingItem.update(using: editableData)
 		}
 	}
 	
@@ -158,7 +156,7 @@ struct AddorModifyShoppingItemView: View {
 		if let item = editableItem {
 			presentationMode.wrappedValue.dismiss()
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-				self.viewModel.delete(item: item)
+				ShoppingItem.delete(item: item, saveChanges: true)
 			}
 		}
 	}

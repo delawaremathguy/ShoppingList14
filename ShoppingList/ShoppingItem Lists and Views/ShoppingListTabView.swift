@@ -49,7 +49,7 @@ AddorModifyShoppingItemView inside its own NavigationView (so the Picker will wo
 				}
 				.sheet(isPresented: $isAddNewItemSheetShowing) {
 					NavigationView {
-						AddorModifyShoppingItemView(viewModel: viewModel, addItemToShoppingList: true)
+						AddorModifyShoppingItemView(addItemToShoppingList: true)
 					}
 				}
 				
@@ -93,7 +93,8 @@ invoked on an item in the list
 						.padding([.bottom, .top], 6)
 					
 					if viewModel.hasUnavailableItems {
-						SLCenteredButton(title: "Mark All Items Available", action: { viewModel.markAllItemsAvailable() })
+						SLCenteredButton(title: "Mark All Items Available",
+														 action: { viewModel.items.forEach({ $0.markAvailable() }) })
 							.padding([.bottom], 6)
 						
 					}
@@ -162,10 +163,10 @@ invoked on an item in the list
 	
 	func destructiveAlertAction() {
 		if destructiveMoveToOtherList {
-			viewModel.moveAllItemsToOtherList()
+			viewModel.items.forEach({ $0.toggleOnListStatus() })
 			destructiveMoveToOtherList = false
 		} else if let item = itemToDelete {
-			viewModel.delete(item: item)
+			ShoppingItem.delete(item: item, saveChanges: true)
 		}
 	}
 
@@ -191,13 +192,12 @@ struct SingleSectionShoppingListView: View {
 			Section(header: Text("Items Remaining: \(viewModel.itemCount)").textCase(.none)) {
 				ForEach(viewModel.items) { item in
 					// display a single row here for 'item'
-					NavigationLink(destination: AddorModifyShoppingItemView(viewModel: viewModel, editableItem: item)) {
+					NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
 						SelectableShoppingItemRowView(item: item, viewModel: viewModel,
 												selected: itemsChecked.contains(item),
 												respondToTapOnSelector: handleItemTapped)
 							.contextMenu {
-								shoppingItemContextMenu(viewModel: viewModel,
-																				for: item, deletionTrigger: {
+								shoppingItemContextMenu(item: item, deletionTrigger: {
 																					itemToDelete = item
 																					isDeleteItemAlertShowing = true
 																				})
@@ -216,7 +216,7 @@ struct SingleSectionShoppingListView: View {
 		if !itemsChecked.contains(item) {
 			itemsChecked.append(item)
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-				viewModel.moveToOtherList(item: item)
+				item.toggleOnListStatus()
 				itemsChecked.removeAll(where: { $0 == item })
 			}
 		}
@@ -244,13 +244,12 @@ struct MultiSectionShoppingListView: View {
 					// display items in this location
 					ForEach(viewModel.items(at: location)) { item in
 						// display a single row here for 'item'
-						NavigationLink(destination: AddorModifyShoppingItemView(viewModel: viewModel, editableItem: item)) {
+						NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
 							SelectableShoppingItemRowView(item: item, viewModel: viewModel,
 													selected: itemsChecked.contains(item),
 													respondToTapOnSelector: handleItemTapped)
 									.contextMenu {
-										shoppingItemContextMenu(viewModel: viewModel,
-																						for: item, deletionTrigger: {
+										shoppingItemContextMenu(item: item, deletionTrigger: {
 																							itemToDelete = item
 																							isDeleteItemAlertShowing = true
 										})
@@ -266,7 +265,7 @@ struct MultiSectionShoppingListView: View {
 		if !itemsChecked.contains(item) {
 			itemsChecked.append(item)
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-				viewModel.moveToOtherList(item: item)
+				item.toggleOnListStatus()
 				itemsChecked.removeAll(where: { $0 == item })
 			}
 		}

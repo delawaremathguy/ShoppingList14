@@ -43,7 +43,7 @@ import SwiftUI
 
 // finally, one curiosity is that if you make `var itemData: ShoppingItemRowData` into
 // `@State var itemData: ShoppingItemRowData`, this view will NOT update correctly, for
-// the simple reason that by setting @State, SwiftUI takes full ownership.  nothing outside
+// the simple reason that by setting @State, this SwiftUI view takes full ownership.  nothing outside
 // can reset it (e.g., running the body property that makes the list won't reset the
 // property, even though it looks like it should), and nothing inside the view changes it,
 // so you're stuck with this view until the view finally disappears.

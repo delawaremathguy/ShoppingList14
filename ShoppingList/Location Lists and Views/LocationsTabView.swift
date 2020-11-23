@@ -10,8 +10,8 @@ import SwiftUI
 
 struct LocationsTabView: View {
 	
-	//@ObservedObject var viewModel = LocationsListViewModel()
-	
+	// this View is a simple list view, so we'll drive this with a simple
+	// @FetchRequest rather than a view model to manage the list of Locations
 	@FetchRequest(entity: Location.entity(),
 								sortDescriptors: [NSSortDescriptor(keyPath: \Location.visitationOrder, ascending: true)])
 	private var locations: FetchedResults<Location>

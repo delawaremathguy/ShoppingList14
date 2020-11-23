@@ -91,7 +91,7 @@ struct AddorModifyLocationView: View {
 			if editableLocation != nil {
 				Section(header: SLSectionHeaderView(title: "At this Location: \(editableLocation?.items?.count ?? 0) items")) {
 					ForEach(shoppingItemsViewModel.items) { item in
-						NavigationLink(destination: AddorModifyShoppingItemView(viewModel: self.shoppingItemsViewModel, editableItem: item)) {
+						NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
 							Text(item.name)
 						}
 					}
