@@ -73,9 +73,9 @@ Here are some of those code-level changes:
 * Many code changes have been made or simplified and comments throughout the code. 
 * The basic architecture of the app has been simplified.  What started out as more of an MVVM-style architecture has morphed into a hybrid style:
 
-- Views can effect changes to ShoppingItems by calling ShoppingItem functions directly ("user intents"), which then are handled appropriately in the ShoppingItem class, and for which notifications are then posted as to what happened. 
-- There is no longer a LocationsListViewModel.  The LocationsTabView is such a simple view that it is now driven by a @Fetchrequest.
-- The ShoppingListViewModel has now become exclusively an array manager that serves only the functions that the @FetchRequest it replaces would handle, and does not carry out user-intent requests. 
+ - Views can effect changes to ShoppingItems by calling ShoppingItem functions directly ("user intents"), which then are handled appropriately in the ShoppingItem class, and for which notifications are then posted as to what happened. 
+ - There is no longer a LocationsListViewModel.  The LocationsTabView is such a simple view that it is now driven by a @Fetchrequest.
+ - The ShoppingListViewModel has now become exclusively an array manager that serves only the functions that the @FetchRequest it replaces would handle, and does not carry out user-intent requests. 
 
 
 ## App Architecture Comment

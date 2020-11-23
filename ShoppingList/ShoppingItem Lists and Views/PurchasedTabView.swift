@@ -23,7 +23,7 @@ struct PurchasedTabView: View {
 	@State private var isDeleteItemAlertShowing: Bool = false
 	@State private var itemToDelete: ShoppingItem?
 	@State private var isAddNewItemSheetShowing = false
-	@ObservedObject var viewModel = ShoppingListViewModel(type: .purchasedItemShoppingList)
+	@StateObject var viewModel = ShoppingListViewModel(type: .purchasedItemShoppingList)
 	
 	@State private var itemsChecked = [ShoppingItem]()
 	

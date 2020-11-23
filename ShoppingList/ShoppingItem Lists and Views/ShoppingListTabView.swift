@@ -18,7 +18,7 @@ import SwiftUI
 struct ShoppingListTabView: View {
 	// our view model = a window into Core Data so we can use it and be
 	// notified when changes are made via the ObservableObject protocol
-	@ObservedObject var viewModel = ShoppingListViewModel(type: .shoppingList)
+	@StateObject var viewModel = ShoppingListViewModel(type: .shoppingList)
 
 	// local state to trigger showing a sheet to add a new item
 	@State private var isAddNewItemSheetShowing = false

@@ -13,7 +13,7 @@ import SwiftUI
 
 struct TimerTabView: View {
 	
-	@ObservedObject var instoreTimer = gInStoreTimer
+	@StateObject var instoreTimer = gInStoreTimer
 
 	var body: some View {
 		NavigationView {
