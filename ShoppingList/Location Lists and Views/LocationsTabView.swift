@@ -29,7 +29,7 @@ struct LocationsTabView: View {
 				// 1. add new location "button" is at top.  note that this will put up the AddorModifyLocationView
 				// inside its own NaviagtionView (so the Picker will work!) and we must pass along the
 				// viewModel to really accomplish any change
-				Button(action: { self.isAddNewLocationSheetShowing = true }) {
+				Button(action: { isAddNewLocationSheetShowing = true }) {
 					Text("Add New Location")
 						.foregroundColor(Color.blue)
 						.padding(10)
@@ -56,8 +56,8 @@ struct LocationsTabView: View {
 									.contextMenu {
 										Button(action: {
 											if !location.isUnknownLocation() {
-												self.locationToDelete = location
-												self.showDeleteConfirmation = true
+												locationToDelete = location
+												showDeleteConfirmation = true
 											}
 										}) {
 											Text(location.isUnknownLocation() ? "(Cannot be deleted)" : "Delete This Location")
@@ -82,7 +82,7 @@ struct LocationsTabView: View {
 			.toolbar { toolbarButton() }
 				.onAppear {
 					print("LocationsTabView appear")
-					//self.viewModel.loadLocations()
+					//viewModel.loadLocations()
 				}
 			
 		} // end of NavigationView
@@ -91,7 +91,7 @@ struct LocationsTabView: View {
 	} // end of var body: some View
 	
 	func toolbarButton() -> some View {
-		Button(action: { self.isAddNewLocationSheetShowing = true }) {
+		Button(action: { isAddNewLocationSheetShowing = true }) {
 			Image(systemName: "plus")
 				.resizable()
 				.frame(width: 20, height: 20)

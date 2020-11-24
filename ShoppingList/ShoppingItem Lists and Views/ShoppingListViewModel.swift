@@ -11,8 +11,8 @@ import Foundation
 // a ShoppingListViewModel object manages an ordered list of ShoppingItems
 // that appear in the ShoppingListTabView, PurchasedTabView, or in a
 // AddorModifyLocationView subview.  it provides only information about the
-// items and their order, and responds to various notifications that will
-// arrive that affect the list and changes in the items within that list
+// items and their order, and responds to various notifications that
+// arrive that could affect the list or changes to the items within that list
 // (i.e., insertions, deletions, and updates to items that affect order).
 class ShoppingListViewModel: ObservableObject {
 		
@@ -219,6 +219,14 @@ class ShoppingListViewModel: ObservableObject {
 	func hasItemsForToday(containing searchText: String) -> Bool {
 		!items.allSatisfy(
 			{ $0.dateLastPurchased < Calendar.current.startOfDay(for: Date()) || !searchText.appearsIn($0.name) })
+	}
+	
+	func itemsPurchasedTodayCount(containing searchText: String) -> Int {
+		items.count(where: { $0.dateLastPurchased >= Calendar.current.startOfDay(for: Date()) && searchText.appearsIn($0.name) })
+	}
+	
+	func itemsPurchasedEarlierCount(containing searchText: String) -> Int {
+		items.count - itemsPurchasedTodayCount(containing: searchText)
 	}
 	
 	func itemsForToday(containing searchText: String) -> [ShoppingItem] {

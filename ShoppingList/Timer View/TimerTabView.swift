@@ -30,17 +30,17 @@ struct TimerTabView: View {
 				Spacer()
 				
 				HStack(spacing: 40) {
-					Button(action: { self.instoreTimer.start() } ){
+					Button(action: { instoreTimer.start() } ){
 						Text("Start")
 							.font(.title)
 					}
 					.disabled(instoreTimer.isRunning)
-					Button(action: { self.instoreTimer.stop() } ){
+					Button(action: { instoreTimer.stop() } ){
 						Text("Stop")
 							.font(.title)
 					}
 					.disabled(!instoreTimer.isRunning)
-					Button(action: { self.instoreTimer.reset() } ){
+					Button(action: { instoreTimer.reset() } ){
 						Text("Reset")
 							.font(.title)
 					}

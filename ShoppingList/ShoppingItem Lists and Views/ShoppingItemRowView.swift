@@ -107,8 +107,9 @@ struct ShoppingItemRowView: View {
 					Text(itemData.name)
 				} else {
 					Text(itemData.name)
-						.font(.body)
-						.overlay(Rectangle().frame(height: 1.0))
+						.italic()
+						.foregroundColor(Color(.systemGray3))
+						//.overlay(Rectangle().frame(height: 1.0))
 				}
 				
 				if itemData.showLocation {

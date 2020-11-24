@@ -16,9 +16,10 @@ import Foundation
 // this boolean determines this behaviour (so my preference is "false")
 //
 // note: if you don't disable the timer when in the background, what we're really
-// doing is remembering when we went into the background; killing the timer; and
-// when we become active again, we recreate the timer and set the startDate of the
-// timer to either the current date, or the date when we were previously stopped.
+// doing is remembering how much time we had accumulated before we go into the
+// background; killing the timer; and when we become active again, we restart a timer
+// setting the startDate of the timer to either the current date, or the date when
+// we were previously stopped.
 
 var kDisableTimerWhenAppIsNotActive = false
 
@@ -27,7 +28,7 @@ class InStoreTimer: ObservableObject {
 	// there are three states for this simple timer.  movement between states works this way:
 	//
 	// .stopped:
-	// -- initially state
+	// -- initial state
 	// -- calling reset() does not change state, just resets time counters
 	// -- calling start() moves to the .running state
 	//

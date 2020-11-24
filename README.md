@@ -2,7 +2,7 @@
 
 This is a simple, iOS project to process a shopping list that you can take to the grocery store with you, and move items off the list as you pick them up.  It persists data in CoreData.  The project should be compiled with XCode 12.2 or later to run on iOS14.2 or later.
 
-* An [earlier version of this project](https://github.com/delawaremathguy/ShoppingList) is available that works with **XCode 11.7/iOS 13.7**.  If you have not yet made the move to XCode 12.2 and iOS 14.2, you should use this earlier project instead.
+* An [earlier version of this project](https://github.com/delawaremathguy/ShoppingList) is available that works with XCode 11.7/iOS 13.7.  If you have not yet made the move to XCode 12.2 and iOS 14.2, you should use this earlier project instead.
 
 Feel free to use this as is, to develop further,  to completely ignore, or even just to inspect and then send me a note to tell me I am doing this all wrong.  
 
@@ -25,21 +25,15 @@ Please be sure to read the What's New in ShoppingList14 section below, primarily
  ![](Screenshot3.jpg)  ![](Screenshot4.jpg) 
 
 The main screen is a TabView, to show 
-* a current shopping list, 
-* a (searchable) list of previously purchased items, 
+* a current shopping list (which can appear as a single section, or in multiple sections by Location) 
+* a (searchable) list of previously purchased items, with one section showing items "purchased today" and a second section showing all other items
 * a list of "locations" in a store, such as "Dairy," "Fruits & Vegetables," "Deli," and so forth, 
 * an in-store timer, to track how long it takes you to complete shopping, and
 * optionally, for purposes of demonstration, a "Dev Tools" tab to make wholesale adjustments to the data and the shopping list display.
 
-The CoreData model has only two entities named "ShoppingItem" and "Location," with every ShoppingItem having a to-one relationship to a Location (the inverse is to-many).
-
-* `ShoppingItem`s have an id (UUID), a name, a quantity, a boolean "onList" that indicates whether the item is on the list for today's shopping exercise, or not on the list (and so available in the purchased list for future promotion to the shopping list), and also an "isAvailable" boolean that provides a strike-through appearance for the item when false (sometimes an item is on the list, but not available today, and I want to remember that when planning the future shopping list).  New to this project is the addition of a dateLastPurchsed for a ShoppingItem.
-
-* `Location`s have an id (UUID), a name, a visitationOrder (an integer, as in, go to the dairy first, then the deli, then the canned vegetables, etc), and then values red, green, blue, opacity to define a color that is used to color every item listed in the shopping list. 
-
 For the first two tabs, tapping on the circular button on the leading edge moves a shopping item from one list to the other list (from "on the list" to "purchased" and vice-versa).  
 
-Tapping on any item (*not the leading circular button*) in either list lets you edit it for name, quantity, assign/edit the store location in which it is found, or even delete the item.  Long pressing on an item gives you a contextMenu to let you move items between lists, toggle between the item being available and not available, or directly delete the item.
+Tapping on any item (*not the leading circular button*) in either list lets you edit it for name, quantity, assign/edit the store location in which it is found, or even delete the item.  Long pressing on an item gives you a contextMenu to let you move items between lists, toggle between the item being available and not available, or directly delete the item.  (*Items not available will have a greyed-out, italic presentation on screen*.)
 
 The shopping list is sorted by the visitation order of the location in which it is found (and then alphabetically within each Location).  Items in the shopping list cannot be otherwise re-ordered, although all items in the same Location have the same color as a form of grouping.  Tapping on the leading icon in the navigation bar will toggle the display from a simple, one-section list, to a multi-section list.
 
@@ -60,27 +54,36 @@ So,
 
 * **If you plan to play with or just test out this app**, go straight to the Dev Tools tab and tap the "Load Sample Data" button.  Now you can play with the app, and eventually delete the data (also from the Dev Tools tab) when you're finished.
 
+
 ## What's New in ShoppingList14
 
 Things have changed [since the previous release of this project](https://github.com/delawaremathguy/ShoppingList) for XCode 11 that was titled, simply, **ShoppingList**.  Although this project is called "ShoppingList14," it retains the same signature as the previous project; and despite some changes to the Core Data model, *should* properly migrate data from the earlier project to the new model of this project -- however, I *cannot guarantee this based on my own experience*.
 
 Here are some of those code-level changes:
 
-* The AppDelegate-SceneDelegate application structure has been replaced by the more simplified App-Scene-WindowGroup structure introduced for XCode 12/iOS 14.
+* The AppDelegate-SceneDelegate application structure has been replaced by the simplified App-Scene-WindowGroup structure introduced for XCode 12/iOS 14.
 * The three primary tabs (Shopping List, Purchased, and Locations) now use a Form presentation, rather than a List presentation.
 * Each ShoppingItem now has a "dateLastPurchased" property which is reset to "today" whenever you move an item off the shopping list.
-* The Purchased items tab has been slightly re-worked so that shopping items that were purchased "today" appear in the first section of the list.  This makes it easy to review the list of today's purchases, and to quickly locate any item that you may have accidentally tapped off the Shopping List so you can put it back on the list.
-* Many code changes have been made or simplified and comments throughout the code. 
-* The basic architecture of the app has been simplified.  What started out as more of a strict MVVM-style architecture has morphed into a hybrid style:
-
+* The Purchased items tab now presents shopping items that were "purchased today" in its first section (if not empty) and everything else in its "second section."  This makes it easy to review the list of today's purchases, and to quickly locate any item that you may have accidentally tapped off the Shopping List so you can put it back on the list.
+* Many code changes have been made or simplified and comments throughout the code have been updated. 
+* The basic architecture of the app has been simplified.  What started out as more of a strict MVVM-style architecture has morphed into very much a hybrid:
  - Views can effect changes to ShoppingItems by calling ShoppingItem functions directly ("user intents"), which then are handled appropriately in the ShoppingItem class, and for which notifications are then posted as to what happened. 
- - There is no longer a LocationsListViewModel.  The LocationsTabView is such a simple view that it is now driven by a @Fetchrequest.
- - The ShoppingListViewModel has now serves only two purposes: it manages an array of ShoppingItems (it is a replacement for @FetchRequest in this regard, although we can see and understand how this works), and provides some simple services to views such as sectioning the items when the ShoppingList is shown in multi-section style and providing information that makes it easy to split the PurchasedItemTabView into "Today" and "All the others.""
+ - There is no longer a LocationsListViewModel.  The LocationsTabView is such a simple view that it is now driven by a @FetchRequest.
+ - The ShoppingListViewModel now has fewer responsibilities and consequently serves only two purposes: it manages an array of ShoppingItems (it is a replacement for @FetchRequest in this regard, although we can see and understand how this works), and it provides some simple services to views such as sectioning the items when the ShoppingList is shown in multi-section style and providing information that supports splitting the PurchasedItemTabView into two sections.
+
+### Core Data Notes
+
+The CoreData model has only two entities named `ShoppingItem` and `Location`, with every ShoppingItem having a to-one relationship to a Location (the inverse is to-many).
+
+* `ShoppingItem`s have an id (UUID), a name, a quantity, a boolean "onList" that indicates whether the item is on the list for today's shopping exercise, or not on the list (and so available in the purchased list for future promotion to the shopping list), and also an "isAvailable" boolean that provides a strike-through appearance for the item when false (sometimes an item is on the list, but not available today, and I want to remember that when planning the future shopping list).  New to this project is the addition of a dateLastPurchased for a ShoppingItem.
+
+* `Location`s have an id (UUID), a name, a visitationOrder (an integer, as in, go to the dairy first, then the deli, then the canned vegetables, etc), and then values red, green, blue, opacity to define a color that is used to color every item listed in the shopping list. 
 
 
-## App Architecture Comment
 
-Despite this app starting off with some simple @FetchRequest definitions and making some lists, this version makes no direct use of @FetchRequest or even Combine. I have *gone completely old-school*, just like I would have built this app using UIKit, before there was SwiftUI and Combine. 
+### App Architecture Comment
+
+This app started out as a few SwiftUI views driven by @FetchRequests, but that eventually ran into when deleting Core Data objects.  Next, I tried to insert a little Combine into the app (e.g., a view driven by a list of Locations would tuen the list into a subscriber to each of the Location i the list)
 
 * I post internal notifications through the NotificationCenter that a `ShoppingItem` or a `Location` has either been created, or edited, or is about to be deleted.  (Remember, notifications are essentially a form of using the more general Combine framework.) Every view model loads its data only once from Core Data and signs up for appropriate notifications to stay in-sync without additional fetches from Core Data.  Each view model can then react accordingly, alerting SwiftUI so that the associated View needs to be updated.  This design suits my needs, but may not be necessary for your own projects, for which straightforward use of @FetchRequest might well be sufficient.
 

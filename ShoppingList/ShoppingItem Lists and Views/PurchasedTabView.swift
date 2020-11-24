@@ -35,7 +35,7 @@ struct PurchasedTabView: View {
 				
 				// 1. add new item "button" is at top.  note that this will put up the AddorModifyShoppingItemView
 				// inside its own NavigationView (so the Picker will work!)
-				Button(action: { self.isAddNewItemSheetShowing = true }) {
+				Button(action: { isAddNewItemSheetShowing = true }) {
 					Text("Add New Item")
 						.foregroundColor(Color.blue)
 						.padding(10)
@@ -50,14 +50,13 @@ struct PurchasedTabView: View {
 					EmptyListView(listName: "Purchased")
 				} else {
 					
-					// Report purchased item count, or the number of items matching the
-					// current search text, essentially as a section header for just the one section
-					SLSimpleHeaderView(label: sectionHeaderTitle())
+					Rectangle()
+						.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
 					Form {
 						
 						// 1. Items purchased today
-						if viewModel.hasItemsForToday(containing: searchText) {
-							Section(header: Text("Purchased Today").textCase(.none)) {
+						if viewModel.itemsPurchasedTodayCount(containing: searchText) > 0 {
+							Section(header: Text("Items Purchased Today: \(viewModel.itemsPurchasedTodayCount(containing: searchText))").textCase(.none)) {
 								ForEach(viewModel.itemsForToday(containing: searchText)) { item in
 									NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
 										SelectableShoppingItemRowView(item: item, viewModel: viewModel, selected: itemsChecked.contains(item), respondToTapOnSelector: handleItemTapped)
@@ -73,15 +72,15 @@ struct PurchasedTabView: View {
 						}
 						
 						// 2. all items purchased earlier
-						Section(header: Text("Purchased Yesterday or Earlier").textCase(.none)) {
+						Section(header: Text("Items Purchased Earlier: \(viewModel.itemsPurchasedEarlierCount(containing: searchText))").textCase(.none)) {
 							ForEach(viewModel.itemsEarlierThanToday(containing: searchText)) { item in
 								NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
 									SelectableShoppingItemRowView(item: item, viewModel: viewModel, selected: itemsChecked.contains(item), respondToTapOnSelector: handleItemTapped)
 										.contextMenu {
 											shoppingItemContextMenu(item: item,
 																							deletionTrigger: {
-																								self.itemToDelete = item
-																								self.isDeleteItemAlertShowing = true
+																								itemToDelete = item
+																								isDeleteItemAlertShowing = true
 																							})
 										} // end of contextMenu
 								} // end of NavigationLink
@@ -108,14 +107,14 @@ struct PurchasedTabView: View {
 		.navigationViewStyle(StackNavigationViewStyle())
 		.onAppear {
 			print("PurchasedTabView appear")
-			self.searchText = ""
-			self.viewModel.loadItems()
+			searchText = ""
+			viewModel.loadItems()
 		}
 		.onDisappear { print("PurchasedTabView disappear") }
 	}
 	
 	func toolbarButton() -> some View {
-		Button(action: { self.isAddNewItemSheetShowing = true }) {
+		Button(action: { isAddNewItemSheetShowing = true }) {
 			Image(systemName: "plus")
 				.resizable()
 				.frame(width: 20, height: 20)
@@ -127,7 +126,7 @@ struct PurchasedTabView: View {
 			itemsChecked.append(item)
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
 				item.toggleOnListStatus()
-				self.itemsChecked.removeAll(where: { $0 == item })
+				itemsChecked.removeAll(where: { $0 == item })
 			}
 		}
 	}
@@ -139,13 +138,13 @@ struct PurchasedTabView: View {
 	}
 	
 	
-	func sectionHeaderTitle() -> String {
-		if searchText.isEmpty {
-			return "Items Listed: \(viewModel.itemCount)"
-		}
-		let itemsShowing = viewModel.items.filter({ searchText.appearsIn($0.name) })
-		return "Items Matching \"\(searchText)\": \(itemsShowing.count)"
-	}
+//	func sectionHeaderTitle() -> String {
+//		if searchText.isEmpty {
+//			return "Items Listed: \(viewModel.itemCount)"
+//		}
+//		let itemsShowing = viewModel.items.filter({ searchText.appearsIn($0.name) })
+//		return "Items Matching \"\(searchText)\": \(itemsShowing.count)"
+//	}
 	
 }
 

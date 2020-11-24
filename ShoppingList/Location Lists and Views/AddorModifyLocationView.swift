@@ -43,8 +43,8 @@ struct AddorModifyLocationView: View {
 	// location gets initialized properly with the location as associated data for
 	// the type locationSpecificShoppingList
 	init(at location: Location? = nil) {
-		//self.viewModel = viewModel
-		self.editableLocation = location
+		//viewModel = viewModel
+		editableLocation = location
 		shoppingItemsViewModel = ShoppingListViewModel(type: .locationSpecificShoppingList(location))
 	}
 	
@@ -72,7 +72,7 @@ struct AddorModifyLocationView: View {
 			// Section 2: Delete button, if present (must be editing a user location)
 			if editableLocation != nil && editableData.visitationOrder != kUnknownLocationVisitationOrder  {
 				Section(header: SLSectionHeaderView(title: "Location Management")) {
-					SLCenteredButton(title: "Delete This Location", action: { self.showDeleteConfirmation = true })
+					SLCenteredButton(title: "Delete This Location", action: { showDeleteConfirmation = true })
 						.foregroundColor(Color.red)
 				}
 			}  // end of Section 2
@@ -93,10 +93,10 @@ struct AddorModifyLocationView: View {
 			.navigationBarTitle(barTitle(), displayMode: .inline)
 			.navigationBarBackButtonHidden(true)
 			.navigationBarItems(
-				leading: Button(action: { self.presentationMode.wrappedValue.dismiss() }){
+				leading: Button(action: { presentationMode.wrappedValue.dismiss() }){
 					Text("Cancel")
 				},
-				trailing: Button(action: { self.commitData() }){
+				trailing: Button(action: { commitData() }){
 					Text("Save")
 			})
 			.alert(isPresented: $showDeleteConfirmation) {
@@ -127,8 +127,8 @@ struct AddorModifyLocationView: View {
 	func commitData() {
 		presentationMode.wrappedValue.dismiss()
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-			self.editableData.updateColor(from: editableColor)
-			Location.updateData(for: self.editableLocation, using: self.editableData)
+			editableData.updateColor(from: editableColor)
+			Location.updateData(for: editableLocation, using: editableData)
 		}
 	}
 

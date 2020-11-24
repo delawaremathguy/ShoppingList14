@@ -29,11 +29,6 @@ struct LocationRowData {
 struct LocationRowView: View {
 	 var rowData: LocationRowData
 
-//	init(rowData: LocationRowData) {
-//		self.rowData = rowData
-//		NSLog("LocationRowView struct instantiated, name = \(rowData.name)")
-//	}
-	
 	var body: some View {
 		HStack {
 			// color bar at left (new in this code)
