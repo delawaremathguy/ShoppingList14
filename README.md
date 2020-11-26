@@ -57,7 +57,7 @@ So,
 
 ## What's New in ShoppingList14
 
-Things have changed [since the previous release of this project](https://github.com/delawaremathguy/ShoppingList) for XCode 11 that was titled, simply, **ShoppingList**.  Although this project is called "ShoppingList14," it retains the same signature as the previous project; and despite some changes to the Core Data model, *should* properly migrate data from the earlier project to the new model of this project -- however, I *cannot guarantee this based on my own experience*.
+Things have changed [since the previous release of this project](https://github.com/delawaremathguy/ShoppingList) for XCode 11 that was titled, simply, **ShoppingList**.  Although this project is called "ShoppingList14," it retains the same signature as the previous project; and despite some changes to the Core Data model, *should* properly migrate data from the earlier project to the new model of this project -- however, I *cannot guarantee this based on my own experience, but I think that's because this uses the new App structure and/or that the reliability of XCode 12.2 is still in question*.
 
 Here are some of those code-level changes:
 
@@ -65,11 +65,13 @@ Here are some of those code-level changes:
 * The three primary tabs (Shopping List, Purchased, and Locations) now use a Form presentation, rather than a List presentation.
 * Each ShoppingItem now has a "dateLastPurchased" property which is reset to "today" whenever you move an item off the shopping list.
 * The Purchased items tab now presents shopping items that were "purchased today" in its first section (if not empty) and everything else in its "second section."  This makes it easy to review the list of today's purchases, and to quickly locate any item that you may have accidentally tapped off the Shopping List so you can put it back on the list.
+* A ColorPicker has be added to the view that modifies a Location, replacing the four individual sliders that adjusted the location's color.
 * Many code changes have been made or simplified and comments throughout the code have been updated. 
-* The basic architecture of the app has been simplified.  What started out as more of a strict MVVM-style architecture has morphed into very much a hybrid:
- - Views can effect changes to ShoppingItems by calling ShoppingItem functions directly ("user intents"), which then are handled appropriately in the ShoppingItem class, and for which notifications are then posted as to what happened. 
- - There is no longer a LocationsListViewModel.  The LocationsTabView is such a simple view that it is now driven by a @FetchRequest.
- - The ShoppingListViewModel now has fewer responsibilities and consequently serves only two purposes: it manages an array of ShoppingItems (it is a replacement for @FetchRequest in this regard, although we can see and understand how this works), and it provides some simple services to views such as sectioning the items when the ShoppingList is shown in multi-section style and providing information that supports splitting the PurchasedItemTabView into two sections.
+
+The basic architecture of the app has also been simplified.  What started out as more of a strict MVVM-style architecture has morphed into very much a hybrid:
+* Views can effect changes to ShoppingItems by calling ShoppingItem functions directly ("user intents"), which then are handled appropriately in the ShoppingItem class, and for which notifications are then posted as to what happened. 
+* There is no longer a LocationsListViewModel.  The LocationsTabView is such a simple view that it is now driven by a @FetchRequest.
+* The ShoppingListViewModel now has fewer responsibilities and consequently serves only two purposes: it manages an array of ShoppingItems (it is a replacement for @FetchRequest in this regard, although we can see and understand how this works), and it provides some simple services to views such as sectioning the items when the ShoppingList is shown in multi-section style and it supports splitting the PurchasedItemTabView into two sections.
 
 ### Core Data Notes
 
@@ -79,13 +81,17 @@ The CoreData model has only two entities named `ShoppingItem` and `Location`, wi
 
 * `Location`s have an id (UUID), a name, a visitationOrder (an integer, as in, go to the dairy first, then the deli, then the canned vegetables, etc), and then values red, green, blue, opacity to define a color that is used to color every item listed in the shopping list. 
 
-
+* This version of the app has added a version 2 of the Core Data datamodel, to handle some renaming issues and to add a dateLastPurchased attribute to every ShoppingItem.
 
 ### App Architecture Comment
 
-This app started out as a few SwiftUI views driven by @FetchRequests, but that eventually ran into when deleting Core Data objects.  Next, I tried to insert a little Combine into the app (e.g., a view driven by a list of Locations would tuen the list into a subscriber to each of the Location i the list)
+This app started out as a few SwiftUI views driven by @FetchRequests, but that eventually ran into trouble when deleting Core Data objects.  Next, I tried to insert a little Combine into the app (e.g., a view driven by a list of Locations would tuen the list into a subscriber to each of the Location in the list), but there were problems with that as well.  
 
-* I post internal notifications through the NotificationCenter that a `ShoppingItem` or a `Location` has either been created, or edited, or is about to be deleted.  (Remember, notifications are essentially a form of using the more general Combine framework.) Every view model loads its data only once from Core Data and signs up for appropriate notifications to stay in-sync without additional fetches from Core Data.  Each view model can then react accordingly, alerting SwiftUI so that the associated View needs to be updated.  This design suits my needs, but may not be necessary for your own projects, for which straightforward use of @FetchRequest might well be sufficient.
+I finally settled on more of an MVVM-style architecture, posting internal notifications through the NotificationCenter that a `ShoppingItem` or a `Location` has either been created, or edited, or is about to be deleted.  View models would react appropriately. (Remember, notifications are essentially a form of using the more general Combine framework.) 
+
+A view model (*view models are used only to handle lists of ShoppingItems*) now loads its data only once from Core Data and signs up for appropriate notifications to stay in-sync with Core Data, without additional fetches from Core Data.  A view model can then react accordingly, alerting SwiftUI so that its associated View needs to be updated.  
+
+This design suits my needs, but may not be necessary for your own projects, for which straightforward use of @FetchRequest might well be sufficient.
 
 
 
@@ -94,9 +100,9 @@ This app started out as a few SwiftUI views driven by @FetchRequests, but that e
 
 Although this is the last, public release of the project, there are many directions to move with this code.
 
-* I'd like to look at CloudKit support for the database for my own use, although such a development  could return to public view if I run into trouble and have to ask for help.  The general theory is that you just replace NSPersistentContainer with NSPersistentCloudkitContainer, flip a few switches in the project, add the right entitlements, and off you go. *I doubt that is truly the case*, and certainly there will be a collection of new issues that arise.
+* I'd like to look at CloudKit support for the database for my own use, although such a development  could return to public view if I run into trouble and have to ask for help.  The general theory is that you just replace NSPersistentContainer with NSPersistentCloudkitContainer, flip a few switches in the project, add the right entitlements, and off you go. *I have added CloudKit support in one other project recently, and some minor adjustments did have to be made to make it all work*.
 
-* I should invest a little time with iPadOS.  Unfortunately, my iPad 2 is stuck in iOS 9, so it's not important to me right now.  As a future option, though -- even though you probably don't want to drag an iPad around in the store with you -- you might want to use it to update the day's shopping list and then, via the cloud, have those changes show up on your phone to use in-store.
+* I should invest a little time with iPadOS.  This was not important to me originally, but it soon will be as I now have a new iPad Air 4 in the delivery queue to replace my 2011 iPad 2 (andI hope to see it in about a week).  Even though you probably don't want to drag an iPad around in the store with you, you might want to use it to update the day's shopping list and then, via the cloud, have those changes show up on your phone to use in-store.
 
 *  I still get console messages at runtime about tables laying out outside the view hierarchy, and one that's come up recently of "Trying to pop to a missing destination." I see fewer of these messages in XCode 11.7.  When using contextMenus, I get a plenty of "Unable to simultaneously satisfy constraints" messages.  I'm ignoring them for now, and I have already seen fewer or none of these in testing out XCode 12 (through beta 6). 
 
@@ -106,23 +112,22 @@ Although this is the last, public release of the project, there are many directi
 * I could add a printing capability, or even a general sharing capability (e.g., email the shopping list to someone else).  I did something like this in another (*UI-Kit based*) project, so it should be easy, right?  (Fact: it is easy; there are several "mail views for SwiftUI" already on Github. [This is one from Mohammad Rahchamani](https://github.com/mohammad-rahchamani/MailView) that I have tested and it works quite easily for any SwiftUI app.)
 
 
-Note that I am certainly not at all interested in creating the next, killer shopping list app or moving any of this to the App Store.  *The world really does not need a new list-making app*.  
-But, if you want to take this code and run with it ... go right ahead.
+Note that I am certainly not at all interested in creating the next, killer shopping list app or moving any of this to the App Store.  *The world really does not need a new list-making app*.  But, if you want to take this code and run with it ... go right ahead.
 
 
 ##  View Updating Issues
 
-I built this project in public only as an experiment, in order to simply get a lot of practice with SwiftUI, and to look more deeply and perhaps offer some suggested code to the folks who keep running into what I call SwiftUI's **generic problem**:
+I built this project in public initially as an experiment, in order to simply get a lot of practice with SwiftUI, and to look more deeply and perhaps offer some suggested code to the folks who keep running into what I call SwiftUI's **generic problem**:
 
 > An item appears in View A; it is edited in View B (a detail view that appears either by a NavigationLink or a .sheet presentation); but its appearance in View A does not get updated properly upon return.  
 
-SwiftUI does a lot of the updating for you automatically, but the situation is more tricky when using Core Data because the model data consists of objects (classes), not structs.  SwiftUI does provide @FetchRequest and @ObservedObject and @EnvironmentObject (and Combine if you go deeper), but the updating problem is not completely solved just by sprinkling @ObservedObject property wrappers around in your code. It also matters in SwiftUI whether you pass around structs or classes between SwiftUI Views, and exactly how you pass them.  
+SwiftUI does a lot of the updating for you automatically, but the situation is more tricky when using Core Data because the model data consists of objects (classes), not structs.  SwiftUI does provide `@FetchRequest` and `@ObservedObject` and `@EnvironmentObject` and `@StateObject` (and Combine if you go deeper), but the updating problem is not completely solved just by sprinkling @ObservedObject property wrappers around in your code. It also matters in SwiftUI whether you pass around structs or classes between SwiftUI Views, and exactly how you pass them: *SwiftUI really wants you to use structs*.
 
 
-Indeed, the biggest issue that I found in the early days of this app involved updates following a **deletion** of a Core Data object.  My conclusion is that @FetchRequest and SwiftUI don't always interact that well with respect to deletions, and that is what drove me to the architecture and my reliance on using the NotificationCenter that you will find in the app. (*I have extensive comments in the code about the problems I faced*).
+Indeed, the biggest issue that I found in the early days of this app involved updates following a **deletion** of a Core Data object.  My conclusion was (and remains) that @FetchRequest and SwiftUI don't always interact that well with respect to Core Data deletions, and that is what drove me to the architecture and my reliance on using the NotificationCenter that you will find in this app. (*I have extensive comments in the code about the problems I faced*).
 
 
-* I think that my current use of notifications and "view models" in place of @FetchRequest provides a solution to much of the **generic problem** in the distributed SwiftUI situation that occurs in *this* app.  It works for me; you must decide if any of this is something that might work for you.
+* I think that my current use of notifications and a "view model" as a direct replacment of @FetchRequest provides a solution to much of the **generic problem** in the distributed SwiftUI situation that occurs in *this* app.  It works for me; you must decide if any of this is something that might work for you.
 
 
 

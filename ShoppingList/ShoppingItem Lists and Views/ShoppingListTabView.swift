@@ -28,9 +28,9 @@ struct ShoppingListTabView: View {
 	@State private var itemToDelete: ShoppingItem? // item to delete, if that's what we want to do
 	@State private var destructiveMoveToOtherList = false  // set to true if moving to other list
 	
-	// local state for are we a multisection display or not.  this must remain in
-	// sync with the global setting (in case this View is destroyed and later recreated)
-	@State var multiSectionDisplay: Bool = gShowMultiSectionShoppingList
+	// local state for are we a multisection display or not.  the default here is false,
+	// but an eager developer could easilt store this default value in UserDefaults (?)
+	@State var multiSectionDisplay: Bool = false
 	
 	
 	var body: some View {
@@ -131,14 +131,13 @@ invoked on an item in the list
 	func leadingButton() -> some View {
 		Button(action: {
 			multiSectionDisplay.toggle()
-			gShowMultiSectionShoppingList.toggle()
 		}) {
 			Image(systemName: multiSectionDisplay ? "tray.2" : "tray")
 				.font(.title2)
 		}
 	}
 	
-	// data to pass along to the destructive alert that eithers deletes an item
+	// data to pass along to the destructive alert that either deletes an item
 	// or moves all items off the list.  which these do depend on the value of
 	// the boolean destructiveMoveToOtherList
 	func destructiveAlertTitle() -> String {

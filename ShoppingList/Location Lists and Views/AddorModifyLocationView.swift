@@ -16,7 +16,6 @@ struct AddorModifyLocationView: View {
 	// editableLocation is either a Location to edit, or nil to signify
 	// that we're creating a new Location in for the viewModel.
 	var editableLocation: Location? = nil
-	//var viewModel: LocationsListViewModel
 	
 	// we use a specialized form of a ShoppingListViewModel in this View to
 	// drive the list of items at this location.  it must be an observed object

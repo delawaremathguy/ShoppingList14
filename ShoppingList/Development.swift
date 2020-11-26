@@ -17,35 +17,10 @@ import UIKit
 
 let kShowDevToolsTab = true
 
-// this boolean control whether the Shopping List is initially shown as multiple Sections,
-// one Section per Location, or whether it shows only a simple list (items
-// will still be listed in the same order, just not sectioned).  you can change
-// this value here directly (i now have single section on by default).  the eager
-// developer might want to put this value in UserDefaults ...
-
-var gShowMultiSectionShoppingList = false
-
-// i'm torn about this next setting.  i find it easier when i am in the store shopping to swipe
-// to say "i just put that in the cart, take it off today's shopping list."  but
-// SwiftUI only allows (even with WWDC2020 now in the rear view mirror) a traling
-// swipe to be invoked by .onDelete(), and SwiftUI demands the label to be "Delete."
-// you may want to change this behaviour.
-// so i have code in the app based on the following boolean for whether a trailing
-// swipe of ShoppingItems in a list means
-//   (1) delete from Core Data
-//   (2) remove from the current shopping list and place item into history/purchased list
-//
-// my default view of life is that a trailing swipe -- EVEN THOUGH IT SAYS DELETE -- means
-// "move to the other list," so i set this boolean to false to choose option (2)
-// change this flag to true if you want (1)
-
-// note: THIS HAS BEEN DEPRECATED
-// let kTrailingSwipeMeansDelete = false
-
-// i used these constants and routines during development to import and
-// export shoppingItems and Locations via JSON
+// i used these constants and functions below during development to import and
+// export ShoppingItems and Locations via JSON.
 // these are the filenames for JSON output when dumped from the simulator
-// (and also the filenames in the bundle used for sample data)
+// and also the filenames in the bundle used to load sample data.
 let kJSONDumpDirectory = "/Users/USE_YOUR_OWN_MAC_USERNAME_HERE_HERE/Desktop/"	// dumps to the Desktop: Adjust for your Username!
 let kShoppingItemsFilename = "shoppingItems.json"
 let kLocationsFilename = "locations.json"
@@ -76,12 +51,13 @@ func writeAsJSON<T>(items: [T], to filename: String) where T: CodableStructRepre
 		return
 	}
 	
-	// if in simulator, dump to files somewhere on your Mac (check definition in Development.swift)
-	// and otherwise if on device (or if file dump path doesn't work) print to console.
+	// if in simulator, dump to files somewhere on your Mac (check definition above)
+	// and otherwise if on device (or if file dump doesn't work) simply print to the console.
 	#if targetEnvironment(simulator)
 		let filepath = kJSONDumpDirectory + filename
 		do {
 			try data.write(to: URL(fileURLWithPath: filepath))
+			print("List of items dumped as JSON to " + filename)
 		} catch let error as NSError {
 			print("Could not write to desktop file: \(error.localizedDescription), \(error.userInfo)")
 			print(String(data: data, encoding: .utf8)!)
@@ -90,9 +66,7 @@ func writeAsJSON<T>(items: [T], to filename: String) where T: CodableStructRepre
 		print(String(data: data, encoding: .utf8)!)
 	#endif
 	
-	print("List of items dumped as JSON to " + filename)
 }
-
 
 func populateDatabaseFromJSON() {
 	// it sure is easy to do with HWS's Bundle extension (!)
@@ -177,7 +151,7 @@ func deleteAllData() {
 //	print("Core Data DB Path :: \(path ?? "Not found")")
 //}
 
-// MARK: - USeful Extensions to make CodableStructRepresentable work
+// MARK: - USeful Extensions re: CodableStructRepresentable
 
 extension Location: CodableStructRepresentable {
 	var codableProxy: some Encodable & Decodable {

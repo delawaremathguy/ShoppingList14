@@ -14,8 +14,6 @@
 		D60F14A924686D710077AD3F /* LocationCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60F14A824686D710077AD3F /* LocationCodable.swift */; };
 		D610C3BE2451D8DC009F7F36 /* ShoppingItem+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D610C3BD2451D8DC009F7F36 /* ShoppingItem+Extensions.swift */; };
 		D612E16124898EBB007E1412 /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D612E16024898EBB007E1412 /* Array+Extensions.swift */; };
-		D62B882B2451162D0051A7CE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D62B882A2451162D0051A7CE /* AppDelegate.swift */; };
-		D62B882D2451162D0051A7CE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D62B882C2451162D0051A7CE /* SceneDelegate.swift */; };
 		D62B88322451162D0051A7CE /* ShoppingListTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D62B88312451162D0051A7CE /* ShoppingListTabView.swift */; };
 		D62B88342451162E0051A7CE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D62B88332451162E0051A7CE /* Assets.xcassets */; };
 		D62B88372451162E0051A7CE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D62B88362451162E0051A7CE /* Preview Assets.xcassets */; };
@@ -62,8 +60,6 @@
 		D610C3BD2451D8DC009F7F36 /* ShoppingItem+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShoppingItem+Extensions.swift"; sourceTree = "<group>"; };
 		D612E16024898EBB007E1412 /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
 		D62B88272451162D0051A7CE /* ShoppingList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShoppingList.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D62B882A2451162D0051A7CE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		D62B882C2451162D0051A7CE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		D62B88312451162D0051A7CE /* ShoppingListTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListTabView.swift; sourceTree = "<group>"; };
 		D62B88332451162E0051A7CE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D62B88362451162E0051A7CE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -137,8 +133,6 @@
 			isa = PBXGroup;
 			children = (
 				D63C05552566B9DE000A63FC /* ShoppingListApp.swift */,
-				D62B882A2451162D0051A7CE /* AppDelegate.swift */,
-				D62B882C2451162D0051A7CE /* SceneDelegate.swift */,
 				D6EF5586246D97C3007D636B /* Development.swift */,
 				D640329F24BB30BE00CC0B94 /* Convenience Extensions */,
 				D6EF5583246D9489007D636B /* CoreData Related */,
@@ -330,7 +324,6 @@
 				D6931D6C24C4C60900A61BB6 /* TimerTabView.swift in Sources */,
 				D610C3BE2451D8DC009F7F36 /* ShoppingItem+Extensions.swift in Sources */,
 				D60F14A924686D710077AD3F /* LocationCodable.swift in Sources */,
-				D62B882B2451162D0051A7CE /* AppDelegate.swift in Sources */,
 				D62B88322451162D0051A7CE /* ShoppingListTabView.swift in Sources */,
 				D60631F3252E42830032CC47 /* SelectionIndicatorView.swift in Sources */,
 				D6AE3643246F035400F7A237 /* Bundle+Extensions.swift in Sources */,
@@ -351,7 +344,6 @@
 				D6B8A9562463693D005F8EF2 /* LocationsTabView.swift in Sources */,
 				D6FC7A0A24635D950096F018 /* ShoppingList.xcdatamodeld in Sources */,
 				D648D349246388C100CD881B /* Location+Extensions.swift in Sources */,
-				D62B882D2451162D0051A7CE /* SceneDelegate.swift in Sources */,
 				D66FF3562492E67100B3ABC8 /* SLCenteredButton.swift in Sources */,
 				D6EF5585246D964C007D636B /* ShoppingItemRowView.swift in Sources */,
 				D64898E924B0E95E008FE512 /* PersistentStore.swift in Sources */,

@@ -10,12 +10,13 @@ import SwiftUI
 
 struct LocationsTabView: View {
 	
-	// this View is a simple list view, so we'll drive this with a simple
+	// this View is a simple list view, so we'll drive it with a simple
 	// @FetchRequest rather than a view model to manage the list of Locations
 	@FetchRequest(entity: Location.entity(),
 								sortDescriptors: [NSSortDescriptor(keyPath: \Location.visitationOrder, ascending: true)])
 	private var locations: FetchedResults<Location>
 	
+	// controls appearance of the Add/ModifyLocation view, presented as a sheet
 	@State private var isAddNewLocationSheetShowing = false
 	
 	// support for context menu deletion
