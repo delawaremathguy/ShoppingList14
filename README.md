@@ -68,16 +68,17 @@ Here are some of those code-level changes:
 * A ColorPicker has be added to the view that modifies a Location, replacing the four individual sliders that adjusted the location's color.
 * Many code changes have been made or simplified and comments throughout the code have been updated. 
 
-The basic architecture of the app has also been simplified.  What started out as more of a strict MVVM-style architecture has morphed into very much a hybrid:
+The basic architecture of the app has also been simplified.  What started out as more of a strict MVVM-style architecture to avoid using @FetchRequest (*simple Core Data deletions and @FetchRequest don't play nicely together*), has morphed into ... wait for it ... an app that uses @FetchRequest (*because to work with Core Data deletions, you need to know one special aspect of Core Data I have only recently learned*).
 * Views can effect changes to ShoppingItems by calling ShoppingItem functions directly ("user intents"), which then are handled appropriately in the ShoppingItem class, and for which notifications are then posted as to what happened. 
 * There is no longer a LocationsListViewModel.  The LocationsTabView is such a simple view that it is now driven by a @FetchRequest.
-* The ShoppingListViewModel now has fewer responsibilities and consequently serves only two purposes: it manages an array of ShoppingItems (it is a replacement for @FetchRequest in this regard, although we can see and understand how this works), and it provides some simple services to views such as sectioning the items when the ShoppingList is shown in multi-section style and it supports splitting the PurchasedItemTabView into two sections.
+* And there is no longer a ShoppingListViewModel to handle a list of items associated with a Location.
+* What remains of the ShoppingListViewModel now has fewer responsibilities and consequently serves only two purposes: it manages an array of ShoppingItems (it is a replacement for @FetchRequest in this regard, although we can see and understand how this works), and it provides some simple services to views such as sectioning the items when the ShoppingList is shown in multi-section style and it supports splitting the PurchasedItemTabView into two sections.
 
 ### Core Data Notes
 
 The CoreData model has only two entities named `ShoppingItem` and `Location`, with every ShoppingItem having a to-one relationship to a Location (the inverse is to-many).
 
-* `ShoppingItem`s have an id (UUID), a name, a quantity, a boolean "onList" that indicates whether the item is on the list for today's shopping exercise, or not on the list (and so available in the purchased list for future promotion to the shopping list), and also an "isAvailable" boolean that provides a strike-through appearance for the item when false (sometimes an item is on the list, but not available today, and I want to remember that when planning the future shopping list).  New to this project is the addition of a dateLastPurchased for a ShoppingItem.
+* `ShoppingItem`s have an id (UUID), a name, a quantity, a boolean "onList" that indicates whether the item is on the list for today's shopping exercise, or not on the list (and so available in the purchased list for future promotion to the shopping list), and also an "isAvailable" boolean that provides a greyed-out, italic, strike-through appearance for the item when false (sometimes an item is on the list, but not available today, and I want to remember that when planning the future shopping list).  New to this project is the addition of a dateLastPurchased for a ShoppingItem. 
 
 * `Location`s have an id (UUID), a name, a visitationOrder (an integer, as in, go to the dairy first, then the deli, then the canned vegetables, etc), and then values red, green, blue, opacity to define a color that is used to color every item listed in the shopping list. 
 

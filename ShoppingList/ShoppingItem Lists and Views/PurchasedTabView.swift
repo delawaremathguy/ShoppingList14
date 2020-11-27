@@ -72,7 +72,7 @@ struct PurchasedTabView: View {
 						}
 						
 						// 2. all items purchased earlier
-						Section(header: Text("Items Purchased Earlier: \(viewModel.itemsPurchasedEarlierCount(containing: searchText))").textCase(.none)) {
+						Section(header: Text("Items Purchased Before Today: \(viewModel.itemsPurchasedEarlierCount(containing: searchText))").textCase(.none)) {
 							ForEach(viewModel.itemsEarlierThanToday(containing: searchText)) { item in
 								NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
 									SelectableShoppingItemRowView(item: item, viewModel: viewModel, selected: itemsChecked.contains(item), respondToTapOnSelector: handleItemTapped)
@@ -94,7 +94,6 @@ struct PurchasedTabView: View {
 									primaryButton: .cancel(Text("No")),
 									secondaryButton: .destructive(Text("Yes"), action: deleteSelectedItem)
 						)}
-					
 					//.listStyle(PlainListStyle())
 					
 				} // end of if-else
@@ -136,15 +135,6 @@ struct PurchasedTabView: View {
 			ShoppingItem.delete(item: item, saveChanges: true)
 		}
 	}
-	
-	
-//	func sectionHeaderTitle() -> String {
-//		if searchText.isEmpty {
-//			return "Items Listed: \(viewModel.itemCount)"
-//		}
-//		let itemsShowing = viewModel.items.filter({ searchText.appearsIn($0.name) })
-//		return "Items Matching \"\(searchText)\": \(itemsShowing.count)"
-//	}
 	
 }
 

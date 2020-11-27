@@ -239,7 +239,7 @@ struct MultiSectionShoppingListView: View {
 	var body: some View {
 		Form {
 			ForEach(viewModel.locationsForItems()) { location in
-				Section(header: SLSectionHeaderView(title: location.name!)) {
+				Section(header: Text(location.name!).textCase(.none)) {
 					// display items in this location
 					ForEach(viewModel.items(at: location)) { item in
 						// display a single row here for 'item'

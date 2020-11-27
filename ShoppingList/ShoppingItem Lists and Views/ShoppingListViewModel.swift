@@ -22,7 +22,7 @@ class ShoppingListViewModel: ObservableObject {
 	enum ViewModelUsageType {
 		case shoppingList 		// drives ShoppingListTabView
 		case purchasedItemShoppingList 		// drives PurchasedTabView
-		case locationSpecificShoppingList(Location?)	// drives LocationsTabView with associated location data
+		//case locationSpecificShoppingList(Location?)	// drives LocationsTabView with associated location data
 	}
 	var usageType: ViewModelUsageType
 		
@@ -75,10 +75,10 @@ class ShoppingListViewModel: ObservableObject {
 					items = ShoppingItem.currentShoppingList(onList: true)
 				case .purchasedItemShoppingList:
 					items = ShoppingItem.currentShoppingList(onList: false)
-				case .locationSpecificShoppingList(let location):
-					if let locationItems = location!.items as? Set<ShoppingItem> {
-						items = Array(locationItems)
-				}
+//				case .locationSpecificShoppingList(let location):
+//					if let locationItems = location!.items as? Set<ShoppingItem> {
+//						items = Array(locationItems)
+//				}
 			}
 			print("shopping list loaded. \(items.count) items.")
 			sortItems()
@@ -146,7 +146,7 @@ class ShoppingListViewModel: ObservableObject {
 				if !items.allSatisfy({ $0.location! == location }) {
 					sortItems()
 			}
-			case .purchasedItemShoppingList, .locationSpecificShoppingList(_):
+			case .purchasedItemShoppingList: //, .locationSpecificShoppingList(_):
 				// nothing to do here; purchased items are sorted alphabetically
 				// as is a list of items associated with an AddOrModifyLocationView
 				break
@@ -173,8 +173,8 @@ class ShoppingListViewModel: ObservableObject {
 				return item.onList == true
 			case .purchasedItemShoppingList:
 				return item.onList == false
-			case .locationSpecificShoppingList(let location):
-				return item.location == location! // this must be not nil
+//			case .locationSpecificShoppingList(let location):
+//				return item.location == location! // this must be not nil
 		}
 	}
 		
@@ -185,7 +185,7 @@ class ShoppingListViewModel: ObservableObject {
 			case .shoppingList: // , .multiSectionShoppingList:
 				items.sort(by: { $0.name < $1.name })
 				items.sort(by: { $0.location!.visitationOrder < $1.location!.visitationOrder })
-			case .purchasedItemShoppingList, .locationSpecificShoppingList:
+			case .purchasedItemShoppingList: //, .locationSpecificShoppingList:
 				items.sort(by: { $0.name < $1.name })
 		}
 	}

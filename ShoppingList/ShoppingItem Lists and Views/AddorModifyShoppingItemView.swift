@@ -44,7 +44,7 @@ struct AddorModifyShoppingItemView: View {
 	var body: some View {
 		Form {
 			// Section 1. Basic Information Fields
-			Section(header: SLSectionHeaderView(title: "Basic Information")) {
+			Section(header: Text("Basic Information").textCase(.none)) {
 				
 				HStack(alignment: .firstTextBaseline) {
 					SLFormLabelText(labelText: "Name: ")
@@ -80,7 +80,7 @@ struct AddorModifyShoppingItemView: View {
 			
 			// Section 2. Item Management (Delete), if present
 			if editableItem != nil {
-				Section(header: SLSectionHeaderView(title: "Shopping Item Management")) {
+				Section(header: Text("Shopping Item Management").textCase(.none)) {
 					SLCenteredButton(title: "Delete This Shopping Item",
 													 action: { showDeleteConfirmation = true })
 						.foregroundColor(Color.red)
@@ -142,22 +142,12 @@ struct AddorModifyShoppingItemView: View {
 		}
 	}
 	
-	// called after confirmation to delete an item. currently we use a 1/2 second
-	// delay in calling for the deletion after dismiss(), long enough to let SwifUI
-	// leave this View and go back to the list it came from, and
-	// THEN be told that something's been removed. this seems a little silly, but
-	// for XCode 11.6/iOS 13.6, this eliminates most of the console messages about views being told
-	// to layout outside their view hierarchy -- this View will be gone and we'll have returned
-	// to the View we came from and it will be onscreen when it gets the deletion.
-	// curiously, in the Stanford CS193p lectures of Spring, 2020, Paul Hegarty introduced
-	// this technique at one point in a similar situation saying that it was
-	// to "let things settle down."
+	// called after confirmation to delete an item.
+	
 	func deleteItem() {
 		if let item = editableItem {
+			ShoppingItem.delete(item: item, saveChanges: true)
 			presentationMode.wrappedValue.dismiss()
-			DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-				ShoppingItem.delete(item: item, saveChanges: true)
-			}
 		}
 	}
 }

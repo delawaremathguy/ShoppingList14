@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 // MARK: - View Definition
 
@@ -22,35 +23,32 @@ struct AddorModifyLocationView: View {
 	// so that if move over to the AddorModifyShoppingItemView, we can track
 	// edits back here, especially if we either change the object's location
 	// or delete the object.
-	@ObservedObject var shoppingItemsViewModel: ShoppingListViewModel //(type: .locationSpecificShoppingList)
+	//@ObservedObject var shoppingItemsViewModel: ShoppingListViewModel //(type: .locationSpecificShoppingList)
 	
-	// all editableData is packaged here:
+	// testing possible replacement of view model by simple list
+	//@State private var itemsAtThisLocation = [ShoppingItem]()
+	
+	// all editableData is packaged here.  its initial values are set to be
+	// the defaults for a new Location that is added (editableLocation == nil)
+	// and this will be updated in .onAppear() in the case that we are
+	// editing an existing, non-nil Location.
 	@State private var editableData = EditableLocationData()
-	
+	// this state variable translates RGB-A values to a Color -- used by the ColorPicker
+	@State private var editableColor: Color = .green
+
 	// this indicates dataHasBeenLoaded from an incoming editableLocation
-	// it will be flipped to true once .onAppear() has been called
+	// it will be flipped to true the first time .onAppear() is called so
+	// we wont be reloading the editableData and the editableColor
 	@State private var dataHasBeenLoaded = false
 	
 	// showDeleteConfirmation controls whether an Alert will appear
 	// to confirm deletion of a Location
 	@State private var showDeleteConfirmation: Bool = false
 	
-	// state to translate RGB-A into a Color used by the ColorPicker
-	@State private var editableColor: Color = .black
-	
-	// we use an init, so the ShoppingListViewModel for the shopping items at this
-	// location gets initialized properly with the location as associated data for
-	// the type locationSpecificShoppingList
-	init(at location: Location? = nil) {
-		//viewModel = viewModel
-		editableLocation = location
-		shoppingItemsViewModel = ShoppingListViewModel(type: .locationSpecificShoppingList(location))
-	}
-	
 	var body: some View {
 		Form {
 			// 1: Name, Visitation Order, Colors
-			Section(header: SLSectionHeaderView(title: "Basic Information")) {
+			Section(header: Text("Basic Information").textCase(.none)) {
 				HStack {
 					SLFormLabelText(labelText: "Name: ")
 					TextField("Location name", text: $editableData.locationName)
@@ -70,7 +68,7 @@ struct AddorModifyLocationView: View {
 			
 			// Section 2: Delete button, if present (must be editing a user location)
 			if editableLocation != nil && editableData.visitationOrder != kUnknownLocationVisitationOrder  {
-				Section(header: SLSectionHeaderView(title: "Location Management")) {
+				Section(header: Text("Location Management").textCase(.none)) {
 					SLCenteredButton(title: "Delete This Location", action: { showDeleteConfirmation = true })
 						.foregroundColor(Color.red)
 				}
@@ -78,13 +76,7 @@ struct AddorModifyLocationView: View {
 			
 			// Section 3: Items assigned to this Location, if we are editing a Location
 			if editableLocation != nil {
-				Section(header: SLSectionHeaderView(title: "At this Location: \(editableLocation?.items?.count ?? 0) items")) {
-					ForEach(shoppingItemsViewModel.items) { item in
-						NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
-							Text(item.name)
-						}
-					}
-				} // end of Section 3
+				SimpleItemsList(location: editableLocation!)
 			}
 			
 		} // end of Form
@@ -106,20 +98,17 @@ struct AddorModifyLocationView: View {
 				)}
 	}
 	
-	func rgbColor() -> Color {
-		Color(.sRGB, red: editableData.red, green: editableData.green, blue: editableData.blue, opacity: editableData.opacity)
-	}
-	
 	func barTitle() -> Text {
 		return editableLocation == nil ? Text("Add New Location") : Text("Modify Location")
 	}
 	
 	func deleteLocation() {
 		if let location = editableLocation {
+			Location.delete(location)
 			presentationMode.wrappedValue.dismiss()
-			DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) { // seems to want more time in simulator
-				Location.delete(location)
-			}
+//			DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) { // seems to want more time in simulator
+//				Location.delete(location)
+//			}
 		}
 	}
 
@@ -137,7 +126,6 @@ struct AddorModifyLocationView: View {
 		if !dataHasBeenLoaded {
 			if let location = editableLocation {
 				editableData = EditableLocationData(location: location)
-				shoppingItemsViewModel.loadItems()
 				editableColor = Color(.sRGB, red: location.red, green: location.green, blue: location.blue, opacity: location.opacity)
 			} // else we already have default, editable data set up right
 			dataHasBeenLoaded = true
@@ -146,3 +134,26 @@ struct AddorModifyLocationView: View {
 	
 }
 
+
+struct SimpleItemsList: View {
+	
+	// the location we're associated with
+	var location: Location
+	@FetchRequest	private var items: FetchedResults<ShoppingItem>
+	
+	init(location: Location) {
+		self.location = location
+		let request = ShoppingItem.allShoppingItems(at: location)
+		_items = FetchRequest(fetchRequest: request)
+	}
+	
+	var body: some View {
+		Section(header: Text("At this Location: \(items.count) items").textCase(.none)) {
+			ForEach(items) { item in
+				NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
+					Text(item.name)
+				}
+			}
+		}
+	}
+}

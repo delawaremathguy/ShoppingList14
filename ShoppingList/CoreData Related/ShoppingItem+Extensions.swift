@@ -31,6 +31,15 @@ extension ShoppingItem {
 		set { nameOpt = newValue }
 	}
 	
+	// MARK: - Useful Fetch Requests
+	
+	class func allShoppingItems(at location: Location) -> NSFetchRequest<ShoppingItem> {
+		let request: NSFetchRequest<ShoppingItem> = ShoppingItem.fetchRequest()
+		request.sortDescriptors = [NSSortDescriptor(key: "nameOpt", ascending: true)]
+		request.predicate = NSPredicate(format: "location == %@", location)
+		return request
+	}
+	
 	// MARK: - Class functions for CRUD operations
 	
 	// this whole bunch of static functions lets me do a simple fetch and
@@ -92,14 +101,28 @@ extension ShoppingItem {
 		PersistentStore.shared.saveContext()
 	}
 
+	
+	// this is a little tricky to understand:
+	// deleting an item in Core Data doesn't really delete it ... it sort of hangs around
+	// a little bit, eventually getting removed (likely once the actual save goes out
+	// to disk).  this confuses the hell out of a @FetchRequest, which doesn't seem to
+	// get the message right away, and so handling an objectWillChange message can
+	// make it try to use what is really a non-existent shopping item.
+	//
+	// so this new code, which seems to work (he says, confidently) is to call
+	// processPendingChanges() which syncs up the object graph in memory right away and this,
+	// apparently, is enough to to get the message out to everyone.
+	
 	static func delete(item: ShoppingItem, saveChanges: Bool = false) {
 		// let anyone who is interested we're about to kill this ShoppingItem
 		NotificationCenter.default.post(name: .shoppingItemWillBeDeleted, object: item, userInfo: nil)
 		// remove reference to this item from its associated location first
 		let location = item.location
 		location?.removeFromItems(item)
-		// now delete and save (default)
-		item.managedObjectContext?.delete(item)
+		// now delete and save
+		let context = item.managedObjectContext
+		context?.delete(item)
+		context?.processPendingChanges()
 		if saveChanges {
 			Self.saveChanges()
 		}

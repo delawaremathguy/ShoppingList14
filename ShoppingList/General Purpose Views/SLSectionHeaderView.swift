@@ -16,19 +16,19 @@ import SwiftUI
 // XCODE 12 NOTE.  uncomment-out the commented lines below (this code will
 // not compile under XCode 11) to get the iOS 13 appearance of section headers.
 
-struct SLSectionHeaderView: View {
-	
-	var title: String
-	
-	var body: some View {
-		GeometryReader { geo in
-			Text(self.title)
-				.font(.body)
-				.foregroundColor(.black)
-				.textCase(.none)
-				.position(x: geo.size.width/2, y: geo.size.height/2)
-			
-		}
-	}
-	
-}
+//struct SLSectionHeaderView: View {
+//	
+//	var title: String
+//	
+//	var body: some View {
+//		GeometryReader { geo in
+//			Text(self.title)
+//				.font(.body)
+//				.foregroundColor(.black)
+//				.textCase(.none)
+//				.position(x: geo.size.width/2, y: geo.size.height/2)
+//			
+//		}
+//	}
+//	
+//}

@@ -152,6 +152,15 @@ extension Location: Comparable {
 		PersistentStore.shared.saveContext()
 	}
 	
+	// MARK: - Computed properties
+	
+	var shoppingItems: [ShoppingItem] {
+		if let items = items as? Set<ShoppingItem> {
+			return items.sorted(by: { $0.name < $1.name })
+		}
+		return []
+	}
+	
 	// MARK: - Reference functions
 	
 	func uiColor() -> UIColor {

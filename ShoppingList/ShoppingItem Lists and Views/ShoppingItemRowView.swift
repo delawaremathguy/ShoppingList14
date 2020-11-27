@@ -109,7 +109,7 @@ struct ShoppingItemRowView: View {
 					Text(itemData.name)
 						.italic()
 						.foregroundColor(Color(.systemGray3))
-						//.overlay(Rectangle().frame(height: 1.0))
+						.strikethrough()
 				}
 				
 				if itemData.showLocation {

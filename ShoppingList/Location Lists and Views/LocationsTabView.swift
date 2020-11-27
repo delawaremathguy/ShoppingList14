@@ -37,9 +37,7 @@ struct LocationsTabView: View {
 				}
 					
 				.sheet(isPresented: $isAddNewLocationSheetShowing) {
-					NavigationView {
-						AddorModifyLocationView()
-					}
+					NavigationView { AddorModifyLocationView() }
 				}
 				
 				// 1a. Report location count, essentially as a section header for just the one section
@@ -52,7 +50,7 @@ struct LocationsTabView: View {
 				Form {
 					Section(header: Text("Locations Listed: \(Location.count())").textCase(.none)) {
 						ForEach(locations) { location in
-							NavigationLink(destination: AddorModifyLocationView(at: location)) {
+							NavigationLink(destination: AddorModifyLocationView(editableLocation: location)) {
 								LocationRowView(rowData: LocationRowData(location: location))
 									.contextMenu {
 										Button(action: {
