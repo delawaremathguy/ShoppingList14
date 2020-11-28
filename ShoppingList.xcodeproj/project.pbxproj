@@ -26,14 +26,12 @@
 		D648D349246388C100CD881B /* Location+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D648D348246388C100CD881B /* Location+Extensions.swift */; };
 		D65721B32464591700E4AAAF /* AddorModifyLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65721B22464591700E4AAAF /* AddorModifyLocationView.swift */; };
 		D65A509F2565789900D43229 /* String+Extnesions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65A509E2565789900D43229 /* String+Extnesions.swift */; };
-		D65A50A225657EDC00D43229 /* SelectableShoppingItemRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65A50A125657EDC00D43229 /* SelectableShoppingItemRowView.swift */; };
 		D65B206C2493005600DB55F1 /* SLSliderControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65B206B2493005600DB55F1 /* SLSliderControl.swift */; };
 		D65C931824C5DC9B003E6EB7 /* GlobalTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65C931724C5DC9B003E6EB7 /* GlobalTimer.swift */; };
 		D66FF35424926B6400B3ABC8 /* DevToolsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66FF35324926B6400B3ABC8 /* DevToolsTabView.swift */; };
 		D66FF3562492E67100B3ABC8 /* SLCenteredButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66FF3552492E67100B3ABC8 /* SLCenteredButton.swift */; };
 		D677946224D58F34006EB9CF /* EditableLocationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D677946124D58F34006EB9CF /* EditableLocationData.swift */; };
 		D6931D6C24C4C60900A61BB6 /* TimerTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6931D6B24C4C60900A61BB6 /* TimerTabView.swift */; };
-		D69BD17424D84D1100339513 /* NotificationName+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D69BD17324D84D1100339513 /* NotificationName+Extensions.swift */; };
 		D6ADB3B2247C266F00376271 /* locations.json in Resources */ = {isa = PBXBuildFile; fileRef = D6ADB3B1247C266E00376271 /* locations.json */; };
 		D6ADB3B4247C267900376271 /* shoppingItems.json in Resources */ = {isa = PBXBuildFile; fileRef = D6ADB3B3247C267900376271 /* shoppingItems.json */; };
 		D6AE3643246F035400F7A237 /* Bundle+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6AE3642246F035400F7A237 /* Bundle+Extensions.swift */; };
@@ -72,7 +70,6 @@
 		D65721B22464591700E4AAAF /* AddorModifyLocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddorModifyLocationView.swift; sourceTree = "<group>"; };
 		D65A15D22465A137004ACCBB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D65A509E2565789900D43229 /* String+Extnesions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extnesions.swift"; sourceTree = "<group>"; };
-		D65A50A125657EDC00D43229 /* SelectableShoppingItemRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableShoppingItemRowView.swift; sourceTree = "<group>"; };
 		D65B206B2493005600DB55F1 /* SLSliderControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLSliderControl.swift; sourceTree = "<group>"; };
 		D65C931724C5DC9B003E6EB7 /* GlobalTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalTimer.swift; sourceTree = "<group>"; };
 		D6661E0A25645D2200BA47E9 /* ShoppingList 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "ShoppingList 2.xcdatamodel"; sourceTree = "<group>"; };
@@ -80,7 +77,6 @@
 		D66FF3552492E67100B3ABC8 /* SLCenteredButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLCenteredButton.swift; sourceTree = "<group>"; };
 		D677946124D58F34006EB9CF /* EditableLocationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableLocationData.swift; sourceTree = "<group>"; };
 		D6931D6B24C4C60900A61BB6 /* TimerTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerTabView.swift; sourceTree = "<group>"; };
-		D69BD17324D84D1100339513 /* NotificationName+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationName+Extensions.swift"; sourceTree = "<group>"; };
 		D6ADB3B1247C266E00376271 /* locations.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = locations.json; sourceTree = "<group>"; };
 		D6ADB3B3247C267900376271 /* shoppingItems.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = shoppingItems.json; sourceTree = "<group>"; };
 		D6AE3642246F035400F7A237 /* Bundle+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+Extensions.swift"; sourceTree = "<group>"; };
@@ -174,7 +170,6 @@
 			isa = PBXGroup;
 			children = (
 				D6AE3642246F035400F7A237 /* Bundle+Extensions.swift */,
-				D69BD17324D84D1100339513 /* NotificationName+Extensions.swift */,
 				D612E16024898EBB007E1412 /* Array+Extensions.swift */,
 				D65A509E2565789900D43229 /* String+Extnesions.swift */,
 			);
@@ -187,7 +182,6 @@
 				D62B88312451162D0051A7CE /* ShoppingListTabView.swift */,
 				D6EF557C246D7421007D636B /* PurchasedTabView.swift */,
 				D6EF5584246D964C007D636B /* ShoppingItemRowView.swift */,
-				D65A50A125657EDC00D43229 /* SelectableShoppingItemRowView.swift */,
 				D6450BD6245F49DB0074DA16 /* AddorModifyShoppingItemView.swift */,
 				D6C75D3224B4B123003E445B /* ViewBuildingCode.swift */,
 				D6C91D8624A8EC09008C8DFF /* EditableShoppingItemData.swift */,
@@ -306,9 +300,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D65A50A225657EDC00D43229 /* SelectableShoppingItemRowView.swift in Sources */,
 				D6450BD7245F49DB0074DA16 /* AddorModifyShoppingItemView.swift in Sources */,
-				D69BD17424D84D1100339513 /* NotificationName+Extensions.swift in Sources */,
 				D60F14A724686BA80077AD3F /* ShoppingItemCodable.swift in Sources */,
 				D6B8A95424636711005F8EF2 /* MainView.swift in Sources */,
 				D6DE39BD247314B40013F9B4 /* SLFormLabelText.swift in Sources */,

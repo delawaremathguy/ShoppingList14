@@ -307,8 +307,8 @@ struct shoppingListView: View {
 	
 	// the notion of this struct is that we use it to tell us what to draw for a single
 	// section: its title and the items in the section
-	struct SectionData: Identifiable {
-		let id = UUID() // <-- very suspicious, possibly causes excess drawing
+	struct SectionData: Identifiable, Hashable {
+		var id: Int { hashValue }
 		let title: String
 		let items: [ShoppingItem]
 	}

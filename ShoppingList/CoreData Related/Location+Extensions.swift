@@ -20,7 +20,7 @@ extension Location: Comparable {
 		lhs.visitationOrder < rhs.visitationOrder
 	}
 	
-	// MARK: - Class Functions for CRUD Operations
+	// MARK: - Class Functions
 	
 	static func count() -> Int {
 		let fetchRequest: NSFetchRequest<Location> = Location.fetchRequest()
@@ -97,9 +97,6 @@ extension Location: Comparable {
 		// you cannot delete the unknownLocation
 		guard location.visitationOrder != kUnknownLocationVisitationOrder else { return }
 
-		// OK, announce what's about to happen
-		NotificationCenter.default.post(name: .locationWillBeDeleted, object: location)
-
 		// retrieve the context of this Location and get a list of
 		// all items for this location so we can work with them
 		let context = location.managedObjectContext
@@ -129,15 +126,15 @@ extension Location: Comparable {
 		// if location is nil, it's a signal to add a new item with the packaged data
 		if let location = location {
 			location.updateValues(from: editableData)
-			NotificationCenter.default.post(name: .locationEdited, object: location)
 		} else {
 			let newLocation = Location.addNewLocation()
 			newLocation.updateValues(from: editableData)
-//			NotificationCenter.default.post(name: .locationAdded, object: newLocation)
 		}
 		
 		saveChanges()
 	}
+	
+	// MARK: - Object Methods
 	
 	func updateValues(from editableData: EditableLocationData) {
 		name = editableData.locationName
@@ -161,14 +158,14 @@ extension Location: Comparable {
 		return []
 	}
 	
+	var isUnknownLocation: Bool { visitationOrder == kUnknownLocationVisitationOrder }
+	
+
+	
 	// MARK: - Reference functions
 	
 	func uiColor() -> UIColor {
 		UIColor(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: CGFloat(opacity))
-	}
-	
-	func isUnknownLocation() -> Bool {
-		return visitationOrder == kUnknownLocationVisitationOrder
 	}
 	
 }

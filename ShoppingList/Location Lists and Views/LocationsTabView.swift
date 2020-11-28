@@ -54,13 +54,13 @@ struct LocationsTabView: View {
 								LocationRowView(rowData: LocationRowData(location: location))
 									.contextMenu {
 										Button(action: {
-											if !location.isUnknownLocation() {
+											if !location.isUnknownLocation {
 												locationToDelete = location
 												showDeleteConfirmation = true
 											}
 										}) {
-											Text(location.isUnknownLocation() ? "(Cannot be deleted)" : "Delete This Location")
-											Image(systemName: location.isUnknownLocation() ? "trash.slash" : "trash")
+											Text(location.isUnknownLocation ? "(Cannot be deleted)" : "Delete This Location")
+											Image(systemName: location.isUnknownLocation ? "trash.slash" : "trash")
 										}
 									}
 							}

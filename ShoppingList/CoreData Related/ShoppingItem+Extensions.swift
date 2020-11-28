@@ -147,8 +147,6 @@ extension ShoppingItem {
 	// apparently, is enough to to get the message out to everyone.
 	
 	static func delete(item: ShoppingItem, saveChanges: Bool = false) {
-		// let anyone who is interested we're about to kill this ShoppingItem
-		NotificationCenter.default.post(name: .shoppingItemWillBeDeleted, object: item, userInfo: nil)
 		// remove reference to this item from its associated location first
 		let location = item.location
 		location?.removeFromItems(item)
@@ -164,7 +162,6 @@ extension ShoppingItem {
 	// changes availability flag for an item
 	func toggleAvailableStatus() {
 		isAvailable.toggle()
-		NotificationCenter.default.post(name: .shoppingItemEdited, object: self)
 		ShoppingItem.saveChanges()
 	}
 
@@ -174,13 +171,11 @@ extension ShoppingItem {
 		if !onList { // just moved off list, so record date
 			dateLastPurchased = Date()
 		}
-		NotificationCenter.default.post(name: .shoppingItemEdited, object: self)
 		ShoppingItem.saveChanges()
 	}
 
 	func markAvailable() {
 		isAvailable = true
-		NotificationCenter.default.post(name: .shoppingItemEdited, object: self)
 		ShoppingItem.saveChanges()
 	}
 
@@ -205,11 +200,9 @@ extension ShoppingItem {
 		// if we can find a ShoppingItem with the right id, use it, else create one
 		if let item = allShoppingItems().first(where: { $0.id == editableData.shoppingItemID }) {
 			item.updateValues(from: editableData)
-			NotificationCenter.default.post(name: .shoppingItemEdited, object: item)
 		} else {
 			let newItem = ShoppingItem.addNewItem()
 			newItem.updateValues(from: editableData)
-			NotificationCenter.default.post(name: .shoppingItemAdded, object: newItem)
 		}
 		
 		ShoppingItem.saveChanges()

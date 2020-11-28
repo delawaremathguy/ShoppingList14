@@ -100,8 +100,6 @@ func insertNewShoppingItems(from codableShoppingItems: [ShoppingItemCodable]) {
 			newItem.location = Location.unknownLocation()!
 		}
 		
-		NotificationCenter.default.post(name: .shoppingItemAdded, object: newItem, userInfo: nil)
-		NotificationCenter.default.post(name: .locationEdited, object: newItem.location!, userInfo: nil)
 	}
 }
 
