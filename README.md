@@ -1,6 +1,6 @@
 #  About "ShoppingList14"
 
-This is a simple, iOS project to process a shopping list that you can take to the grocery store with you, and move items off the list as you pick them up.  It persists data in CoreData.  The project should be compiled with XCode 12.2 or later to run on iOS14.2 or later.
+This is a simple, iOS app to process a shopping list that you can take to the grocery store with you, and move items off the list as you pick them up.  It persists data in CoreData.  The project should be compiled with XCode 12.2  and run on iOS14.2 or later.
 
 * An [earlier version of this project](https://github.com/delawaremathguy/ShoppingList) is available that works with XCode 11.7/iOS 13.7.  If you have not yet made the move to XCode 12.2 and iOS 14.2, you should use this earlier project instead.
 
@@ -10,7 +10,7 @@ Feel free to use this as is, to develop further,  to completely ignore, or even 
 ## First Public Update for iOS 14: November, 2020
 
 
-Now that XCode 12 has finally stabilized, I feel it safe to make some refinements and possibly use features of iOS 14 in this project.  This repository has been put together using XCode 12.2 (release version) and is intended to run under iOS 14.2 
+Now that XCode 12 has finally stabilized, I feel it safe to make some refinements and possibly use features of iOS 14 in this project.  This repository has been put together using XCode 12.3 beta and is intended to run under iOS 14.2 
 
 Please be sure to read the What's New in ShoppingList14 section below, primarily for implementation and code-level changes.
 
@@ -57,22 +57,21 @@ So,
 
 ## What's New in ShoppingList14
 
-Things have changed [since the previous release of this project](https://github.com/delawaremathguy/ShoppingList) for XCode 11 that was titled, simply, **ShoppingList**.  Although this project is called "ShoppingList14," it retains the same signature as the previous project; and despite some changes to the Core Data model, *should* properly migrate data from the earlier project to the new model of this project -- however, I *cannot guarantee this based on my own experience, but I think that's because this uses the new App structure and/or that the reliability of XCode 12.2 is still in question*.
+Things have changed [since the previous release of this project](https://github.com/delawaremathguy/ShoppingList) for XCode 11 that was titled, simply, **ShoppingList**.  Although this project is called "ShoppingList14," it carries the same name and signature as the previous project, but is now "version 2.0"; and despite some changes to the Core Data model, *should* properly migrate data from the earlier project to the new model of this project -- however, I *cannot guarantee this, based on my own experience, but it may be due to using the new App structure and/or issues in XCode*.
 
 Here are some of those code-level changes:
 
 * The AppDelegate-SceneDelegate application structure has been replaced by the simplified App-Scene-WindowGroup structure introduced for XCode 12/iOS 14.
 * The three primary tabs (Shopping List, Purchased, and Locations) now use a Form presentation, rather than a List presentation.
 * Each ShoppingItem now has a "dateLastPurchased" property which is reset to "today" whenever you move an item off the shopping list.
-* The Purchased items tab now presents shopping items that were "purchased today" in its first section (if not empty) and everything else in its "second section."  This makes it easy to review the list of today's purchases, and to quickly locate any item that you may have accidentally tapped off the Shopping List so you can put it back on the list.
+* The Purchased items tab now presents shopping items that were "purchased today" in its first section (which may be empty) and everything else in a second section.  This makes it easy to review the list of today's purchases, possibly to quickly locate any item that you may have accidentally tapped off the Shopping List so you can put it back on the list.
 * A ColorPicker has be added to the view that modifies a Location, replacing the four individual sliders that adjusted the location's color.
 * Many code changes have been made or simplified and comments throughout the code have been updated. 
 
-The basic architecture of the app has also been simplified.  What started out as more of a strict MVVM-style architecture to avoid using @FetchRequest (*simple Core Data deletions and @FetchRequest don't play nicely together*), has morphed into ... wait for it ... an app that uses @FetchRequest (*because to work with Core Data deletions, you need to know one special aspect of Core Data I have only recently learned*).
-* Views can effect changes to ShoppingItems by calling ShoppingItem functions directly ("user intents"), which then are handled appropriately in the ShoppingItem class, and for which notifications are then posted as to what happened. 
-* There is no longer a LocationsListViewModel.  The LocationsTabView is such a simple view that it is now driven by a @FetchRequest.
-* And there is no longer a ShoppingListViewModel to handle a list of items associated with a Location.
-* What remains of the ShoppingListViewModel now has fewer responsibilities and consequently serves only two purposes: it manages an array of ShoppingItems (it is a replacement for @FetchRequest in this regard, although we can see and understand how this works), and it provides some simple services to views such as sectioning the items when the ShoppingList is shown in multi-section style and it supports splitting the PurchasedItemTabView into two sections.
+The basic architecture of the app has also been simplified.  What started out initially as a few views with simple @FetchRequests first morphed into more of a strict MVVM-style architecture using view models that completely avoided using @FetchRequest (*simple Core Data deletions and @FetchRequest don't play nicely together*).  Well, it has now morphed into ... wait for it ... an app having a few views with simple @FetchRequests (*because I have now discovered one special aspect of Core Data that makes @FetchRequest work with Core Data deletions*).  This is shocking!
+
+* Views can effect changes to ShoppingItems and Locations by uisng functions directly ("user intents"), which then are handled appropriately in the ShoppingItem class, and for which notifications are then posted as to what happened. 
+* There are no view models.
 
 ### Core Data Notes
 

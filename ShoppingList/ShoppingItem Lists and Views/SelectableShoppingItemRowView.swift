@@ -11,8 +11,7 @@ import SwiftUI
 
 struct SelectableShoppingItemRowView: View {
 	
-	var item: ShoppingItem
-	@ObservedObject var viewModel: ShoppingListViewModel
+	@ObservedObject var item: ShoppingItem
 	var selected: Bool
 	var respondToTapOnSelector: (ShoppingItem) -> Void
 	

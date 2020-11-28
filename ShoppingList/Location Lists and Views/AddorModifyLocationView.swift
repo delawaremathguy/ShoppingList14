@@ -17,17 +17,7 @@ struct AddorModifyLocationView: View {
 	// editableLocation is either a Location to edit, or nil to signify
 	// that we're creating a new Location in for the viewModel.
 	var editableLocation: Location? = nil
-	
-	// we use a specialized form of a ShoppingListViewModel in this View to
-	// drive the list of items at this location.  it must be an observed object
-	// so that if move over to the AddorModifyShoppingItemView, we can track
-	// edits back here, especially if we either change the object's location
-	// or delete the object.
-	//@ObservedObject var shoppingItemsViewModel: ShoppingListViewModel //(type: .locationSpecificShoppingList)
-	
-	// testing possible replacement of view model by simple list
-	//@State private var itemsAtThisLocation = [ShoppingItem]()
-	
+		
 	// all editableData is packaged here.  its initial values are set to be
 	// the defaults for a new Location that is added (editableLocation == nil)
 	// and this will be updated in .onAppear() in the case that we are
@@ -138,12 +128,12 @@ struct AddorModifyLocationView: View {
 struct SimpleItemsList: View {
 	
 	// the location we're associated with
-	var location: Location
+	//var location: Location
 	@FetchRequest	private var items: FetchedResults<ShoppingItem>
 	
 	init(location: Location) {
-		self.location = location
-		let request = ShoppingItem.allShoppingItems(at: location)
+		//self.location = location
+		let request = ShoppingItem.fetchAllItems(at: location)
 		_items = FetchRequest(fetchRequest: request)
 	}
 	

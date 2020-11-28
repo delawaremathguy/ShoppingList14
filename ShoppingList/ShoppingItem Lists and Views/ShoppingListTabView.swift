@@ -8,30 +8,25 @@
 
 import SwiftUI
 
-// this is a list display of items on the shopping list. we use a ShoppingListViewModel
-// object to mediate for us between the data that's over in Core Data and the
-// data we need to drive this View.  the view will display either as a single
-// section list, or a multi-section list (initial display is single section), with
-// these areas of the view handled by separate views, each of which has its own,
-// specific List/ForEach constructs.
-
 struct ShoppingListTabView: View {
-	// our view model = a window into Core Data so we can use it and be
-	// notified when changes are made via the ObservableObject protocol
-	@StateObject var viewModel = ShoppingListViewModel(type: .shoppingList)
+	
+	// this is the @FetchRequest that ties this view to CoreData ShoppingItems
+	@FetchRequest(fetchRequest: ShoppingItem.fetchAllItems(onList: true))
+	private var itemsToBePurchased: FetchedResults<ShoppingItem>
 
 	// local state to trigger showing a sheet to add a new item
 	@State private var isAddNewItemSheetShowing = false
-	// local states to trigger a destructive Alert either to delete
-	// an item, or to move all items off the list
-	@State private var isDestructiveAlertShowing = false
-	@State private var itemToDelete: ShoppingItem? // item to delete, if that's what we want to do
-	@State private var destructiveMoveToOtherList = false  // set to true if moving to other list
+	// local state to trigger an Alert to confirm either deleting
+	// an item, or moving all items off the list
+	@State private var isConfirmationAlertShowing = false
+	// which of these we do: move all off-list (true) or delete (false)
+	@State private var operationIsMoveToOtherList = false
+	// and in the case of a delete, which item we are deleting
+	@State private var itemToDelete: ShoppingItem?
 	
 	// local state for are we a multisection display or not.  the default here is false,
-	// but an eager developer could easilt store this default value in UserDefaults (?)
+	// but an eager developer could easily store this default value in UserDefaults (?)
 	@State var multiSectionDisplay: Bool = false
-	
 	
 	var body: some View {
 		NavigationView {
@@ -55,58 +50,60 @@ AddorModifyShoppingItemView inside its own NavigationView (so the Picker will wo
 				
 /* ---------
 2. we display either a "List is Empty" view, a single-section shopping list view
-or multi-section shopping list view.  these call out to other views below, because
-the looping construct is quite different, as is how the .onDelete() modifier is
-invoked on an item in the list
+or multi-section shopping list view.
 ----------*/
 
-				if viewModel.itemCount == 0 {
+				if itemsToBePurchased.count == 0 {
 					EmptyListView(listName: "Shopping")
-				} else if multiSectionDisplay {
-					SLSimpleHeaderView(label: "Items Remaining: \(viewModel.itemCount)")
-					MultiSectionShoppingListView(viewModel: viewModel,
-																			 isDeleteItemAlertShowing: $isDestructiveAlertShowing,
-																			 itemToDelete: $itemToDelete)
+//				} else if multiSectionDisplay {
+//					SLSimpleHeaderView(label: "Items Remaining: \(itemsToBePurchased.count)")
+//					MultiSectionShoppingListView(itemsToBePurchased: itemsToBePurchased,
+//																			 isConfirmationAlertShowing: $isConfirmationAlertShowing,
+//																			 itemToDelete: $itemToDelete)
+//				} else {
+//					//SLSimpleHeaderView(label: "Items Listed: \(viewModel.itemCount)")
+//					Rectangle()
+//						.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
+//					SingleSectionShoppingListView(itemsToBePurchased: itemsToBePurchased,
+//																				isConfirmationAlertShowing: $isConfirmationAlertShowing,
+//																				itemToDelete: $itemToDelete)
 				} else {
-					//SLSimpleHeaderView(label: "Items Listed: \(viewModel.itemCount)")
-					Rectangle()
-						.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
-					SingleSectionShoppingListView(viewModel: viewModel,
-																				isDeleteItemAlertShowing: $isDestructiveAlertShowing,
-																				itemToDelete: $itemToDelete)
+					shoppingListView(itemsToBePurchased: itemsToBePurchased,
+																	multiSectionDisplay: multiSectionDisplay,
+																	isConfirmationAlertShowing: $isConfirmationAlertShowing,
+																	itemToDelete: $itemToDelete)
 				}
 				
 /* ---------
-3. for non-empty lists, we tack on a few buttons at the end.
+3. for non-empty lists, we have a few buttons at the end for bulk operations
 ----------*/
 
-				// clear/ mark as unavailable shopping list buttons
-				if viewModel.itemCount > 0 {
+				if itemsToBePurchased.count > 0 {
 					Rectangle()
 						.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
 					
 					SLCenteredButton(title: "Move All Items Off-list", action: {
-						// setting tese allow the Alert to come up with the right messages and actions
-						destructiveMoveToOtherList = true
-						isDestructiveAlertShowing = true
+						// setting these allow the Alert to come up with the right messages and actions
+						operationIsMoveToOtherList = true
+						isConfirmationAlertShowing = true
 						})
 						.padding([.bottom, .top], 6)
 					
-					if viewModel.hasUnavailableItems {
+					if !itemsToBePurchased.allSatisfy({ $0.isAvailable }) {
 						SLCenteredButton(title: "Mark All Items Available",
-														 action: { viewModel.items.forEach({ $0.markAvailable() }) })
+														 action: { itemsToBePurchased.forEach({ $0.markAvailable() }) })
 							.padding([.bottom], 6)
 						
 					}
-				} //end of if viewModel.itemCount > 0
+				} //end of if itemsToBePurchased.count > 0
 
 			} // end of VStack
 			.navigationBarTitle("Shopping List")
 			.navigationBarItems(leading: leadingButton())
 			.toolbar { toolBarButton() }
-			.alert(isPresented: $isDestructiveAlertShowing) {
-				Alert(title: Text(destructiveAlertTitle()),
-							message: Text(destructiveAlertMessage()),
+			.alert(isPresented: $isConfirmationAlertShowing) {
+				Alert(title: Text(confirmationAlertTitle()),
+							message: Text(confirmationAlertMessage()),
 							primaryButton: .cancel(Text("No"), action: destructiveAlertCancel),
 							secondaryButton: .destructive(Text("Yes"), action: destructiveAlertAction)
 				)
@@ -117,17 +114,21 @@ invoked on an item in the list
 		.navigationViewStyle(StackNavigationViewStyle())
 			.onAppear {
 				print("ShoppingListTabView appear")
-				viewModel.loadItems()
+				//viewModel.loadItems()
 			}
 			.onDisappear { print("ShoppingListTabView disappear") }
 		
 	} // end of body: some View
 	
+	// MARK: - NavigationBarItems
+	
+	// a "+" symbol to support adding a new item
 	func toolBarButton() -> some View {
 		Button(action: { isAddNewItemSheetShowing = true })
 			{ Image(systemName: "plus") }
 	}
 	
+	// a toggle button to change section display mechanisms
 	func leadingButton() -> some View {
 		Button(action: {
 			multiSectionDisplay.toggle()
@@ -137,19 +138,20 @@ invoked on an item in the list
 		}
 	}
 	
-	// data to pass along to the destructive alert that either deletes an item
-	// or moves all items off the list.  which these do depend on the value of
-	// the boolean destructiveMoveToOtherList
-	func destructiveAlertTitle() -> String {
-		if destructiveMoveToOtherList {
+	// MARK: - Confirmation Alert Setup
+	
+	// these functions data to pass along to the confirmation alert that either deletes
+	// an item or moves all items off the list, based on the boolean "operationIsMoveToOtherList"
+	func confirmationAlertTitle() -> String {
+		if operationIsMoveToOtherList {
 			return "Move All Items Off-List"
 		} else {
 			return "Delete \'\(itemToDelete!.name)\'?"
 		}
 	}
 	
-	func destructiveAlertMessage() -> String {
-		if destructiveMoveToOtherList {
+	func confirmationAlertMessage() -> String {
+		if operationIsMoveToOtherList {
 			return ""
 		} else {
 			return "Are you sure you want to delete this item?"
@@ -157,118 +159,223 @@ invoked on an item in the list
 	}
 	
 	func destructiveAlertCancel() {
-		destructiveMoveToOtherList = false
+		operationIsMoveToOtherList = false
 	}
 	
 	func destructiveAlertAction() {
-		if destructiveMoveToOtherList {
-			viewModel.items.forEach({ $0.toggleOnListStatus() })
-			destructiveMoveToOtherList = false
+		if operationIsMoveToOtherList {
+			itemsToBePurchased.forEach({ $0.toggleOnListStatus() })
+			operationIsMoveToOtherList = false
 		} else if let item = itemToDelete {
 			ShoppingItem.delete(item: item, saveChanges: true)
 		}
 	}
 
-}
+} // end of ShoppingListTabView
 
+// MARK: - Single Section Display
 
-// this is the inner section of a single section list, which is just a List/ForEach
-// construct with a NavigationLink and a contextMenu for each item
-struct SingleSectionShoppingListView: View {
+//// this shows itemsToBePurchased as a single section.  it has a simple structure
+//// of Form/Section/ForEach.  each item has a NavigationLink and a contextMenu on it
+//struct SingleSectionShoppingListView: View {
+//
+//	var itemsToBePurchased: FetchedResults<ShoppingItem>
+//	@Binding var isConfirmationAlertShowing: Bool
+//	@Binding var itemToDelete: ShoppingItem?
+//
+//	// this is a temporary holding array for items being moved to the other list
+//	// this is how we tell whether an item is currently in the process of being "checked"
+//	@State private var itemsChecked = [ShoppingItem]()
+//
+//	var body: some View {
+//
+//		Form {
+//			// one main section, showing all items
+//			Section(header: Text("Items Remaining: \(itemsToBePurchased.count)").textCase(.none)) {
+//				ForEach(itemsToBePurchased) { item in
+//					// display a single row here for 'item'
+//					NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
+//						SelectableShoppingItemRowView(item: item,
+//												selected: itemsChecked.contains(item),
+//												respondToTapOnSelector: handleItemTapped)
+//							.contextMenu {
+//								shoppingItemContextMenu(item: item, deletionTrigger: {
+//																					itemToDelete = item
+//																					isConfirmationAlertShowing = true
+//																				})
+//							} // end of contextMenu
+//					} // end of NavigationLink
+//				} // end of ForEach
+//			} // end of Section
+//		}  // end of Form
+//	}
+//
+//	func handleItemTapped(_ item: ShoppingItem) {
+//		// add this item to the temporary holding array for items being
+//		// moved to the other list, and queue the actual after a slight delay
+//		if !itemsChecked.contains(item) {
+//			itemsChecked.append(item)
+//			DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+//				item.toggleOnListStatus()
+//				itemsChecked.removeAll(where: { $0 == item })
+//			}
+//		}
+//	}
+//
+//}
+
+// MARK: - Multi-Section Display
+
+//// this shows itemsToBePurchased as a multi-section list.  it has a much more
+//// complicated Form/ForEach/Section/ForEach construct to break the sections
+//// by the locations for which we have items on the shopping list.  as in the single section
+//// version, each item has a NavigationLink and a contextMenu on it
+//
+//struct MultiSectionShoppingListView: View {
+//
+//	var itemsToBePurchased: FetchedResults<ShoppingItem>
+//	@Binding var isConfirmationAlertShowing: Bool
+//	@Binding var itemToDelete: ShoppingItem?
+//
+//	@State private var itemsChecked = [ShoppingItem]()
+//
+//	var body: some View {
+//		Form {
+//			ForEach(locationsAssociated(with: itemsToBePurchased)) { location in
+//				Section(header: Text(location.name!).textCase(.none)) {
+//					// display items in this location
+//					ForEach(location.shoppingItems) { item in
+//						// display a single row here for 'item'
+//						NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
+//							SelectableShoppingItemRowView(item: item,
+//																						selected: itemsChecked.contains(item),
+//																						respondToTapOnSelector: handleItemTapped)
+//									.contextMenu {
+//										shoppingItemContextMenu(item: item, deletionTrigger: {
+//																							itemToDelete = item
+//																							isConfirmationAlertShowing = true
+//										})
+//								} // end of contextMenu
+//						} // end of NavigationLink
+//					} // end of ForEach
+//				} // end of Section
+//			} // end of ForEach
+//		}  // end of List
+//	}
+//
+//	func locationsAssociated(with items: FetchedResults<ShoppingItem>) -> [Location] {
+//		// get all the locations associated with our items
+//		let allLocations = items.map({ $0.location! })
+//		// then turn these into a Set (which causes all duplicates to be removed)
+//		// and sort by visitationOrder (which gives an array)
+//		return Set(allLocations).sorted(by: <)
+//	}
+//
+//	func handleItemTapped(_ item: ShoppingItem) {
+//		if !itemsChecked.contains(item) {
+//			itemsChecked.append(item)
+//			DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+//				item.toggleOnListStatus()
+//				itemsChecked.removeAll(where: { $0 == item })
+//			}
+//		}
+//	}
+//
+//}
+
+// MARK: - Shopping List Display
+
+// this shows itemsToBePurchased as either a single section or as multiple
+// sections, one section for each Location.  it uses a somewhat complicated
+// Form/ForEach/Section/ForEach construct to draw out the list.  each item
+// has a NavigationLink and a contextMenu on it.
+
+struct shoppingListView: View {
 	
-	@ObservedObject var viewModel: ShoppingListViewModel
-	@Binding var isDeleteItemAlertShowing: Bool
+	// all items on the shopping list
+	var itemsToBePurchased: FetchedResults<ShoppingItem>
+	// display format: one big section, or sectioned by Location
+	var multiSectionDisplay: Bool
+	// hooks back to the ShoppingListTabView enclosing view to
+	// support deletion from a context menu
+	@Binding var isConfirmationAlertShowing: Bool
 	@Binding var itemToDelete: ShoppingItem?
 	
 	// this is a temporary holding array for items being moved to the other list
 	// this is how we tell whether an item is currently in the process of being "checked"
 	@State private var itemsChecked = [ShoppingItem]()
 	
-	var body: some View {
-		
-		Form {
-			// one main section, showing all items
-			Section(header: Text("Items Remaining: \(viewModel.itemCount)").textCase(.none)) {
-				ForEach(viewModel.items) { item in
-					// display a single row here for 'item'
-					NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
-						SelectableShoppingItemRowView(item: item, viewModel: viewModel,
-												selected: itemsChecked.contains(item),
-												respondToTapOnSelector: handleItemTapped)
-							.contextMenu {
-								shoppingItemContextMenu(item: item, deletionTrigger: {
-																					itemToDelete = item
-																					isDeleteItemAlertShowing = true
-																				})
-							} // end of contextMenu
-					} // end of NavigationLink
-				} // end of ForEach
-			} // end of Section
-		}  // end of Form
-		//.listStyle(PlainListStyle())
-		
+	// the notion of this struct is that we use it to tell us what to draw for a single
+	// section: its title and the items in the section
+	struct SectionData: Identifiable {
+		let id = UUID() // <-- very suspicious, possibly causes excess drawing
+		let title: String
+		let items: [ShoppingItem]
 	}
-	
-	func handleItemTapped(_ item: ShoppingItem) {
-		// add this item to the temporary holding array for items being
-		// moved to the other list, and queue
-		if !itemsChecked.contains(item) {
-			itemsChecked.append(item)
-			DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-				item.toggleOnListStatus()
-				itemsChecked.removeAll(where: { $0 == item })
-			}
-		}
-	}
-
-}
-
-// this is the inner section of a multi section list, which is a much more
-// complicated List/ForEach/Section/ForEach construct to break the sections
-// by the locations which have items on the shopping list.  as in the single section
-// version, each item has a NavigationLink and a contextMenu on it
-
-struct MultiSectionShoppingListView: View {
-	
-	@ObservedObject var viewModel: ShoppingListViewModel
-	@Binding var isDeleteItemAlertShowing: Bool
-	@Binding var itemToDelete: ShoppingItem?
-	
-	@State private var itemsChecked = [ShoppingItem]()
-
+		
 	var body: some View {
 		Form {
-			ForEach(viewModel.locationsForItems()) { location in
-				Section(header: Text(location.name!).textCase(.none)) {
+			ForEach(sectionData(multiSectionDisplay: multiSectionDisplay)) { section in
+				Section(header: Text(section.title).textCase(.none)) {
 					// display items in this location
-					ForEach(viewModel.items(at: location)) { item in
+					ForEach(section.items) { item in
 						// display a single row here for 'item'
 						NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
-							SelectableShoppingItemRowView(item: item, viewModel: viewModel,
-													selected: itemsChecked.contains(item),
-													respondToTapOnSelector: handleItemTapped)
-									.contextMenu {
-										shoppingItemContextMenu(item: item, deletionTrigger: {
-																							itemToDelete = item
-																							isDeleteItemAlertShowing = true
-										})
+							SelectableShoppingItemRowView(item: item,
+																						selected: itemsChecked.contains(item),
+																						respondToTapOnSelector: handleItemTapped)
+								.contextMenu {
+									shoppingItemContextMenu(item: item, deletionTrigger: {
+										itemToDelete = item
+										isConfirmationAlertShowing = true
+									})
 								} // end of contextMenu
 						} // end of NavigationLink
 					} // end of ForEach
 				} // end of Section
 			} // end of ForEach
-		}  // end of List
+		}  // end of Form
+	} // end of body: some View
+	
+	// the idea of this function is to break out the itemsToBePurchased by section,
+	// according to whether the list is displayed as a single section or in multiple
+	// sections (one for each Location that contains shopping items on the list)
+	func sectionData(multiSectionDisplay: Bool) -> [SectionData] {
+		
+		// the easy case first: one section with a title and all the items.
+		if !multiSectionDisplay {
+			return [SectionData(title: "Items Remaining: \(itemsToBePurchased.count)",
+													items: itemsToBePurchased.sorted(by: { $0.visitationOrder < $1.visitationOrder }))
+			]
+		}
+		
+		// for a multi-section list, break out all the items into a dictionary
+		// with Locations as the keys.
+		let dict = Dictionary(grouping: itemsToBePurchased.compactMap({$0}), by: { $0.location! })
+		// now assemble the data by location visitationOrder
+		var completedSectionData = [SectionData]()
+		for key in dict.keys.sorted() {
+			completedSectionData.append(SectionData(title: key.name!, items: dict[key]!))
+		}
+		return completedSectionData
 	}
+	
+//	func locationsAssociated(with items: FetchedResults<ShoppingItem>) -> [Location] {
+//		// get all the locations associated with our items
+//		let allLocations = items.map({ $0.location! })
+//		// then turn these into a Set (which causes all duplicates to be removed)
+//		// and sort by visitationOrder (which gives an array)
+//		return Set(allLocations).sorted(by: <)
+//	}
 	
 	func handleItemTapped(_ item: ShoppingItem) {
 		if !itemsChecked.contains(item) {
 			itemsChecked.append(item)
-			DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
 				item.toggleOnListStatus()
 				itemsChecked.removeAll(where: { $0 == item })
 			}
 		}
 	}
-
+	
 }
-

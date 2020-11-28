@@ -31,15 +31,33 @@ extension ShoppingItem {
 		set { nameOpt = newValue }
 	}
 	
+// MARK: - Computed Properties
+	
+	var visitationOrder: Int { Int(location!.visitationOrder) }
+	
 	// MARK: - Useful Fetch Requests
 	
-	class func allShoppingItems(at location: Location) -> NSFetchRequest<ShoppingItem> {
+	class func fetchAllItems(at location: Location) -> NSFetchRequest<ShoppingItem> {
 		let request: NSFetchRequest<ShoppingItem> = ShoppingItem.fetchRequest()
 		request.sortDescriptors = [NSSortDescriptor(key: "nameOpt", ascending: true)]
 		request.predicate = NSPredicate(format: "location == %@", location)
 		return request
 	}
 	
+	class func fetchAllItems(onList: Bool) -> NSFetchRequest<ShoppingItem> {
+		let request: NSFetchRequest<ShoppingItem> = ShoppingItem.fetchRequest()
+		request.predicate = NSPredicate(format: "onList == %d", onList)
+		if onList { // today's shopping list: by Location order, then alphabetically
+			request.sortDescriptors = [
+				NSSortDescriptor(keyPath: \ShoppingItem.nameOpt, ascending: true),
+				NSSortDescriptor(keyPath: \ShoppingItem.location?.visitationOrder, ascending: true)
+			]
+		} else { // purchased items list: alphabetically
+			request.sortDescriptors = [NSSortDescriptor(key: "nameOpt", ascending: true)]
+		}
+		return request
+	}
+
 	// MARK: - Class functions for CRUD operations
 	
 	// this whole bunch of static functions lets me do a simple fetch and
@@ -69,6 +87,21 @@ extension ShoppingItem {
 		}
 		catch let error as NSError {
 			print("Error getting ShoppingItems: \(error.localizedDescription), \(error.userInfo)")
+		}
+		return [ShoppingItem]()
+	}
+	
+	static func purchasedItemsFetchRequest() -> [ShoppingItem] {
+		let context = PersistentStore.shared.context
+		let fetchRequest: NSFetchRequest<ShoppingItem> = ShoppingItem.fetchRequest()
+		fetchRequest.sortDescriptors = [NSSortDescriptor(key: "nameOpt", ascending: true)]
+		fetchRequest.predicate = NSPredicate(format: "onList == %d", false, Calendar.current.startOfDay(for: Date()) as CVarArg)
+		do {
+			let items = try context.fetch(fetchRequest)
+			return items
+		}
+		catch let error as NSError {
+			print("Error getting items purchased today : \(error.localizedDescription), \(error.userInfo)")
 		}
 		return [ShoppingItem]()
 	}

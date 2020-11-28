@@ -16,6 +16,10 @@ import SwiftUI
 
 struct PurchasedTabView: View {
 	
+	// this is the @FetchRequest that ties this view to CoreData
+	@FetchRequest(fetchRequest: ShoppingItem.fetchAllItems(onList: false))
+	private var purchasedItems: FetchedResults<ShoppingItem>
+	
 	// the usual @State variables to handle the Search field and control
 	// the action of the confirmation alert that you really do want to
 	// delete an item
@@ -23,8 +27,7 @@ struct PurchasedTabView: View {
 	@State private var isDeleteItemAlertShowing: Bool = false
 	@State private var itemToDelete: ShoppingItem?
 	@State private var isAddNewItemSheetShowing = false
-	@StateObject var viewModel = ShoppingListViewModel(type: .purchasedItemShoppingList)
-	
+
 	@State private var itemsChecked = [ShoppingItem]()
 	
 	
@@ -46,7 +49,7 @@ struct PurchasedTabView: View {
 					}
 				}
 				
-				if viewModel.itemCount == 0 {
+				if purchasedItems.count == 0 {
 					EmptyListView(listName: "Purchased")
 				} else {
 					
@@ -55,27 +58,25 @@ struct PurchasedTabView: View {
 					Form {
 						
 						// 1. Items purchased today
-						if viewModel.itemsPurchasedTodayCount(containing: searchText) > 0 {
-							Section(header: Text("Items Purchased Today: \(viewModel.itemsPurchasedTodayCount(containing: searchText))").textCase(.none)) {
-								ForEach(viewModel.itemsForToday(containing: searchText)) { item in
-									NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
-										SelectableShoppingItemRowView(item: item, viewModel: viewModel, selected: itemsChecked.contains(item), respondToTapOnSelector: handleItemTapped)
-												.contextMenu {
-													shoppingItemContextMenu(item: item, deletionTrigger: {
-																										itemToDelete = item
-																										isDeleteItemAlertShowing = true
-																									})
-												} // end of contextMenu
-										} // end of NavigationLink
-								} // end of ForEach
-							} // end of Section
-						}
+						Section(header: Text(todaySectionTitle()).textCase(.none)) {
+							ForEach(purchasedItems.filter({ qualifiedItem($0, today: true) })) { item in
+								NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
+									SelectableShoppingItemRowView(item: item, selected: itemsChecked.contains(item), respondToTapOnSelector: handleItemTapped)
+										.contextMenu {
+											shoppingItemContextMenu(item: item, deletionTrigger: {
+												itemToDelete = item
+												isDeleteItemAlertShowing = true
+											})
+										} // end of contextMenu
+								} // end of NavigationLink
+							} // end of ForEach
+						} // end of Section
 						
 						// 2. all items purchased earlier
-						Section(header: Text("Items Purchased Before Today: \(viewModel.itemsPurchasedEarlierCount(containing: searchText))").textCase(.none)) {
-							ForEach(viewModel.itemsEarlierThanToday(containing: searchText)) { item in
+						Section(header: Text(otherPurchasesSectionTitle()).textCase(.none)) {
+							ForEach(purchasedItems.filter({ qualifiedItem($0, today: false) })) { item in
 								NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
-									SelectableShoppingItemRowView(item: item, viewModel: viewModel, selected: itemsChecked.contains(item), respondToTapOnSelector: handleItemTapped)
+									SelectableShoppingItemRowView(item: item, selected: itemsChecked.contains(item), respondToTapOnSelector: handleItemTapped)
 										.contextMenu {
 											shoppingItemContextMenu(item: item,
 																							deletionTrigger: {
@@ -100,17 +101,42 @@ struct PurchasedTabView: View {
 			} // end of VStack
 			.navigationBarTitle("Purchased List")
 			.toolbar { toolbarButton() }
-			//					)
 			
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())
 		.onAppear {
 			print("PurchasedTabView appear")
-			searchText = ""
-			viewModel.loadItems()
+			searchText = ""			//viewModel.loadItems()
 		}
 		.onDisappear { print("PurchasedTabView disappear") }
 	}
+	
+	func qualifiedItem(_ item: ShoppingItem, today: Bool) -> Bool {
+		var qualified = searchText.appearsIn(item.name)
+		if qualified && today {
+			qualified = item.dateLastPurchased >= Calendar.current.startOfDay(for: Date())
+		} else {
+			qualified = item.dateLastPurchased < Calendar.current.startOfDay(for: Date())
+		}
+		return qualified
+	}
+	
+	func todaySectionTitle() -> String {
+		let count = purchasedItems.filter({ qualifiedItem($0, today: true) }).count
+		if searchText.isEmpty {
+		 return "Items Purchased Today: \(count)"
+		}
+		return "Items Purchased Today containing \"\(searchText)\": \(count)"
+	}
+	
+	func otherPurchasesSectionTitle() -> String {
+		let count = purchasedItems.filter({ qualifiedItem($0, today: false) }).count
+		if searchText.isEmpty {
+			return "Items Purchased Earlier: \(count)"
+		}
+		return "Items Purchased Earlier containing \"\(searchText)\": \(count)"
+	}
+
 	
 	func toolbarButton() -> some View {
 		Button(action: { isAddNewItemSheetShowing = true }) {
