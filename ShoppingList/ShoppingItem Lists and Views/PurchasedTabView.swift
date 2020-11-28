@@ -61,7 +61,7 @@ struct PurchasedTabView: View {
 						Section(header: Text(todaySectionTitle()).textCase(.none)) {
 							ForEach(purchasedItems.filter({ qualifiedItem($0, today: true) })) { item in
 								NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
-									SelectableShoppingItemRowView(item: item, selected: itemsChecked.contains(item), respondToTapOnSelector: handleItemTapped)
+									SelectableItemRowView(item: item, selected: itemsChecked.contains(item), respondToTapOnSelector: handleItemTapped)
 										.contextMenu {
 											shoppingItemContextMenu(item: item, deletionTrigger: {
 												itemToDelete = item
@@ -76,7 +76,7 @@ struct PurchasedTabView: View {
 						Section(header: Text(otherPurchasesSectionTitle()).textCase(.none)) {
 							ForEach(purchasedItems.filter({ qualifiedItem($0, today: false) })) { item in
 								NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
-									SelectableShoppingItemRowView(item: item, selected: itemsChecked.contains(item), respondToTapOnSelector: handleItemTapped)
+									SelectableItemRowView(item: item, selected: itemsChecked.contains(item), respondToTapOnSelector: handleItemTapped)
 										.contextMenu {
 											shoppingItemContextMenu(item: item,
 																							deletionTrigger: {

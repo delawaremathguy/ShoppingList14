@@ -321,7 +321,7 @@ struct shoppingListView: View {
 					ForEach(section.items) { item in
 						// display a single row here for 'item'
 						NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
-							SelectableShoppingItemRowView(item: item,
+							SelectableItemRowView(item: item,
 																						selected: itemsChecked.contains(item),
 																						respondToTapOnSelector: handleItemTapped)
 								.contextMenu {
