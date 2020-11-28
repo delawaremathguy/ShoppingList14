@@ -12,12 +12,8 @@ import UIKit
 
 extension ShoppingItem {
 	
-	// MARK: - Convenience Properties
-	
-	// the color associated with a ShoppingItem is the same as that of its location's color
-	var backgroundColor: UIColor {
-		return location?.uiColor() ?? UIColor(displayP3Red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
-	}
+	// MARK: - Computed Properties
+
 	
 	// the date last purchased.  this fronts a Core Data optional attribute
 	var dateLastPurchased: Date {
@@ -31,9 +27,16 @@ extension ShoppingItem {
 		set { nameOpt = newValue }
 	}
 	
-// MARK: - Computed Properties
+	// the visitation order (of its associated location)
+	var visitationOrder: Int { Int(location?.visitationOrder ?? 0) }
 	
-	var visitationOrder: Int { Int(location!.visitationOrder) }
+	// the name of its associated location
+	var locationName: String { location?.name ?? "Not Available" }
+	
+	// the color = the color of its associated location
+	var backgroundColor: UIColor {
+		location?.uiColor() ?? UIColor(displayP3Red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
+	}
 	
 	// MARK: - Useful Fetch Requests
 	
@@ -47,14 +50,7 @@ extension ShoppingItem {
 	class func fetchAllItems(onList: Bool) -> NSFetchRequest<ShoppingItem> {
 		let request: NSFetchRequest<ShoppingItem> = ShoppingItem.fetchRequest()
 		request.predicate = NSPredicate(format: "onList == %d", onList)
-		if onList { // today's shopping list: by Location order, then alphabetically
-			request.sortDescriptors = [
-				NSSortDescriptor(keyPath: \ShoppingItem.nameOpt, ascending: true),
-				NSSortDescriptor(keyPath: \ShoppingItem.location?.visitationOrder, ascending: true)
-			]
-		} else { // purchased items list: alphabetically
-			request.sortDescriptors = [NSSortDescriptor(key: "nameOpt", ascending: true)]
-		}
+		request.sortDescriptors = [NSSortDescriptor(key: "nameOpt", ascending: true)]
 		return request
 	}
 

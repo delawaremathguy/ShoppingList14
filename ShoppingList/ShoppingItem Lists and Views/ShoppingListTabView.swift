@@ -173,121 +173,12 @@ or multi-section shopping list view.
 
 } // end of ShoppingListTabView
 
-// MARK: - Single Section Display
-
-//// this shows itemsToBePurchased as a single section.  it has a simple structure
-//// of Form/Section/ForEach.  each item has a NavigationLink and a contextMenu on it
-//struct SingleSectionShoppingListView: View {
-//
-//	var itemsToBePurchased: FetchedResults<ShoppingItem>
-//	@Binding var isConfirmationAlertShowing: Bool
-//	@Binding var itemToDelete: ShoppingItem?
-//
-//	// this is a temporary holding array for items being moved to the other list
-//	// this is how we tell whether an item is currently in the process of being "checked"
-//	@State private var itemsChecked = [ShoppingItem]()
-//
-//	var body: some View {
-//
-//		Form {
-//			// one main section, showing all items
-//			Section(header: Text("Items Remaining: \(itemsToBePurchased.count)").textCase(.none)) {
-//				ForEach(itemsToBePurchased) { item in
-//					// display a single row here for 'item'
-//					NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
-//						SelectableShoppingItemRowView(item: item,
-//												selected: itemsChecked.contains(item),
-//												respondToTapOnSelector: handleItemTapped)
-//							.contextMenu {
-//								shoppingItemContextMenu(item: item, deletionTrigger: {
-//																					itemToDelete = item
-//																					isConfirmationAlertShowing = true
-//																				})
-//							} // end of contextMenu
-//					} // end of NavigationLink
-//				} // end of ForEach
-//			} // end of Section
-//		}  // end of Form
-//	}
-//
-//	func handleItemTapped(_ item: ShoppingItem) {
-//		// add this item to the temporary holding array for items being
-//		// moved to the other list, and queue the actual after a slight delay
-//		if !itemsChecked.contains(item) {
-//			itemsChecked.append(item)
-//			DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-//				item.toggleOnListStatus()
-//				itemsChecked.removeAll(where: { $0 == item })
-//			}
-//		}
-//	}
-//
-//}
-
-// MARK: - Multi-Section Display
-
-//// this shows itemsToBePurchased as a multi-section list.  it has a much more
-//// complicated Form/ForEach/Section/ForEach construct to break the sections
-//// by the locations for which we have items on the shopping list.  as in the single section
-//// version, each item has a NavigationLink and a contextMenu on it
-//
-//struct MultiSectionShoppingListView: View {
-//
-//	var itemsToBePurchased: FetchedResults<ShoppingItem>
-//	@Binding var isConfirmationAlertShowing: Bool
-//	@Binding var itemToDelete: ShoppingItem?
-//
-//	@State private var itemsChecked = [ShoppingItem]()
-//
-//	var body: some View {
-//		Form {
-//			ForEach(locationsAssociated(with: itemsToBePurchased)) { location in
-//				Section(header: Text(location.name!).textCase(.none)) {
-//					// display items in this location
-//					ForEach(location.shoppingItems) { item in
-//						// display a single row here for 'item'
-//						NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
-//							SelectableShoppingItemRowView(item: item,
-//																						selected: itemsChecked.contains(item),
-//																						respondToTapOnSelector: handleItemTapped)
-//									.contextMenu {
-//										shoppingItemContextMenu(item: item, deletionTrigger: {
-//																							itemToDelete = item
-//																							isConfirmationAlertShowing = true
-//										})
-//								} // end of contextMenu
-//						} // end of NavigationLink
-//					} // end of ForEach
-//				} // end of Section
-//			} // end of ForEach
-//		}  // end of List
-//	}
-//
-//	func locationsAssociated(with items: FetchedResults<ShoppingItem>) -> [Location] {
-//		// get all the locations associated with our items
-//		let allLocations = items.map({ $0.location! })
-//		// then turn these into a Set (which causes all duplicates to be removed)
-//		// and sort by visitationOrder (which gives an array)
-//		return Set(allLocations).sorted(by: <)
-//	}
-//
-//	func handleItemTapped(_ item: ShoppingItem) {
-//		if !itemsChecked.contains(item) {
-//			itemsChecked.append(item)
-//			DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-//				item.toggleOnListStatus()
-//				itemsChecked.removeAll(where: { $0 == item })
-//			}
-//		}
-//	}
-//
-//}
-
 // MARK: - Shopping List Display
 
 // this shows itemsToBePurchased as either a single section or as multiple
 // sections, one section for each Location.  it uses a somewhat complicated
-// Form/ForEach/Section/ForEach construct to draw out the list.  each item
+// Form/ForEach/Section/ForEach construct to draw out the list and requires
+// some preliminary work to perform the sectioning.  each item that appears
 // has a NavigationLink and a contextMenu on it.
 
 struct shoppingListView: View {

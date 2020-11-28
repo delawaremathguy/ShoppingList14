@@ -132,14 +132,11 @@ struct AddorModifyShoppingItemView: View {
 		}
 	}
 	
-	// called when you tap the Save button.  we dismiss() and then tell the ShoppingItem
-	// class to make the update fo us, with a slight delay.  see comment below on deleteItem.
+	// called when you tap the Save button.
 	func commitDataEntry() {
 		guard editableData.canBeSaved else { return }
 		presentationMode.wrappedValue.dismiss()
-		DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-			ShoppingItem.update(using: editableData)
-		}
+		ShoppingItem.update(using: editableData)
 	}
 	
 	// called after confirmation to delete an item.
