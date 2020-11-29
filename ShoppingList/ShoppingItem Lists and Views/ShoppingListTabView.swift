@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ShoppingListTabView: View {
 	
-	// this is the @FetchRequest that ties this view to CoreData ShoppingItems
+	// this is the @FetchRequest that ties this view to CoreData Items
 	@FetchRequest(fetchRequest: Item.fetchAllItems(onList: true))
 	private var itemsToBePurchased: FetchedResults<Item>
 
@@ -34,7 +34,7 @@ struct ShoppingListTabView: View {
 				
 /* ---------
 1. add new item "button" is at top.  note that this will put up the
-AddorModifyShoppingItemView inside its own NavigationView (so the Picker will work!)
+AddorModifyItemView inside its own NavigationView (so the Picker will work!)
 ----------*/
 				
 				Button(action: { isAddNewItemSheetShowing = true }) {
@@ -43,7 +43,7 @@ AddorModifyShoppingItemView inside its own NavigationView (so the Picker will wo
 						.padding(10)
 				}
 				.sheet(isPresented: $isAddNewItemSheetShowing) {
-					NavigationView { AddorModifyShoppingItemView(addItemToShoppingList: true) }
+					NavigationView { AddorModifyItemView(addItemToShoppingList: true) }
 				}
 				
 /* ---------
@@ -209,12 +209,12 @@ struct shoppingListView: View {
 					// display items in this location
 					ForEach(section.items) { item in
 						// display a single row here for 'item'
-						NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
+						NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
 							SelectableItemRowView(item: item, selected: itemsChecked.contains(item),
 																		sfSymbolName: "purchased",
 																		respondToTapOnSelector:  { handleItemTapped(item) })
 								.contextMenu {
-									shoppingItemContextMenu(item: item, deletionTrigger: {
+									itemContextMenu(item: item, deletionTrigger: {
 										itemToDelete = item
 										isConfirmationAlertShowing = true
 									})

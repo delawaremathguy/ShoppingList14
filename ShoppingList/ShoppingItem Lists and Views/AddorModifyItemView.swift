@@ -1,5 +1,5 @@
 //
-//  ModifyShoppingItemView.swift
+//  AddorModifyItemView.swift
 //  ShoppingList
 //
 //  Created by Jerry on 5/3/20.
@@ -8,13 +8,13 @@
 
 import SwiftUI
 
-struct AddorModifyShoppingItemView: View {
+struct AddorModifyItemView: View {
 	// we use this so we can dismiss ourself (sometimes we're in a Sheet, sometimes
 	// in a NavigationLink)
 	@Environment(\.presentationMode) var presentationMode
 
-	// editableItem is either a ShoppingItem to edit, or nil to signify
-	// that we're creating a new ShoppingItem in this View.
+	// editableItem is either an Item to edit, or nil to signify
+	// that we're creating a new Item in this View.
 	var editableItem: Item? = nil
 		
 	// addItemToShoppingList just means that by default, a new item will be added to
@@ -23,10 +23,10 @@ struct AddorModifyShoppingItemView: View {
 	// this will be set to false. the user can override here if they wish.
 	var addItemToShoppingList: Bool = true
 	
-	// this editableData stuct contains all of the fields of a ShoppingItem that
-	// can be edited here, so that we're not doing a "live edit" on the ShoppingItem
+	// this editableData stuct contains all of the fields of an Item that
+	// can be edited here, so that we're not doing a "live edit" on the Item
 	// it  this will be defaulted properly in .onAppear()
-	@State var editableData = EditableShoppingItemData()
+	@State var editableData = EditableItemData()
 
 	// this indicates whether the editableData has been initialized from an incoming
 	// editableItem and it will be flipped to true once .onAppear() has been called
@@ -34,7 +34,7 @@ struct AddorModifyShoppingItemView: View {
 	@State private var editableDataInitialized = false
 	
 	// showDeleteConfirmation controls whether a Delete This Shopping Item button appear
-	// to confirm deletion of a ShoppingItem
+	// to confirm deletion of an Item
 	@State private var showDeleteConfirmation: Bool = false
 	
 	// we need all locations so we can populate the Picker
@@ -112,11 +112,11 @@ struct AddorModifyShoppingItemView: View {
 		// local state editable data that control this view
 		if !editableDataInitialized {
 			if let item = editableItem {
-				editableData = EditableShoppingItemData(shoppingItem: item)
+				editableData = EditableItemData(item: item)
 			} else {
 				// just be sure the default data is tweaked to place a new item on
 				// the right list by default, depending on how this view was created
-				editableData = EditableShoppingItemData(onList: addItemToShoppingList)
+				editableData = EditableItemData(onList: addItemToShoppingList)
 			}
 			// and be sure we don't do this again (!)
 			editableDataInitialized = true

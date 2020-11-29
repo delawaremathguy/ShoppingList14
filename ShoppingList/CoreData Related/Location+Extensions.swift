@@ -137,7 +137,7 @@ extension Location: Comparable {
 		// we only keep one "UnknownLocation" in the data store.  you can
 		// find it because its visitationOrder is the largest 32-bit integer.
 		// return nil if no such thing exists, which means that the data store
-		// is empty (since all ShoppingItems have an assigned Location).
+		// is empty (since all Items have an assigned Location).
 		let fetchRequest: NSFetchRequest<Location> = Location.fetchRequest()
 		fetchRequest.predicate = NSPredicate(format: "visitationOrder_ == %d", kUnknownLocationVisitationOrder)
 		do {

@@ -143,7 +143,7 @@ struct SimpleItemsList: View {
 	var body: some View {
 		Section(header: Text("At this Location: \(items.count) items").textCase(.none)) {
 			ForEach(items) { item in
-				NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
+				NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
 					Text(item.name)
 				}
 			}

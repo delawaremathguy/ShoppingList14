@@ -1,5 +1,5 @@
 //
-//  ShoppingItemJSON.swift
+//  ItemCodable.swift
 //  ShoppingList
 //
 //  Created by Jerry on 5/10/20.
@@ -8,10 +8,10 @@
 
 import Foundation
 
-// this is a simple struct to extract only the fields of a ShoppingItem
+// this is a simple struct to extract only the fields of an Item
 // that we would import or export in such a way that the result is Codable
 // there's some assumption here that location names are unique, because by representing
-// a ShoppingItem in JSON, we're asking that the item can be later hooked back up
+// an Item in JSON, we're asking that the item can be later hooked back up
 // to its Location
 struct ItemCodable: Codable {
 	var name: String

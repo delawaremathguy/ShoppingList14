@@ -36,7 +36,7 @@ struct PurchasedTabView: View {
 			VStack(spacing: 0) {
 				SearchBarView(text: $searchText)
 				
-				// 1. add new item "button" is at top.  note that this will put up the AddorModifyShoppingItemView
+				// 1. add new item "button" is at top.  note that this will put up the AddorModifyItemView
 				// inside its own NavigationView (so the Picker will work!)
 				Button(action: { isAddNewItemSheetShowing = true }) {
 					Text("Add New Item")
@@ -45,7 +45,7 @@ struct PurchasedTabView: View {
 				}
 				.sheet(isPresented: $isAddNewItemSheetShowing) {
 					NavigationView {
-						AddorModifyShoppingItemView(addItemToShoppingList: false)
+						AddorModifyItemView(addItemToShoppingList: false)
 					}
 				}
 				
@@ -60,12 +60,12 @@ struct PurchasedTabView: View {
 						// 1. Items purchased today
 						Section(header: Text(todaySectionTitle()).textCase(.none)) {
 							ForEach(purchasedItems.filter({ qualifiedItem($0, today: true) })) { item in
-								NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
+								NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
 									SelectableItemRowView(item: item, selected: itemsChecked.contains(item),
 																				sfSymbolName: "cart",
 																				respondToTapOnSelector: { handleItemTapped(item) })
 										.contextMenu {
-											shoppingItemContextMenu(item: item, deletionTrigger: {
+											itemContextMenu(item: item, deletionTrigger: {
 												itemToDelete = item
 												isDeleteItemAlertShowing = true
 											})
@@ -77,12 +77,12 @@ struct PurchasedTabView: View {
 						// 2. all items purchased earlier
 						Section(header: Text(otherPurchasesSectionTitle()).textCase(.none)) {
 							ForEach(purchasedItems.filter({ qualifiedItem($0, today: false) })) { item in
-								NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
+								NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
 									SelectableItemRowView(item: item, selected: itemsChecked.contains(item),
 																				sfSymbolName: "cart",
 																				respondToTapOnSelector: { handleItemTapped(item) })
 										.contextMenu {
-											shoppingItemContextMenu(item: item,
+											itemContextMenu(item: item,
 																							deletionTrigger: {
 																								itemToDelete = item
 																								isDeleteItemAlertShowing = true

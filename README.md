@@ -7,7 +7,7 @@ This is a simple, iOS app to process a shopping list that you can take to the gr
 Feel free to use this as is, to develop further,  to completely ignore, or even just to inspect and then send me a note to tell me I am doing this all wrong.  
 
 
-## First Public Update for iOS 14: November, 2020
+## First Public Update for iOS 14: December, 2020
 
 
 Now that XCode 12 has finally stabilized, I feel it safe to make some refinements and possibly use features of iOS 14 in this project.  This repository has been put together using XCode 12.3 beta and is intended to run under iOS 14.2 
@@ -40,9 +40,9 @@ The shopping list is sorted by the visitation order of the location in which it 
 
 The third tab shows a list of all locations, listed in visitationOrder (an integer from 1...100).  One special Location is the "Unknown Location," which serves as the default location for all new items.  I use this special location to mean that "I don't really know where this item is yet, but I'll figure it out at the store." In programming terms, this location has the highest of all visitationOrder values, so that it comes last in the list of Locations, and shopping items with this unassigned/unknown location will come at the bottom of the shopping list. 
 
-Tapping on a Location in the list lets you edit location information, including reassigning the visitation order, change its color, or delete it.  (Individually adjusting RGB and Alpha may not the best UI in this app, but it will have to do for now.  Also, using color to distinguish different Locations may not even be a good UI, since a significant portion of users either cannot distinguish color or cannot choose visually compatible colors very well.)  You will also see a list of the ShoppingItems that are associated with this Location. A long press on a location (other than the "unknown location") will allow you to delete the location directly.
+Tapping on a Location in the list lets you edit location information, including reassigning the visitation order, change its color, or delete it.  (Individually adjusting RGB and Alpha may not the best UI in this app, but it will have to do for now.  Also, using color to distinguish different Locations may not even be a good UI, since a significant portion of users either cannot distinguish color or cannot choose visually compatible colors very well.)  You will also see a list of the Items that are associated with this Location. A long press on a location (other than the "unknown location") will allow you to delete the location directly.
 
-* What happens to ShoppingItems in a Location when the Location is deleted?  The ShoppingItems are not deleted, but are moved to the Unknown Location.
+* What happens to Items in a Location when the Location is deleted?  The Items are not deleted, but are moved to the Unknown Location.
 
 The fourth tab is an in-store timer, with three simple button controls: "Start," "Stop," and "Reset."  This timer can be (optionally) paused when the app goes inactive (e.g., if you get a phone call while you're shopping), although the default is to *not* pause it when going inactive. (*See Development.swift to change this behaviour*.)
 
@@ -57,27 +57,27 @@ So,
 
 ## What's New in ShoppingList14
 
-Things have changed [since the previous release of this project](https://github.com/delawaremathguy/ShoppingList) for XCode 11 that was titled, simply, **ShoppingList**.  Although this project is called "ShoppingList14," it carries the same name and signature as the previous project, but is now "version 2.0"; and despite some changes to the Core Data model, *should* properly migrate data from the earlier project to the new model of this project -- however, I *cannot guarantee this, based on my own experience, but it may be due to using the new App structure and/or issues in XCode*.
-
+Things have changed [since the previous release of this project](https://github.com/delawaremathguy/ShoppingList) for XCode 11 that was titled, simply, **ShoppingList**.  Although this project is called "ShoppingList14," it carries the same name and signature as the previous project, but is now "version 2.0". 
 Here are some of those code-level changes:
 
+* There have been some changes to the Core Data model for which i have versioned the model. Although I *hope* previous CD models will migrate data from earlier models, I *cannot guarantee this, based on my own experience*.  It may be that i lost data during migration on my own device either due to using the new App structure, or issues that remain in XCode.
 * The AppDelegate-SceneDelegate application structure has been replaced by the simplified App-Scene-WindowGroup structure introduced for XCode 12/iOS 14.
 * The three primary tabs (Shopping List, Purchased, and Locations) now use a Form presentation, rather than a List presentation.
-* Each ShoppingItem now has a "dateLastPurchased" property which is reset to "today" whenever you move an item off the shopping list.
+* Each Item now has a "dateLastPurchased" property which is reset to "today" whenever you move an item off the shopping list.
 * The Purchased items tab now presents shopping items that were "purchased today" in its first section (which may be empty) and everything else in a second section.  This makes it easy to review the list of today's purchases, possibly to quickly locate any item that you may have accidentally tapped off the Shopping List so you can put it back on the list.
 * A ColorPicker has be added to the view that modifies a Location, replacing the four individual sliders that adjusted the location's color.
 * Many code changes have been made or simplified and comments throughout the code have been updated. 
 
 The basic architecture of the app has also been simplified.  What started out initially as a few views with simple @FetchRequests first morphed into more of a strict MVVM-style architecture using view models that completely avoided using @FetchRequest (*simple Core Data deletions and @FetchRequest don't play nicely together*).  Well, it has now morphed into ... wait for it ... an app having a few views with simple @FetchRequests (*because I have now discovered one special aspect of Core Data that makes @FetchRequest work with Core Data deletions*).  This is shocking!
 
-* Views can effect changes to ShoppingItems and Locations by uisng functions directly ("user intents"), which then are handled appropriately in the ShoppingItem class, and for which notifications are then posted as to what happened. 
+* Views can effect changes to Items and Locations by uisng functions directly ("user intents"), which then are handled appropriately in the Item class, and for which notifications are then posted as to what happened. 
 * There are no view models.
 
 ### Core Data Notes
 
-The CoreData model has only two entities named `ShoppingItem` and `Location`, with every ShoppingItem having a to-one relationship to a Location (the inverse is to-many).
+The CoreData model has only two entities named `Item` and `Location`, with every Item having a to-one relationship to a Location (the inverse is to-many).
 
-* `ShoppingItem`s have an id (UUID), a name, a quantity, a boolean "onList" that indicates whether the item is on the list for today's shopping exercise, or not on the list (and so available in the purchased list for future promotion to the shopping list), and also an "isAvailable" boolean that provides a greyed-out, italic, strike-through appearance for the item when false (sometimes an item is on the list, but not available today, and I want to remember that when planning the future shopping list).  New to this project is the addition of a dateLastPurchased for a Item. 
+* `Item`s have an id (UUID), a name, a quantity, a boolean "onList" that indicates whether the item is on the list for today's shopping exercise, or not on the list (and so available in the purchased list for future promotion to the shopping list), and also an "isAvailable" boolean that provides a greyed-out, italic, strike-through appearance for the item when false (sometimes an item is on the list, but not available today, and I want to remember that when planning the future shopping list).  New to this project is the addition of a dateLastPurchased for a Item. 
 
 * `Location`s have an id (UUID), a name, a visitationOrder (an integer, as in, go to the dairy first, then the deli, then the canned vegetables, etc), and then values red, green, blue, opacity to define a color that is used to color every item listed in the shopping list. 
 
@@ -87,9 +87,9 @@ The CoreData model has only two entities named `ShoppingItem` and `Location`, wi
 
 This app started out as a few SwiftUI views driven by @FetchRequests, but that eventually ran into trouble when deleting Core Data objects.  Next, I tried to insert a little Combine into the app (e.g., a view driven by a list of Locations would tuen the list into a subscriber to each of the Location in the list), but there were problems with that as well.  
 
-I finally settled on more of an MVVM-style architecture, posting internal notifications through the NotificationCenter that a `ShoppingItem` or a `Location` has either been created, or edited, or is about to be deleted.  View models would react appropriately. (Remember, notifications are essentially a form of using the more general Combine framework.) 
+I finally settled on more of an MVVM-style architecture, posting internal notifications through the NotificationCenter that a `Item` or a `Location` has either been created, or edited, or is about to be deleted.  View models would react appropriately. (Remember, notifications are essentially a form of using the more general Combine framework.) 
 
-A view model (*view models are used only to handle lists of ShoppingItems*) now loads its data only once from Core Data and signs up for appropriate notifications to stay in-sync with Core Data, without additional fetches from Core Data.  A view model can then react accordingly, alerting SwiftUI so that its associated View needs to be updated.  
+A view model (*view models are used only to handle lists of Items*) now loads its data only once from Core Data and signs up for appropriate notifications to stay in-sync with Core Data, without additional fetches from Core Data.  A view model can then react accordingly, alerting SwiftUI so that its associated View needs to be updated.  
 
 This design suits my needs, but may not be necessary for your own projects, for which straightforward use of @FetchRequest might well be sufficient.
 
@@ -107,7 +107,7 @@ Although this is the last, public release of the project, there are many directi
 *  I still get console messages at runtime about tables laying out outside the view hierarchy, and one that's come up recently of "Trying to pop to a missing destination." I see fewer of these messages in XCode 11.7.  When using contextMenus, I get a plenty of "Unable to simultaneously satisfy constraints" messages.  I'm ignoring them for now, and I have already seen fewer or none of these in testing out XCode 12 (through beta 6). 
 
 
-* I have thought about expanding the app and database to support multiple "Stores," each of which has "Locations," and having "ShoppingItems" being many-to-many with Locations so one item can be available in many Stores would be a nice exercise. But I have worked with Core Data several times, and I don't see that I gain anything more in the way of learning about SwiftUI by doing this, so I doubt that I'll pursue this any time soon.
+* I have thought about expanding the app and database to support multiple "Stores," each of which has "Locations," and having "Items" being many-to-many with Locations so one item can be available in many Stores would be a nice exercise. But I have worked with Core Data several times, and I don't see that I gain anything more in the way of learning about SwiftUI by doing this, so I doubt that I'll pursue this any time soon.
 
 * I could add a printing capability, or even a general sharing capability (e.g., email the shopping list to someone else).  I did something like this in another (*UI-Kit based*) project, so it should be easy, right?  (Fact: it is easy; there are several "mail views for SwiftUI" already on Github. [This is one from Mohammad Rahchamani](https://github.com/mohammad-rahchamani/MailView) that I have tested and it works quite easily for any SwiftUI app.)
 

@@ -11,17 +11,17 @@ import Foundation
 // with a timer in this the app, it's a real question of whether the timer should be
 // stopped when you switch to a different app or get a phone call.  so, you decide.
 // in my own case, i would not want to disable the timer if i am on the phone when
-// i am in the store because it's probably part of the "shopping experience" if i
+// i am in the store because it's probably part of the "shopping experience," e.g., if i
 // have to call my wife with a question about which brand of salad dressing to get.
 // this boolean determines this behaviour (so my preference is "false")
-//
-// note: if you don't disable the timer when in the background, what we're really
-// doing is remembering how much time we had accumulated before we go into the
-// background; killing the timer; and when we become active again, we restart a timer
-// setting the startDate of the timer to either the current date, or the date when
-// we were previously stopped.
 
 var kDisableTimerWhenAppIsNotActive = false
+
+// note: if you don't disable the timer when in the background, what we're really
+// doing is remembering how much time we had accumulated before we went into the
+// background; we killed the timer; and when we become active again, we restart a timer,
+// setting the startDate of the timer to either the current date, or the date when
+// we were previously stopped.
 
 class InStoreTimer: ObservableObject {
 	
@@ -49,12 +49,12 @@ class InStoreTimer: ObservableObject {
 		case suspended
 	}
 	
-	// the heart of a timer object is a timer, if one is active
+	// the heart of a timer object is a Timer, if one is active
 	private weak var timer: Timer? = nil
 
 	// these are internals of the timer.  when did it last start; when did it last
-	// shut down; what state is it in; and how much time had it accumulated before
-	// it last started up.
+	// shut down; what state is it in; and how much time it had accumulated before
+	// it last shut down up.
 	private var previouslyAccumulatedTime: TimeInterval = 0
 	private var startDate: Date? = nil
 	private var lastStopDate: Date? = nil
@@ -80,7 +80,7 @@ class InStoreTimer: ObservableObject {
 
 		// remember when we shut down
 		lastStopDate = Date()
-		// throw out the time
+		// throw out the timer
 		timer!.invalidate()
 		timer = nil  // should happen anyway with a weak variable
 	}
@@ -106,7 +106,6 @@ class InStoreTimer: ObservableObject {
 			}
 			// schedule a new timer
 			timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: (#selector(update)), userInfo: nil, repeats: true)
-			RunLoop.current.add(timer!, forMode:RunLoop.Mode.default)
 			state = .running
 		}
 	}

@@ -1,5 +1,5 @@
 //
-//  ShoppingItem+Extensions.swift
+//  Item+Extensions.swift
 //  ShoppingList
 //
 //  Created by Jerry on 4/23/20.
@@ -92,12 +92,12 @@ extension Item {
 			return itemCount
 		}
 		catch let error as NSError {
-			print("Error counting ShoppingItems: \(error.localizedDescription), \(error.userInfo)")
+			print("Error counting items: \(error.localizedDescription), \(error.userInfo)")
 		}
 		return 0
 	}
 
-	static func allShoppingItems() -> [Item] {
+	static func allItems() -> [Item] {
 		let context = PersistentStore.shared.context
 		let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
 		do {
@@ -105,7 +105,7 @@ extension Item {
 			return items
 		}
 		catch let error as NSError {
-			print("Error getting ShoppingItems: \(error.localizedDescription), \(error.userInfo)")
+			print("Error getting items: \(error.localizedDescription), \(error.userInfo)")
 		}
 		return [Item]()
 	}
@@ -134,7 +134,7 @@ extension Item {
 //			return items
 //		}
 //		catch let error as NSError {
-//			print("Error getting ShoppingItems on the list: \(error.localizedDescription), \(error.userInfo)")
+//			print("Error getting Items on the list: \(error.localizedDescription), \(error.userInfo)")
 //		}
 //		return [Item]()
 //	}
@@ -199,7 +199,7 @@ extension Item {
 	}
 
 	
-	func updateValues(from editableData: EditableShoppingItemData) {
+	func updateValues(from editableData: EditableItemData) {
 		name = editableData.name
 		quantity = editableData.quantity
 		onList = editableData.onList
@@ -211,12 +211,12 @@ extension Item {
 		//location?.objectWillChange.send()
 	}
 
-	// updates data for a ShoppingItem that the user has directed from an Add or Modify View.
+	// updates data for an Item that the user has directed from an Add or Modify View.
 	// if the incoming data is not assoicated with an item, we need to create it first
-	static func update(using editableData: EditableShoppingItemData) {
+	static func update(using editableData: EditableItemData) {
 		
-		// if we can find a ShoppingItem with the right id, use it, else create one
-		if let item = allShoppingItems().first(where: { $0.id == editableData.id }) {
+		// if we can find an Item with the right id, use it, else create one
+		if let item = allItems().first(where: { $0.id == editableData.id }) {
 			item.updateValues(from: editableData)
 		} else {
 			let newItem = Item.addNewItem()

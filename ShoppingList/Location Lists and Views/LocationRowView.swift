@@ -8,9 +8,6 @@
 
 import SwiftUI
 
-// DEVELOPMENT COMMENT
-// see the discussion in ShoppingItemRowView.
-
 // this is a struct to transport all the incoming data about a Location that we will display
 struct LocationRowData {
 	var name: String = ""

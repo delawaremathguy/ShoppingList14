@@ -1,5 +1,5 @@
 //
-//  EditableShoppingItemData.swift
+//  EditableItemData.swift
 //  ShoppingList
 //
 //  Created by Jerry on 6/28/20.
@@ -8,15 +8,15 @@
 
 import Foundation
 
-// this gives me a way to collect all the data for a shoppingItem that i might want
+// this gives me a way to collect all the data for an Item that i might want
 // to edit.  it defaults to having values appropriate for a new item upon
 // creation, or can be initialized from a Item.  this is something
 // i can then hand off to an edit view.  at some point, that edit view will
-// want to update a ShoppingItem with this data, so we also provide an extension
-// on ShoppingItem to copy this data back to a Item.
+// want to update an Item with this data, so we also provide an extension
+// on Item to copy this data back to a Item.
 
-struct EditableShoppingItemData {
-	// the ShoppingItem, if any, associated with this data collection
+struct EditableItemData {
+	// the id of the Item, if any, associated with this data collection
 	// (nil if data for a new item that does not yet exist)
 	var id: UUID? = nil
 	// all of the values here provide suitable defaults for a new shopping item

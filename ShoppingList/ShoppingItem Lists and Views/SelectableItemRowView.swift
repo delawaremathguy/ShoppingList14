@@ -13,7 +13,7 @@ struct SelectableItemRowView: View {
 	
 	// on initialization, this collects the item's data, plus the color and name associated
 	// with the item's location
-	var itemData: EditableShoppingItemData
+	var itemData: EditableItemData
 	var locationName: String
 	var uiColor: UIColor
 	
@@ -26,7 +26,7 @@ struct SelectableItemRowView: View {
 	
 	init(item: Item, selected: Bool, sfSymbolName: String, respondToTapOnSelector: @escaping () -> Void) {
 		// copy item data to local variables
-		itemData = EditableShoppingItemData(shoppingItem: item)
+		itemData = EditableItemData(item: item)
 		locationName = item.locationName
 		uiColor = item.uiColor
 		self.selected = selected

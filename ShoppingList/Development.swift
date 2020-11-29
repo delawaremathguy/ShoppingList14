@@ -18,14 +18,14 @@ import UIKit
 let kShowDevToolsTab = true
 
 // i used these constants and functions below during development to import and
-// export ShoppingItems and Locations via JSON.
+// export Items and Locations via JSON.
 // these are the filenames for JSON output when dumped from the simulator
 // and also the filenames in the bundle used to load sample data.
 let kJSONDumpDirectory = "/Users/USE_YOUR_OWN_MAC_USERNAME_HERE_HERE/Desktop/"	// dumps to the Desktop: Adjust for your Username!
-let kShoppingItemsFilename = "shoppingItems.json"
+let kItemsFilename = "items.json"
 let kLocationsFilename = "locations.json"
 
-// to write stuff out -- a list of ShoppingItems and a list of Locations --
+// to write stuff out -- a list of Items and a list of Locations --
 // the code is essentially the same except for the typing of the objects
 // in the list.  so we use the power of generics:  we introduce
 // (1) a protocol that demands that something be able to produce a simple
@@ -35,10 +35,10 @@ protocol CodableStructRepresentable {
 	var codableProxy: DataType { get }
 }
 
-// and (2), knowing that ShoppingItem and Location are NSManagedObjects, and we
+// and (2), knowing that Item and Location are NSManagedObjects, and we
 // don't want to write our own custom encoder (eventually we will), we extend each to
 // be able to produce a simple, Codable struct proxy holding only what we want to write out
-// (ShoppingItemJSON and LocationJSON structs, respectively)
+// (ItemCodable and LocationCodable structs, respectively)
 func writeAsJSON<T>(items: [T], to filename: String) where T: CodableStructRepresentable {
 	let codableItems = items.map() { $0.codableProxy }
 	let encoder = JSONEncoder()
@@ -72,12 +72,12 @@ func populateDatabaseFromJSON() {
 	// it sure is easy to do with HWS's Bundle extension (!)
 	let codableLocations: [LocationCodable] = Bundle.main.decode(from: kLocationsFilename)
 	insertNewLocations(from: codableLocations)
-	let codableItems: [ItemCodable] = Bundle.main.decode(from: kShoppingItemsFilename)
-	insertNewShoppingItems(from: codableItems)
+	let codableItems: [ItemCodable] = Bundle.main.decode(from: kItemsFilename)
+	insertNewItems(from: codableItems)
 	Item.saveChanges()
 }
 
-func insertNewShoppingItems(from codableItems: [ItemCodable]) {
+func insertNewItems(from codableItems: [ItemCodable]) {
 	
 	// get all Locations that are not the unknown location
 	// group by name for lookup below when adding an item to a location
@@ -118,19 +118,23 @@ func insertNewLocations(from codableLocations: [LocationCodable]) {
 }
 
 // useful only as an introductory tool.  if you want to try out the app, you can
-// insert s full, working database of ShoppingItems and Locations; play with it;
+// insert a full, working database of Items and Locations; play with it;
 // then delete everything and start over.
 func deleteAllData() {
-	let shoppingItems = Item.allShoppingItems()
-	for item in shoppingItems {
+	var context: NSManagedObjectContext? = nil // i'll want the context of at least one Item or Location below
+	let items = Item.allItems()
+	for item in items {
+		context = item.managedObjectContext
 		Item.delete(item: item)
 	}
 	
 	let locations = Location.allLocations(userLocationsOnly: true)
 	for location in locations {
+		context = location.managedObjectContext
 		Location.delete(location)
 	}
 	
+	context?.processPendingChanges()
 	Location.saveChanges()
 }
 
