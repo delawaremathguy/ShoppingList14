@@ -10,16 +10,15 @@ import SwiftUI
 
 struct LocationsTabView: View {
 	
-	// this View is a simple list view, so we'll drive it with a simple
-	// @FetchRequest rather than a view model to manage the list of Locations
-	@FetchRequest(entity: Location.entity(),
-								sortDescriptors: [NSSortDescriptor(keyPath: \Location.visitationOrder, ascending: true)])
+	// this is the @FetchRequest that ties this view to CoreData Locatiopns
+	@FetchRequest(fetchRequest: Location.fetchAllLocations())
 	private var locations: FetchedResults<Location>
-	
-	// controls appearance of the Add/ModifyLocation view, presented as a sheet
+		
+	// local state to trigger showing a sheet to add a new location
 	@State private var isAddNewLocationSheetShowing = false
 	
-	// support for context menu deletion
+	// support for context menu deletion: a boolean to control showing an
+	// alert, and the location to delete after confirmation
 	@State private var locationToDelete: Location?
 	@State private var showDeleteConfirmation = false
 	
@@ -27,28 +26,24 @@ struct LocationsTabView: View {
 		NavigationView {
 			VStack(spacing: 0) {
 				
-				// 1. add new location "button" is at top.  note that this will put up the AddorModifyLocationView
-				// inside its own NaviagtionView (so the Picker will work!) and we must pass along the
-				// viewModel to really accomplish any change
+				// 1. add new location "button" is at top.  note that this will put up the
+				// AddorModifyLocationView inside its own NaviagtionView (so the Picker will work!)
 				Button(action: { isAddNewLocationSheetShowing = true }) {
 					Text("Add New Location")
 						.foregroundColor(Color.blue)
 						.padding(10)
 				}
-					
 				.sheet(isPresented: $isAddNewLocationSheetShowing) {
 					NavigationView { AddorModifyLocationView() }
 				}
 				
-				// 1a. Report location count, essentially as a section header for just the one section
-				//SLSimpleHeaderView(label: "Locations Listed: \(viewModel.locationCount)")
 				Rectangle()
 					.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
 
 				
 				// 2. then the list of locations
 				Form {
-					Section(header: Text("Locations Listed: \(Location.count())").textCase(.none)) {
+					Section(header: Text("Locations Listed: \(locations.count)").textCase(.none)) {
 						ForEach(locations) { location in
 							NavigationLink(destination: AddorModifyLocationView(editableLocation: location)) {
 								LocationRowView(rowData: LocationRowData(location: location))
@@ -62,31 +57,26 @@ struct LocationsTabView: View {
 											Text(location.isUnknownLocation ? "(Cannot be deleted)" : "Delete This Location")
 											Image(systemName: location.isUnknownLocation ? "trash.slash" : "trash")
 										}
-									}
-							}
-							//.listRowBackground(Color(location.uiColor()))
+									} // end of .contextMenu
+							} // end of NavigationLink
 						} // end of ForEach
 					} // end of Section
-						.alert(isPresented: $showDeleteConfirmation) {
-							Alert(title: Text("Delete \'\(locationToDelete!.name!)\'?"),
-										message: Text("Are you sure you want to delete this location?"),
-										primaryButton: .cancel(Text("No")),
-										secondaryButton: .destructive(Text("Yes"), action: deleteSelectedLocation)
-							)}
-				} // end of List
-				//.listStyle(PlainListStyle())
-
+				} // end of Form
+				
 			} // end of VStack
 			.navigationBarTitle("Locations")
 			.toolbar { toolbarButton() }
-				.onAppear {
-					print("LocationsTabView appear")
-					//viewModel.loadLocations()
-				}
-			
+			.alert(isPresented: $showDeleteConfirmation) {
+				Alert(title: Text("Delete \'\(locationToDelete!.name)\'?"),
+							message: Text("Are you sure you want to delete this location?"),
+							primaryButton: .cancel(Text("No")),
+							secondaryButton: .destructive(Text("Yes"), action: { Location.delete(locationToDelete!) })
+				)}
+			.onAppear { print("LocationsTabView appear") }
+			.onDisappear { print("LocationsTabView disappear") }
+
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())
-			.onDisappear { print("LocationsTabView disappear") }
 	} // end of var body: some View
 	
 	func toolbarButton() -> some View {
@@ -94,11 +84,6 @@ struct LocationsTabView: View {
 			Image(systemName: "plus")
 				.resizable()
 				.frame(width: 20, height: 20)
-		}
-	}
-	func deleteSelectedLocation() {
-		if let location = locationToDelete {
-			Location.delete(location)
 		}
 	}
 		

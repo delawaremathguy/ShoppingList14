@@ -18,7 +18,7 @@ struct AddorModifyLocationView: View {
 	// that we're creating a new Location in for the viewModel.
 	var editableLocation: Location? = nil
 		
-	// all editableData is packaged here.  its initial values are set to be
+	// all editableData is packaged here. its initial values are set to be
 	// the defaults for a new Location that is added (editableLocation == nil)
 	// and this will be updated in .onAppear() in the case that we are
 	// editing an existing, non-nil Location.
@@ -62,7 +62,7 @@ struct AddorModifyLocationView: View {
 					SLCenteredButton(title: "Delete This Location", action: { showDeleteConfirmation = true })
 						.foregroundColor(Color.red)
 				}
-			}  // end of Section 2
+			} // end of Section 2
 			
 			// Section 3: Items assigned to this Location, if we are editing a Location
 			if editableLocation != nil {
@@ -70,22 +70,16 @@ struct AddorModifyLocationView: View {
 			}
 			
 		} // end of Form
-			.onAppear(perform: loadData)
-			.navigationBarTitle(barTitle(), displayMode: .inline)
-			.navigationBarBackButtonHidden(true)
-			.navigationBarItems(
-				leading: Button(action: { presentationMode.wrappedValue.dismiss() }){
-					Text("Cancel")
-				},
-				trailing: Button(action: { commitData() }){
-					Text("Save")
-			})
-			.alert(isPresented: $showDeleteConfirmation) {
-				Alert(title: Text("Delete \'\(editableLocation!.name!)\'?"),
-							message: Text("Are you sure you want to delete this location?"),
-							primaryButton: .cancel(Text("No")),
-							secondaryButton: .destructive(Text("Yes"), action: deleteLocation)
-				)}
+		.onAppear(perform: loadData)
+		.navigationBarTitle(barTitle(), displayMode: .inline)
+		.navigationBarBackButtonHidden(true)
+		.navigationBarItems(leading: cancelButton(), trailing: saveButton())
+		.alert(isPresented: $showDeleteConfirmation) {
+			Alert(title: Text("Delete \'\(editableLocation!.name)\'?"),
+						message: Text("Are you sure you want to delete this location?"),
+						primaryButton: .cancel(Text("No")),
+						secondaryButton: .destructive(Text("Yes"), action: deleteLocation)
+			)}
 	}
 	
 	func barTitle() -> Text {
@@ -96,18 +90,27 @@ struct AddorModifyLocationView: View {
 		if let location = editableLocation {
 			Location.delete(location)
 			presentationMode.wrappedValue.dismiss()
-//			DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) { // seems to want more time in simulator
-//				Location.delete(location)
-//			}
+		}
+	}
+	
+	// the cancel button
+	func cancelButton() -> some View {
+		Button(action : { presentationMode.wrappedValue.dismiss() }){
+			Text("Cancel")
+		}
+	}
+	
+	// the save button
+	func saveButton() -> some View {
+		Button(action : { commitData() }){
+			Text("Save")
 		}
 	}
 
 	func commitData() {
+		editableData.updateColor(from: editableColor)
+		Location.updateData(for: editableLocation, using: editableData)
 		presentationMode.wrappedValue.dismiss()
-		DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-			editableData.updateColor(from: editableColor)
-			Location.updateData(for: editableLocation, using: editableData)
-		}
 	}
 
 	func loadData() {
@@ -129,11 +132,11 @@ struct SimpleItemsList: View {
 	
 	// the location we're associated with
 	//var location: Location
-	@FetchRequest	private var items: FetchedResults<ShoppingItem>
+	@FetchRequest	private var items: FetchedResults<Item>
 	
 	init(location: Location) {
 		//self.location = location
-		let request = ShoppingItem.fetchAllItems(at: location)
+		let request = Item.fetchAllItems(at: location)
 		_items = FetchRequest(fetchRequest: request)
 	}
 	

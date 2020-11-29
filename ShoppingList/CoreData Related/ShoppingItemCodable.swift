@@ -13,19 +13,19 @@ import Foundation
 // there's some assumption here that location names are unique, because by representing
 // a ShoppingItem in JSON, we're asking that the item can be later hooked back up
 // to its Location
-struct ShoppingItemCodable: Codable {
+struct ItemCodable: Codable {
 	var name: String
 	var onList: Bool
 	var isAvailable: Bool
-	var quantity: Int32
+	var quantity: Int
 	var locationName: String
 	
-	init(from item: ShoppingItem) {
+	init(from item: Item) {
 		name = item.name
 		onList = item.onList
 		isAvailable = item.isAvailable
 		quantity = item.quantity
-		locationName = item.location!.name!
+		locationName = item.locationName
 	}
 
 }

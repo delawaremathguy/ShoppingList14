@@ -17,9 +17,70 @@ extension Location: Comparable {
 	
 	// add Comparable conformance: sort by visitation order
 	public static func < (lhs: Location, rhs: Location) -> Bool {
-		lhs.visitationOrder < rhs.visitationOrder
+		lhs.visitationOrder_ < rhs.visitationOrder_
 	}
 	
+	// MARK: - Computed properties
+	
+	// name: fronts Core Data attribute name_
+	var name: String {
+		get { name_ ?? "Unknown Name" }
+		set { name_ = newValue }
+	}
+	
+	// red: fronts Core Data attribute red_
+	var red: Double {
+		get { red_ }
+		set { red_ = newValue }
+	}
+	
+	// green: fronts Core Data attribute green_
+	var green: Double {
+		get { green_ }
+		set { green_ = newValue }
+	}
+
+	// blue: fronts Core Data attribute blue_
+	var blue: Double {
+		get { blue_ }
+		set { blue_ = newValue }
+	}
+
+	// opacity: fronts Core Data attribute opacity_
+	var opacity: Double {
+		get {opacity_ }
+		set { opacity_ = newValue }
+	}
+
+	// visitationOrder: fronts Core Data attribute visitationOrder_
+	var visitationOrder: Int {
+		get { Int(visitationOrder_) }
+		set { visitationOrder_ = Int32(newValue) }
+	}
+	
+	var items: [Item] {
+		if let items = items_ as? Set<Item> {
+			return items.sorted(by: { $0.name < $1.name })
+		}
+		return []
+	}
+	
+	var isUnknownLocation: Bool { visitationOrder_ == kUnknownLocationVisitationOrder }
+	
+	
+	var uiColor: UIColor {
+		UIColor(red: CGFloat(red_), green: CGFloat(green_), blue: CGFloat(blue_), alpha: CGFloat(opacity_))
+	}
+
+	
+	// MARK: - Useful Fetch Request
+	
+	class func fetchAllLocations() -> NSFetchRequest<Location> {
+		let request: NSFetchRequest<Location> = Location.fetchRequest()
+		request.sortDescriptors = [NSSortDescriptor(key: "visitationOrder_", ascending: true)]
+		return request
+	}
+
 	// MARK: - Class Functions
 	
 	static func count() -> Int {
@@ -39,7 +100,7 @@ extension Location: Comparable {
 	static func allLocations(userLocationsOnly: Bool) -> [Location] {
 		let fetchRequest: NSFetchRequest<Location> = Location.fetchRequest()
 		if userLocationsOnly {
-			fetchRequest.predicate = NSPredicate(format: "visitationOrder != %d", kUnknownLocationVisitationOrder)
+			fetchRequest.predicate = NSPredicate(format: "visitationOrder_ != %d", kUnknownLocationVisitationOrder)
 		}
 		do {
 			let items = try PersistentStore.shared.context.fetch(fetchRequest)
@@ -64,12 +125,12 @@ extension Location: Comparable {
 	static func createUnknownLocation() {
 		let unknownLocation = Location(context: PersistentStore.shared.context)
 		unknownLocation.id = UUID()
-		unknownLocation.name = kUnknownLocationName
-		unknownLocation.red = 0.5
-		unknownLocation.green = 0.5
-		unknownLocation.blue = 0.5
-		unknownLocation.opacity = 0.5
-		unknownLocation.visitationOrder = kUnknownLocationVisitationOrder
+		unknownLocation.name_ = kUnknownLocationName
+		unknownLocation.red_ = 0.5
+		unknownLocation.green_ = 0.5
+		unknownLocation.blue_ = 0.5
+		unknownLocation.opacity_ = 0.5
+		unknownLocation.visitationOrder_ = kUnknownLocationVisitationOrder
 	}
 
 	static func unknownLocation() -> Location? {
@@ -78,7 +139,7 @@ extension Location: Comparable {
 		// return nil if no such thing exists, which means that the data store
 		// is empty (since all ShoppingItems have an assigned Location).
 		let fetchRequest: NSFetchRequest<Location> = Location.fetchRequest()
-		fetchRequest.predicate = NSPredicate(format: "visitationOrder == %d", kUnknownLocationVisitationOrder)
+		fetchRequest.predicate = NSPredicate(format: "visitationOrder_ == %d", kUnknownLocationVisitationOrder)
 		do {
 			let locations = try PersistentStore.shared.context.fetch(fetchRequest)
 			if locations.count == 1 {
@@ -95,18 +156,17 @@ extension Location: Comparable {
 	// of locations all at the same time.
 	static func delete(_ location: Location, saveChanges: Bool = true) {
 		// you cannot delete the unknownLocation
-		guard location.visitationOrder != kUnknownLocationVisitationOrder else { return }
+		guard location.visitationOrder_ != kUnknownLocationVisitationOrder else { return }
 
 		// retrieve the context of this Location and get a list of
 		// all items for this location so we can work with them
 		let context = location.managedObjectContext
-		let itemsAtThisLocation = location.items as? Set<ShoppingItem> ?? Set<ShoppingItem>()
+		let itemsAtThisLocation = location.items
 		
-		// remove all shopping items associated with this location from the Location's
-		// NSSet of ShoppingItem, then move then to the unknown location
+		// reset location associated with all of these to the unknownLocation
+		// (which in turn, removes the current association with location)
 		let theUnknownLocation = Location.unknownLocation()!
 		for item in itemsAtThisLocation {
-			item.location?.removeFromItems(item)
 			item.location = theUnknownLocation
 		}
 		// and finish the deletion and make sure the context has gets cleaned up.
@@ -137,36 +197,18 @@ extension Location: Comparable {
 	// MARK: - Object Methods
 	
 	func updateValues(from editableData: EditableLocationData) {
-		name = editableData.locationName
-		visitationOrder = Int32(editableData.visitationOrder)
-		red = editableData.red
-		green = editableData.green
-		blue = editableData.blue
-		opacity = editableData.opacity
+		name_ = editableData.locationName
+		visitationOrder_ = Int32(editableData.visitationOrder)
+		red_ = editableData.red
+		green_ = editableData.green
+		blue_ = editableData.blue
+		opacity_ = editableData.opacity
 	}
 
 	static func saveChanges() {
 		PersistentStore.shared.saveContext()
 	}
 	
-	// MARK: - Computed properties
-	
-	var shoppingItems: [ShoppingItem] {
-		if let items = items as? Set<ShoppingItem> {
-			return items.sorted(by: { $0.name < $1.name })
-		}
-		return []
-	}
-	
-	var isUnknownLocation: Bool { visitationOrder == kUnknownLocationVisitationOrder }
-	
-
-	
-	// MARK: - Reference functions
-	
-	func uiColor() -> UIColor {
-		UIColor(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: CGFloat(opacity))
-	}
 	
 }
 

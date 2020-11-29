@@ -20,7 +20,7 @@ struct EditableLocationData {
 	
 	// this copies all the editable data from an incoming Location
 	init(location: Location) {
-		locationName = location.name!
+		locationName = location.name
 		visitationOrder = Int(location.visitationOrder)
 		red = location.red
 		green = location.green

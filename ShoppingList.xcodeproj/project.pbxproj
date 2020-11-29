@@ -86,6 +86,7 @@
 		D6C7685B2572B3B500E0F4B0 /* SelectableItemRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableItemRowView.swift; sourceTree = "<group>"; };
 		D6C91D8624A8EC09008C8DFF /* EditableShoppingItemData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableShoppingItemData.swift; sourceTree = "<group>"; };
 		D6DE39BC247314B40013F9B4 /* SLFormLabelText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLFormLabelText.swift; sourceTree = "<group>"; };
+		D6EE985F2573EE1900439500 /* ShoppingList 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "ShoppingList 3.xcdatamodel"; sourceTree = "<group>"; };
 		D6EF557C246D7421007D636B /* PurchasedTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchasedTabView.swift; sourceTree = "<group>"; };
 		D6EF5586246D97C3007D636B /* Development.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Development.swift; sourceTree = "<group>"; };
 		D6F375D52485593D005559E6 /* LocationRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationRowView.swift; sourceTree = "<group>"; };
@@ -534,10 +535,11 @@
 		D6FC7A0824635D950096F018 /* ShoppingList.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				D6EE985F2573EE1900439500 /* ShoppingList 3.xcdatamodel */,
 				D6661E0A25645D2200BA47E9 /* ShoppingList 2.xcdatamodel */,
 				D6FC7A0924635D950096F018 /* ShoppingList.xcdatamodel */,
 			);
-			currentVersion = D6661E0A25645D2200BA47E9 /* ShoppingList 2.xcdatamodel */;
+			currentVersion = D6EE985F2573EE1900439500 /* ShoppingList 3.xcdatamodel */;
 			path = ShoppingList.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

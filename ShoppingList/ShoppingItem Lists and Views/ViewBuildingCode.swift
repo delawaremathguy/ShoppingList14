@@ -23,7 +23,7 @@ import SwiftUI
 /// - Parameter deletionTrigger: a closure to call to set state variables and put up an "Are you sure?" alert before allowing deletion of the item
 /// - Returns: Void
 @ViewBuilder
-func shoppingItemContextMenu(item: ShoppingItem,
+func shoppingItemContextMenu(item: Item,
 														 deletionTrigger: @escaping () -> Void) -> some View {
 	Button(action: { item.toggleOnListStatus() }) {
 		Text(item.onList ? "Move to Purchased" : "Move to ShoppingList")

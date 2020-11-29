@@ -32,10 +32,10 @@ struct DevToolsTabView: View {
 			
 			Button("Load sample data") {
 				let currentLocationCount = Location.count() // what it is now
-				let currentShoppingItemCount = ShoppingItem.count() // what it is now
+				let currentShoppingItemCount = Item.count() // what it is now
 				populateDatabaseFromJSON()
 				self.locationsAdded = Location.count() - currentLocationCount // now the differential
-				self.shoppingItemsAdded = ShoppingItem.count() - currentShoppingItemCount // now the differential
+				self.shoppingItemsAdded = Item.count() - currentShoppingItemCount // now the differential
 				self.confirmDataHasBeenAdded = true
 			}
 			.alert(isPresented: $confirmDataHasBeenAdded) {
@@ -59,7 +59,7 @@ struct DevToolsTabView: View {
 				.padding([.leading, .trailing], 10)
 
 			Button("Write database as JSON") {
-				writeAsJSON(items: ShoppingItem.allShoppingItems(), to: kShoppingItemsFilename)
+				writeAsJSON(items: Item.allShoppingItems(), to: kShoppingItemsFilename)
 				writeAsJSON(items: Location.allLocations(userLocationsOnly: true), to: kLocationsFilename)
 			}
 			} // end of Group

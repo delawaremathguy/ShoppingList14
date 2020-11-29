@@ -10,47 +10,70 @@ import Foundation
 import CoreData
 import UIKit
 
-extension ShoppingItem {
+extension Item {
 	
 	// MARK: - Computed Properties
-
 	
 	// the date last purchased.  this fronts a Core Data optional attribute
 	var dateLastPurchased: Date {
-		get { dateLastPurchasedOpt ?? Date() }
-		set { dateLastPurchasedOpt = newValue }
+		get { dateLastPurchased_ ?? Date() }
+		set { dateLastPurchased_ = newValue }
 	}
 	
 	// the name.  this fronts a Core Data optional attribute
 	var name: String {
-		get { nameOpt ?? "Not Available" }
-		set { nameOpt = newValue }
+		get { name_ ?? "Not Available" }
+		set { name_ = newValue }
 	}
 	
-	// the visitation order (of its associated location)
-	var visitationOrder: Int { Int(location?.visitationOrder ?? 0) }
+	// whether the item is on the list.  this fronts a Core Data optional attribute
+	var onList: Bool {
+		get { onList_ }
+		set { onList_ = newValue }
+	}
+	
+	// whether the item is available.  this fronts a Core Data optional attribute
+	var isAvailable: Bool {
+		get { isAvailable_ }
+		set { isAvailable_ = newValue }
+	}
+	
+	// quantity of the item.   this fronts a Core Data optional attribute
+	var quantity: Int {
+		get { Int(quantity_) }
+		set { quantity_ = Int32(newValue) }
+	}
+	
+	// item's associated location.  this fronts a Core Data optional attribute
+	var location: Location {
+		get { location_! }
+		set { location_ = newValue }
+	}
 	
 	// the name of its associated location
-	var locationName: String { location?.name ?? "Not Available" }
+	var locationName: String { location_?.name_ ?? "Not Available" }
+	
+	// the visitation order (of its associated location)
+	var visitationOrder: Int { Int(location_?.visitationOrder_ ?? 0) }
 	
 	// the color = the color of its associated location
-	var backgroundColor: UIColor {
-		location?.uiColor() ?? UIColor(displayP3Red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
+	var uiColor: UIColor {
+		location_?.uiColor ?? UIColor(displayP3Red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
 	}
 	
 	// MARK: - Useful Fetch Requests
 	
-	class func fetchAllItems(at location: Location) -> NSFetchRequest<ShoppingItem> {
-		let request: NSFetchRequest<ShoppingItem> = ShoppingItem.fetchRequest()
-		request.sortDescriptors = [NSSortDescriptor(key: "nameOpt", ascending: true)]
-		request.predicate = NSPredicate(format: "location == %@", location)
+	class func fetchAllItems(at location: Location) -> NSFetchRequest<Item> {
+		let request: NSFetchRequest<Item> = Item.fetchRequest()
+		request.sortDescriptors = [NSSortDescriptor(key: "name_", ascending: true)]
+		request.predicate = NSPredicate(format: "location_ == %@", location)
 		return request
 	}
 	
-	class func fetchAllItems(onList: Bool) -> NSFetchRequest<ShoppingItem> {
-		let request: NSFetchRequest<ShoppingItem> = ShoppingItem.fetchRequest()
-		request.predicate = NSPredicate(format: "onList == %d", onList)
-		request.sortDescriptors = [NSSortDescriptor(key: "nameOpt", ascending: true)]
+	class func fetchAllItems(onList: Bool) -> NSFetchRequest<Item> {
+		let request: NSFetchRequest<Item> = Item.fetchRequest()
+		request.predicate = NSPredicate(format: "onList_ == %d", onList)
+		request.sortDescriptors = [NSSortDescriptor(key: "name_", ascending: true)]
 		return request
 	}
 
@@ -63,7 +86,7 @@ extension ShoppingItem {
 	
 	static func count() -> Int {
 		let context = PersistentStore.shared.context
-		let fetchRequest: NSFetchRequest<ShoppingItem> = ShoppingItem.fetchRequest()
+		let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
 		do {
 			let itemCount = try context.count(for: fetchRequest)
 			return itemCount
@@ -74,9 +97,9 @@ extension ShoppingItem {
 		return 0
 	}
 
-	static func allShoppingItems() -> [ShoppingItem] {
+	static func allShoppingItems() -> [Item] {
 		let context = PersistentStore.shared.context
-		let fetchRequest: NSFetchRequest<ShoppingItem> = ShoppingItem.fetchRequest()
+		let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
 		do {
 			let items = try context.fetch(fetchRequest)
 			return items
@@ -84,44 +107,44 @@ extension ShoppingItem {
 		catch let error as NSError {
 			print("Error getting ShoppingItems: \(error.localizedDescription), \(error.userInfo)")
 		}
-		return [ShoppingItem]()
+		return [Item]()
 	}
 	
-	static func purchasedItemsFetchRequest() -> [ShoppingItem] {
-		let context = PersistentStore.shared.context
-		let fetchRequest: NSFetchRequest<ShoppingItem> = ShoppingItem.fetchRequest()
-		fetchRequest.sortDescriptors = [NSSortDescriptor(key: "nameOpt", ascending: true)]
-		fetchRequest.predicate = NSPredicate(format: "onList == %d", false, Calendar.current.startOfDay(for: Date()) as CVarArg)
-		do {
-			let items = try context.fetch(fetchRequest)
-			return items
-		}
-		catch let error as NSError {
-			print("Error getting items purchased today : \(error.localizedDescription), \(error.userInfo)")
-		}
-		return [ShoppingItem]()
-	}
+//	static func purchasedItemsFetchRequest() -> [Item] {
+//		let context = PersistentStore.shared.context
+//		let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
+//		fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name_", ascending: true)]
+//		fetchRequest.predicate = NSPredicate(format: "onList_ == %d", false, Calendar.current.startOfDay(for: Date()) as CVarArg)
+//		do {
+//			let items = try context.fetch(fetchRequest)
+//			return items
+//		}
+//		catch let error as NSError {
+//			print("Error getting items purchased today : \(error.localizedDescription), \(error.userInfo)")
+//		}
+//		return [Item]()
+//	}
 	
-	static func currentShoppingList(onList: Bool) -> [ShoppingItem] {
-		let context = PersistentStore.shared.context
-		let fetchRequest: NSFetchRequest<ShoppingItem> = ShoppingItem.fetchRequest()
-		fetchRequest.predicate = NSPredicate(format: "onList == %d", onList)
-		do {
-			let items = try context.fetch(fetchRequest)
-			return items
-		}
-		catch let error as NSError {
-			print("Error getting ShoppingItems on the list: \(error.localizedDescription), \(error.userInfo)")
-		}
-		return [ShoppingItem]()
-	}
+//	static func currentShoppingList(onList: Bool) -> [Item] {
+//		let context = PersistentStore.shared.context
+//		let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
+//		fetchRequest.predicate = NSPredicate(format: "onList == %d", onList)
+//		do {
+//			let items = try context.fetch(fetchRequest)
+//			return items
+//		}
+//		catch let error as NSError {
+//			print("Error getting ShoppingItems on the list: \(error.localizedDescription), \(error.userInfo)")
+//		}
+//		return [Item]()
+//	}
 	
 	// addNewItem is the user-facing add of a new entity.  since these are
 	// Identifiable objects, this makes sure we give the entity a unique id, then
 	// hand it back so the user can fill in what's important to them.
-	static func addNewItem() -> ShoppingItem {
+	static func addNewItem() -> Item {
 		let context = PersistentStore.shared.context
-		let newItem = ShoppingItem(context: context)
+		let newItem = Item(context: context)
 		newItem.id = UUID()
 		return newItem
 	}
@@ -142,10 +165,10 @@ extension ShoppingItem {
 	// processPendingChanges() which syncs up the object graph in memory right away and this,
 	// apparently, is enough to to get the message out to everyone.
 	
-	static func delete(item: ShoppingItem, saveChanges: Bool = false) {
-		// remove reference to this item from its associated location first
-		let location = item.location
-		location?.removeFromItems(item)
+	static func delete(item: Item, saveChanges: Bool = false) {
+		// remove the reference to this item from its associated location
+		// by resetting its (real, Core Data) location to nil
+		item.location_ = nil
 		// now delete and save
 		let context = item.managedObjectContext
 		context?.delete(item)
@@ -158,7 +181,7 @@ extension ShoppingItem {
 	// changes availability flag for an item
 	func toggleAvailableStatus() {
 		isAvailable.toggle()
-		ShoppingItem.saveChanges()
+		Item.saveChanges()
 	}
 
 	// changes onList flag for an item
@@ -167,23 +190,22 @@ extension ShoppingItem {
 		if !onList { // just moved off list, so record date
 			dateLastPurchased = Date()
 		}
-		ShoppingItem.saveChanges()
+		Item.saveChanges()
 	}
 
 	func markAvailable() {
 		isAvailable = true
-		ShoppingItem.saveChanges()
+		Item.saveChanges()
 	}
 
 	
 	func updateValues(from editableData: EditableShoppingItemData) {
 		name = editableData.itemName
-		quantity = Int32(editableData.itemQuantity)
+		quantity = editableData.itemQuantity
 		onList = editableData.onList
 		isAvailable = editableData.isAvailable
-		// if we are currently associated with a Location, break that association
-		// and then set new location
-		location?.removeFromItems(self)
+		// if we are currently associated with a Location, then set new location
+		// (which breaks the previous association with a location
 		location = editableData.location
 		// last thing: the associated Location may want to know about this
 		//location?.objectWillChange.send()
@@ -197,11 +219,11 @@ extension ShoppingItem {
 		if let item = allShoppingItems().first(where: { $0.id == editableData.shoppingItemID }) {
 			item.updateValues(from: editableData)
 		} else {
-			let newItem = ShoppingItem.addNewItem()
+			let newItem = Item.addNewItem()
 			newItem.updateValues(from: editableData)
 		}
 		
-		ShoppingItem.saveChanges()
+		Item.saveChanges()
 	}
 
 	

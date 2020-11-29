@@ -11,48 +11,59 @@ import SwiftUI
 
 struct SelectableItemRowView: View {
 	
-	// i want this item to be an ObservedObject so it will get updated properly
-	// for changes elsewhere in the program.  however, there's a significant problem
-	// when this Core Data object is deleted: this view will still have a reference
-	// to the deleted object.  despite forcing a Core Data update with processPendingChanges
-	// upon deletions, we may still hold a reference to what is an in-memory representation
-	// of the item, in which case, we must be sure that all references below are nil-coalesced.
-	//
-	// and, once more i am disappointed by this situation, but i see no need to worry
-	// about it any more !
+	// on initialization, this collects the item's data, plus the color and name associated
+	// with the item's location
+	var itemData: EditableShoppingItemData
+	var locationName: String
+	var uiColor: UIColor
 	
-	@ObservedObject var item: ShoppingItem
+	// selected is whether the item is selected or not.  executing the respondToTapOnSelector
+	// function will cause the parent view's @State variable to redraw its view,
+	// re-instantiating this view as well.
 	var selected: Bool
-	var respondToTapOnSelector: (ShoppingItem) -> Void
+	var sfSymbolName: String
+	var respondToTapOnSelector: () -> ()
+	
+	init(item: Item, selected: Bool, sfSymbolName: String, respondToTapOnSelector: @escaping () -> Void) {
+		// copy item data to local variables
+		itemData = EditableShoppingItemData(shoppingItem: item)
+		locationName = item.locationName
+		uiColor = item.uiColor
+		self.selected = selected
+		self.sfSymbolName = sfSymbolName
+		self.respondToTapOnSelector = respondToTapOnSelector
+		
+		//print("SelectableItemRowView instantiated for \(item.name)")
+	}
 	
 	var body: some View {
 		HStack {
-			SelectionIndicatorView(selected: selected, uiColor: item.backgroundColor, sfSymbolName: "cart")
-				.onTapGesture { respondToTapOnSelector(item) }
+			SelectionIndicatorView(selected: selected, uiColor: uiColor, sfSymbolName: sfSymbolName)
+				.onTapGesture { respondToTapOnSelector() }
 			
-			// color bar at left (new in this code)
-			Color(item.backgroundColor)
+			// color bar at left
+			Color(uiColor)
 				.frame(width: 10, height: 36)
 			
 			VStack(alignment: .leading) {
 				
-				if item.isAvailable {
-					Text(item.name)
+				if itemData.isAvailable {
+					Text(itemData.itemName)
 				} else {
-					Text(item.name)
+					Text(itemData.itemName)
 						.italic()
 						.foregroundColor(Color(.systemGray3))
 						.strikethrough()
 				}
 				
-				Text(item.locationName)
+				Text(locationName)
 					.font(.caption)
 					.foregroundColor(.secondary)
 			}
 			
 			Spacer()
 			
-			Text("\(item.quantity)")
+			Text("\(itemData.itemQuantity)")
 				.font(.headline)
 				.foregroundColor(Color.blue)
 			

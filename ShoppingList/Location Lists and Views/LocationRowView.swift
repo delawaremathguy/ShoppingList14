@@ -15,14 +15,14 @@ import SwiftUI
 struct LocationRowData {
 	var name: String = ""
 	var itemCount: Int = 0
-	var visitationOrder: Int32 = 0
+	var visitationOrder: Int = 0
 	var uiColor = UIColor()
 	
 	init(location: Location) {
-		name = location.name!
-		itemCount = location.items!.count
+		name = location.name
+		itemCount = location.items.count
 		visitationOrder = location.visitationOrder
-		uiColor = location.uiColor()
+		uiColor = location.uiColor
 	}
 }
 

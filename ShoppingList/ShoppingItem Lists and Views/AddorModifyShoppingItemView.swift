@@ -15,7 +15,7 @@ struct AddorModifyShoppingItemView: View {
 
 	// editableItem is either a ShoppingItem to edit, or nil to signify
 	// that we're creating a new ShoppingItem in this View.
-	var editableItem: ShoppingItem? = nil
+	var editableItem: Item? = nil
 		
 	// addItemToShoppingList just means that by default, a new item will be added to
 	// the shopping list, and so this is true.
@@ -60,7 +60,7 @@ struct AddorModifyShoppingItemView: View {
 				
 				Picker(selection: $editableData.location, label: SLFormLabelText(labelText: "Location: ")) {
 					ForEach(locations) { location in
-						Text(location.name!).tag(location)
+						Text(location.name).tag(location)
 					}
 				}
 				
@@ -91,16 +91,7 @@ struct AddorModifyShoppingItemView: View {
 			
 			.navigationBarTitle(barTitle(), displayMode: .inline)
 			.navigationBarBackButtonHidden(true)
-			.navigationBarItems(
-				leading:
-					Button(action : { presentationMode.wrappedValue.dismiss() }){
-						Text("Cancel")
-					},
-				trailing:
-					Button(action : { commitDataEntry() }){
-						Text("Save")
-							.disabled(!editableData.canBeSaved)
-				})
+			.navigationBarItems(leading: cancelButton(), trailing: saveButton())
 			.onAppear(perform: loadData)
 			.alert(isPresented: $showDeleteConfirmation) {
 				Alert(title: Text("Delete \'\(editableItem!.name)\'?"),
@@ -132,18 +123,33 @@ struct AddorModifyShoppingItemView: View {
 		}
 	}
 	
+	// the cancel button
+	func cancelButton() -> some View {
+		Button(action : { presentationMode.wrappedValue.dismiss() }){
+			Text("Cancel")
+		}
+	}
+	
+	// the save button
+	func saveButton() -> some View {
+		Button(action : { commitDataEntry() }){
+			Text("Save")
+				.disabled(!editableData.canBeSaved)
+		}
+	}
+	
 	// called when you tap the Save button.
 	func commitDataEntry() {
 		guard editableData.canBeSaved else { return }
 		presentationMode.wrappedValue.dismiss()
-		ShoppingItem.update(using: editableData)
+		Item.update(using: editableData)
 	}
 	
 	// called after confirmation to delete an item.
 	
 	func deleteItem() {
 		if let item = editableItem {
-			ShoppingItem.delete(item: item, saveChanges: true)
+			Item.delete(item: item, saveChanges: true)
 			presentationMode.wrappedValue.dismiss()
 		}
 	}

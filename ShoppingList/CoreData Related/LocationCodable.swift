@@ -12,14 +12,14 @@ import Foundation
 // that we would import or export in such a way that the result is Codable
 struct LocationCodable: Codable {
 	var name: String
-	var visitationOrder: Int32
+	var visitationOrder: Int
 	var red: Double
 	var green: Double
 	var blue: Double
 	var opacity: Double
 
 	init(from location: Location) {
-		name = location.name!
+		name = location.name
 		visitationOrder = location.visitationOrder
 		red = location.red
 		green = location.green

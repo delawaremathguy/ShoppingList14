@@ -77,11 +77,11 @@ The basic architecture of the app has also been simplified.  What started out in
 
 The CoreData model has only two entities named `ShoppingItem` and `Location`, with every ShoppingItem having a to-one relationship to a Location (the inverse is to-many).
 
-* `ShoppingItem`s have an id (UUID), a name, a quantity, a boolean "onList" that indicates whether the item is on the list for today's shopping exercise, or not on the list (and so available in the purchased list for future promotion to the shopping list), and also an "isAvailable" boolean that provides a greyed-out, italic, strike-through appearance for the item when false (sometimes an item is on the list, but not available today, and I want to remember that when planning the future shopping list).  New to this project is the addition of a dateLastPurchased for a ShoppingItem. 
+* `ShoppingItem`s have an id (UUID), a name, a quantity, a boolean "onList" that indicates whether the item is on the list for today's shopping exercise, or not on the list (and so available in the purchased list for future promotion to the shopping list), and also an "isAvailable" boolean that provides a greyed-out, italic, strike-through appearance for the item when false (sometimes an item is on the list, but not available today, and I want to remember that when planning the future shopping list).  New to this project is the addition of a dateLastPurchased for a Item. 
 
 * `Location`s have an id (UUID), a name, a visitationOrder (an integer, as in, go to the dairy first, then the deli, then the canned vegetables, etc), and then values red, green, blue, opacity to define a color that is used to color every item listed in the shopping list. 
 
-* This version of the app has added a version 2 of the Core Data datamodel, to handle some renaming issues and to add a dateLastPurchased attribute to every ShoppingItem.
+* This version of the app has added a version 2 of the Core Data datamodel, to handle some renaming issues and to add a dateLastPurchased attribute to every Item.
 
 ### App Architecture Comment
 

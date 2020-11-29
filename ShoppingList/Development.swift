@@ -72,29 +72,29 @@ func populateDatabaseFromJSON() {
 	// it sure is easy to do with HWS's Bundle extension (!)
 	let codableLocations: [LocationCodable] = Bundle.main.decode(from: kLocationsFilename)
 	insertNewLocations(from: codableLocations)
-	let codableShoppingItems: [ShoppingItemCodable] = Bundle.main.decode(from: kShoppingItemsFilename)
-	insertNewShoppingItems(from: codableShoppingItems)
-	ShoppingItem.saveChanges()
+	let codableItems: [ItemCodable] = Bundle.main.decode(from: kShoppingItemsFilename)
+	insertNewShoppingItems(from: codableItems)
+	Item.saveChanges()
 }
 
-func insertNewShoppingItems(from codableShoppingItems: [ShoppingItemCodable]) {
+func insertNewShoppingItems(from codableItems: [ItemCodable]) {
 	
 	// get all Locations that are not the unknown location
 	// group by name for lookup below when adding an item to a location
 	let locations = Location.allLocations(userLocationsOnly: true)
-	let name2Location = Dictionary(grouping: locations, by: { $0.name! })
+	let name2Location = Dictionary(grouping: locations, by: { $0.name })
 	
-	for codableShoppingItem in codableShoppingItems {
-		let newItem = ShoppingItem.addNewItem() // new UUID is created here
-		newItem.name = codableShoppingItem.name
-		newItem.quantity = codableShoppingItem.quantity
-		newItem.onList = codableShoppingItem.onList
-		newItem.isAvailable = codableShoppingItem.isAvailable
-		newItem.dateLastPurchasedOpt = Date().addingTimeInterval(-600_000) // pushes time stamp back about a week
+	for codableItem in codableItems {
+		let newItem = Item.addNewItem() // new UUID is created here
+		newItem.name = codableItem.name
+		newItem.quantity = codableItem.quantity
+		newItem.onList = codableItem.onList
+		newItem.isAvailable = codableItem.isAvailable
+		newItem.dateLastPurchased = Date().addingTimeInterval(-600_000) // pushes time stamp back about a week
 		
 		// look up matching location by name
 		// anything that doesn't match goes to the unknown location.
-		if let location = name2Location[codableShoppingItem.locationName]?.first {
+		if let location = name2Location[codableItem.locationName]?.first {
 			newItem.location = location
 		} else {
 			newItem.location = Location.unknownLocation()!
@@ -121,9 +121,9 @@ func insertNewLocations(from codableLocations: [LocationCodable]) {
 // insert s full, working database of ShoppingItems and Locations; play with it;
 // then delete everything and start over.
 func deleteAllData() {
-	let shoppingItems = ShoppingItem.allShoppingItems()
+	let shoppingItems = Item.allShoppingItems()
 	for item in shoppingItems {
-		ShoppingItem.delete(item: item)
+		Item.delete(item: item)
 	}
 	
 	let locations = Location.allLocations(userLocationsOnly: true)
@@ -157,9 +157,9 @@ extension Location: CodableStructRepresentable {
 	}
 }
 
-extension ShoppingItem: CodableStructRepresentable {
+extension Item: CodableStructRepresentable {
 	var codableProxy: some Encodable & Decodable {
-		return ShoppingItemCodable(from: self)
+		return ItemCodable(from: self)
 	}
 }
 

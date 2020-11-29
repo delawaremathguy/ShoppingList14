@@ -11,8 +11,8 @@ import SwiftUI
 struct ShoppingListTabView: View {
 	
 	// this is the @FetchRequest that ties this view to CoreData ShoppingItems
-	@FetchRequest(fetchRequest: ShoppingItem.fetchAllItems(onList: true))
-	private var itemsToBePurchased: FetchedResults<ShoppingItem>
+	@FetchRequest(fetchRequest: Item.fetchAllItems(onList: true))
+	private var itemsToBePurchased: FetchedResults<Item>
 
 	// local state to trigger showing a sheet to add a new item
 	@State private var isAddNewItemSheetShowing = false
@@ -22,7 +22,7 @@ struct ShoppingListTabView: View {
 	// which of these we do: move all off-list (true) or delete (false)
 	@State private var operationIsMoveToOtherList = false
 	// and in the case of a delete, which item we are deleting
-	@State private var itemToDelete: ShoppingItem?
+	@State private var itemToDelete: Item?
 	
 	// local state for are we a multisection display or not.  the default here is false,
 	// but an eager developer could easily store this default value in UserDefaults (?)
@@ -43,9 +43,7 @@ AddorModifyShoppingItemView inside its own NavigationView (so the Picker will wo
 						.padding(10)
 				}
 				.sheet(isPresented: $isAddNewItemSheetShowing) {
-					NavigationView {
-						AddorModifyShoppingItemView(addItemToShoppingList: true)
-					}
+					NavigationView { AddorModifyShoppingItemView(addItemToShoppingList: true) }
 				}
 				
 /* ---------
@@ -167,7 +165,7 @@ or multi-section shopping list view.
 			itemsToBePurchased.forEach({ $0.toggleOnListStatus() })
 			operationIsMoveToOtherList = false
 		} else if let item = itemToDelete {
-			ShoppingItem.delete(item: item, saveChanges: true)
+			Item.delete(item: item, saveChanges: true)
 		}
 	}
 
@@ -184,24 +182,24 @@ or multi-section shopping list view.
 struct shoppingListView: View {
 	
 	// all items on the shopping list
-	var itemsToBePurchased: FetchedResults<ShoppingItem>
+	var itemsToBePurchased: FetchedResults<Item>
 	// display format: one big section, or sectioned by Location
 	var multiSectionDisplay: Bool
 	// hooks back to the ShoppingListTabView enclosing view to
 	// support deletion from a context menu
 	@Binding var isConfirmationAlertShowing: Bool
-	@Binding var itemToDelete: ShoppingItem?
+	@Binding var itemToDelete: Item?
 	
 	// this is a temporary holding array for items being moved to the other list
 	// this is how we tell whether an item is currently in the process of being "checked"
-	@State private var itemsChecked = [ShoppingItem]()
+	@State private var itemsChecked = [Item]()
 	
 	// the notion of this struct is that we use it to tell us what to draw for a single
 	// section: its title and the items in the section
 	struct SectionData: Identifiable, Hashable {
 		var id: Int { hashValue }
 		let title: String
-		let items: [ShoppingItem]
+		let items: [Item]
 	}
 		
 	var body: some View {
@@ -212,9 +210,9 @@ struct shoppingListView: View {
 					ForEach(section.items) { item in
 						// display a single row here for 'item'
 						NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
-							SelectableItemRowView(item: item,
-																						selected: itemsChecked.contains(item),
-																						respondToTapOnSelector: handleItemTapped)
+							SelectableItemRowView(item: item, selected: itemsChecked.contains(item),
+																		sfSymbolName: "purchased",
+																		respondToTapOnSelector:  { handleItemTapped(item) })
 								.contextMenu {
 									shoppingItemContextMenu(item: item, deletionTrigger: {
 										itemToDelete = item
@@ -242,24 +240,16 @@ struct shoppingListView: View {
 		
 		// for a multi-section list, break out all the items into a dictionary
 		// with Locations as the keys.
-		let dict = Dictionary(grouping: itemsToBePurchased.compactMap({$0}), by: { $0.location! })
+		let dict = Dictionary(grouping: itemsToBePurchased.compactMap({$0}), by: { $0.location })
 		// now assemble the data by location visitationOrder
 		var completedSectionData = [SectionData]()
 		for key in dict.keys.sorted() {
-			completedSectionData.append(SectionData(title: key.name!, items: dict[key]!))
+			completedSectionData.append(SectionData(title: key.name, items: dict[key]!))
 		}
 		return completedSectionData
 	}
 	
-//	func locationsAssociated(with items: FetchedResults<ShoppingItem>) -> [Location] {
-//		// get all the locations associated with our items
-//		let allLocations = items.map({ $0.location! })
-//		// then turn these into a Set (which causes all duplicates to be removed)
-//		// and sort by visitationOrder (which gives an array)
-//		return Set(allLocations).sorted(by: <)
-//	}
-	
-	func handleItemTapped(_ item: ShoppingItem) {
+	func handleItemTapped(_ item: Item) {
 		if !itemsChecked.contains(item) {
 			itemsChecked.append(item)
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {

@@ -17,18 +17,18 @@ import SwiftUI
 struct PurchasedTabView: View {
 	
 	// this is the @FetchRequest that ties this view to CoreData
-	@FetchRequest(fetchRequest: ShoppingItem.fetchAllItems(onList: false))
-	private var purchasedItems: FetchedResults<ShoppingItem>
+	@FetchRequest(fetchRequest: Item.fetchAllItems(onList: false))
+	private var purchasedItems: FetchedResults<Item>
 	
 	// the usual @State variables to handle the Search field and control
 	// the action of the confirmation alert that you really do want to
 	// delete an item
 	@State private var searchText: String = ""
 	@State private var isDeleteItemAlertShowing: Bool = false
-	@State private var itemToDelete: ShoppingItem?
+	@State private var itemToDelete: Item?
 	@State private var isAddNewItemSheetShowing = false
 
-	@State private var itemsChecked = [ShoppingItem]()
+	@State private var itemsChecked = [Item]()
 	
 	
 	var body: some View {
@@ -61,7 +61,9 @@ struct PurchasedTabView: View {
 						Section(header: Text(todaySectionTitle()).textCase(.none)) {
 							ForEach(purchasedItems.filter({ qualifiedItem($0, today: true) })) { item in
 								NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
-									SelectableItemRowView(item: item, selected: itemsChecked.contains(item), respondToTapOnSelector: handleItemTapped)
+									SelectableItemRowView(item: item, selected: itemsChecked.contains(item),
+																				sfSymbolName: "cart",
+																				respondToTapOnSelector: { handleItemTapped(item) })
 										.contextMenu {
 											shoppingItemContextMenu(item: item, deletionTrigger: {
 												itemToDelete = item
@@ -76,7 +78,9 @@ struct PurchasedTabView: View {
 						Section(header: Text(otherPurchasesSectionTitle()).textCase(.none)) {
 							ForEach(purchasedItems.filter({ qualifiedItem($0, today: false) })) { item in
 								NavigationLink(destination: AddorModifyShoppingItemView(editableItem: item)) {
-									SelectableItemRowView(item: item, selected: itemsChecked.contains(item), respondToTapOnSelector: handleItemTapped)
+									SelectableItemRowView(item: item, selected: itemsChecked.contains(item),
+																				sfSymbolName: "cart",
+																				respondToTapOnSelector: { handleItemTapped(item) })
 										.contextMenu {
 											shoppingItemContextMenu(item: item,
 																							deletionTrigger: {
@@ -111,7 +115,7 @@ struct PurchasedTabView: View {
 		.onDisappear { print("PurchasedTabView disappear") }
 	}
 	
-	func qualifiedItem(_ item: ShoppingItem, today: Bool) -> Bool {
+	func qualifiedItem(_ item: Item, today: Bool) -> Bool {
 		var qualified = searchText.appearsIn(item.name)
 		if qualified && today {
 			qualified = item.dateLastPurchased >= Calendar.current.startOfDay(for: Date())
@@ -146,7 +150,7 @@ struct PurchasedTabView: View {
 		}
 	}
 	
-	func handleItemTapped(_ item: ShoppingItem) {
+	func handleItemTapped(_ item: Item) {
 		if !itemsChecked.contains(item) {
 			itemsChecked.append(item)
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
@@ -158,7 +162,7 @@ struct PurchasedTabView: View {
 	
 	func deleteSelectedItem() {
 		if let item = itemToDelete {
-			ShoppingItem.delete(item: item, saveChanges: true)
+			Item.delete(item: item, saveChanges: true)
 		}
 	}
 	
