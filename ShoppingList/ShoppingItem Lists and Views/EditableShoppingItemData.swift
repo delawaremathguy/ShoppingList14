@@ -18,10 +18,10 @@ import Foundation
 struct EditableShoppingItemData {
 	// the ShoppingItem, if any, associated with this data collection
 	// (nil if data for a new item that does not yet exist)
-	var shoppingItemID: UUID? = nil
+	var id: UUID? = nil
 	// all of the values here provide suitable defaults for a new shopping item
-	var itemName: String = ""
-	var itemQuantity: Int = 1
+	var name: String = ""
+	var quantity: Int = 1
 	var location = Location.unknownLocation()!
 	var onList: Bool = true
 	var isAvailable = true
@@ -34,13 +34,13 @@ struct EditableShoppingItemData {
 	// as a fault in Core Data.  i still don't quite get this -- it's something to do
 	// with how SwiftUI updates views and its interaction with a @FetchRequest.  this is the
 	// one, remaining issue with SwiftUI i hope to understand real soon.
-	init(shoppingItem: Item) {
-		shoppingItemID = shoppingItem.id
-		itemName = shoppingItem.name
-		itemQuantity = Int(shoppingItem.quantity)
-		location = shoppingItem.location
-		onList = shoppingItem.onList
-		isAvailable = shoppingItem.isAvailable
+	init(item: Item) {
+		id = item.id
+		name = item.name
+		quantity = Int(item.quantity)
+		location = item.location
+		onList = item.onList
+		isAvailable = item.isAvailable
 	}
 	
 	// provides basic init, but can be tweaked in case you want to provide
@@ -49,5 +49,5 @@ struct EditableShoppingItemData {
 		self.onList = onList
 	}
 	
-	var canBeSaved: Bool { itemName.count > 0 }
+	var canBeSaved: Bool { name.count > 0 }
 }

@@ -200,8 +200,8 @@ extension Item {
 
 	
 	func updateValues(from editableData: EditableShoppingItemData) {
-		name = editableData.itemName
-		quantity = editableData.itemQuantity
+		name = editableData.name
+		quantity = editableData.quantity
 		onList = editableData.onList
 		isAvailable = editableData.isAvailable
 		// if we are currently associated with a Location, then set new location
@@ -216,7 +216,7 @@ extension Item {
 	static func update(using editableData: EditableShoppingItemData) {
 		
 		// if we can find a ShoppingItem with the right id, use it, else create one
-		if let item = allShoppingItems().first(where: { $0.id == editableData.shoppingItemID }) {
+		if let item = allShoppingItems().first(where: { $0.id == editableData.id }) {
 			item.updateValues(from: editableData)
 		} else {
 			let newItem = Item.addNewItem()

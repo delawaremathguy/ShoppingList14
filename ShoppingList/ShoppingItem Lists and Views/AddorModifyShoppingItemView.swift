@@ -48,13 +48,13 @@ struct AddorModifyShoppingItemView: View {
 				
 				HStack(alignment: .firstTextBaseline) {
 					SLFormLabelText(labelText: "Name: ")
-					TextField("Item name", text: $editableData.itemName)
+					TextField("Item name", text: $editableData.name)
 				}
 				
-				Stepper(value: $editableData.itemQuantity, in: 1...10) {
+				Stepper(value: $editableData.quantity, in: 1...10) {
 					HStack {
 						SLFormLabelText(labelText: "Quantity: ")
-						Text("\(editableData.itemQuantity)")
+						Text("\(editableData.quantity)")
 					}
 				}
 				

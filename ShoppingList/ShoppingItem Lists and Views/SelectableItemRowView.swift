@@ -48,9 +48,9 @@ struct SelectableItemRowView: View {
 			VStack(alignment: .leading) {
 				
 				if itemData.isAvailable {
-					Text(itemData.itemName)
+					Text(itemData.name)
 				} else {
-					Text(itemData.itemName)
+					Text(itemData.name)
 						.italic()
 						.foregroundColor(Color(.systemGray3))
 						.strikethrough()
@@ -63,7 +63,7 @@ struct SelectableItemRowView: View {
 			
 			Spacer()
 			
-			Text("\(itemData.itemQuantity)")
+			Text("\(itemData.quantity)")
 				.font(.headline)
 				.foregroundColor(Color.blue)
 			
