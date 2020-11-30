@@ -76,6 +76,13 @@ struct AddorModifyItemView: View {
 					}
 				}
 				
+				if !editableData.dateText.isEmpty {
+					HStack(alignment: .firstTextBaseline) {
+						SLFormLabelText(labelText: "Last Purchased: ")
+						Text("\(editableData.dateText)")
+					}
+				}
+
 			} // end of Section
 			
 			// Section 2. Item Management (Delete), if present

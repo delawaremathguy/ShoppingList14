@@ -59,6 +59,7 @@ struct PurchasedItemsTabView: View {
 						
 						// 1. Items purchased today
 						Section(header: Text(todaySectionTitle()).textCase(.none)) {
+							// think about sorting this section in order of purchase ???
 							ForEach(purchasedItems.filter({ qualifiedItem($0, today: true) })) { item in
 								NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
 									SelectableItemRowView(item: item, selected: itemsChecked.contains(item),
@@ -117,13 +118,13 @@ struct PurchasedItemsTabView: View {
 	}
 	
 	func qualifiedItem(_ item: Item, today: Bool) -> Bool {
-		var qualified = searchText.appearsIn(item.name)
-		if qualified && today {
-			qualified = item.dateLastPurchased >= Calendar.current.startOfDay(for: Date())
+		if !searchText.appearsIn(item.name) {
+			return false
+		} else if today {
+			return item.dateLastPurchased >= Calendar.current.startOfDay(for: Date())
 		} else {
-			qualified = item.dateLastPurchased < Calendar.current.startOfDay(for: Date())
+			return item.dateLastPurchased < Calendar.current.startOfDay(for: Date())
 		}
-		return qualified
 	}
 	
 	func todaySectionTitle() -> String {

@@ -89,8 +89,8 @@ func insertNewItems(from codableItems: [ItemCodableProxy]) {
 		newItem.name = codableItem.name
 		newItem.quantity = codableItem.quantity
 		newItem.onList = codableItem.onList
-		newItem.isAvailable = codableItem.isAvailable
-		newItem.dateLastPurchased = Date().addingTimeInterval(-600_000) // pushes time stamp back about a week
+		newItem.isAvailable_ = codableItem.isAvailable
+		newItem.dateLastPurchased_ = nil // never purchased
 		
 		// look up matching location by name
 		// anything that doesn't match goes to the unknown location.
@@ -109,10 +109,10 @@ func insertNewLocations(from codableLocations: [LocationCodableProxy]) {
 		let newLocation = Location.addNewLocation() // new UUID created here
 		newLocation.name = codableLocation.name
 		newLocation.visitationOrder = codableLocation.visitationOrder
-		newLocation.red = codableLocation.red
-		newLocation.green = codableLocation.green
-		newLocation.blue = codableLocation.blue
-		newLocation.opacity = codableLocation.opacity
+		newLocation.red_ = codableLocation.red
+		newLocation.green_ = codableLocation.green
+		newLocation.blue_ = codableLocation.blue
+		newLocation.opacity_ = codableLocation.opacity
 	}
 }
 

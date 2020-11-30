@@ -47,7 +47,15 @@ extension Location: Comparable {
 	
 	// this coalesces the four uiColor components into a single uiColor
 	var uiColor: UIColor {
-		UIColor(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: CGFloat(opacity))
+		get { UIColor(red: CGFloat(red_), green: CGFloat(green_), blue: CGFloat(blue_), alpha: CGFloat(opacity_)) }
+		set {
+			if let components = newValue.cgColor.components {
+				red_ = Double(components[0])
+				green_ = Double(components[1])
+				blue_ = Double(components[2])
+				opacity_ = Double(components[3])
+			}
+		}
 	}
 
 	
@@ -104,10 +112,10 @@ extension Location: Comparable {
 		let unknownLocation = Location(context: PersistentStore.shared.context)
 		unknownLocation.id = UUID()
 		unknownLocation.name_ = kUnknownLocationName
-		unknownLocation.red = 0.5
-		unknownLocation.green = 0.5
-		unknownLocation.blue = 0.5
-		unknownLocation.opacity = 0.5
+		unknownLocation.red_ = 0.5
+		unknownLocation.green_ = 0.5
+		unknownLocation.blue_ = 0.5
+		unknownLocation.opacity_ = 0.5
 		unknownLocation.visitationOrder_ = kUnknownLocationVisitationOrder
 	}
 
@@ -180,10 +188,10 @@ extension Location: Comparable {
 	func updateValues(from editableData: EditableLocationData) {
 		name_ = editableData.locationName
 		visitationOrder_ = Int32(editableData.visitationOrder)
-		red = editableData.red
-		green = editableData.green
-		blue = editableData.blue
-		opacity = editableData.opacity
+		red_ = editableData.red
+		green_ = editableData.green
+		blue_ = editableData.blue
+		opacity_ = editableData.opacity
 	}
 
 	static func saveChanges() {

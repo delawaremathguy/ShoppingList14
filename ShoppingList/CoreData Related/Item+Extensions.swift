@@ -15,16 +15,19 @@ extension Item {
 	// MARK: - Computed Properties
 	
 	// the date last purchased.  this fronts a Core Data optional attribute
-	var dateLastPurchased: Date {
-		get { dateLastPurchased_ ?? Date() }
-		set { dateLastPurchased_ = newValue }
-	}
+	// when no date is available, we'll set the date to ReferenceDate, for purposes of
+	// always having one for comparisons ("today" versus "earlier")
+	var dateLastPurchased: Date { dateLastPurchased_ ?? Date(timeIntervalSinceReferenceDate: 1) }
+	var hasBeenPurchased: Bool { dateLastPurchased_ != nil }
 	
 	// the name.  this fronts a Core Data optional attribute
 	var name: String {
 		get { name_ ?? "Not Available" }
 		set { name_ = newValue }
 	}
+	
+	// whether the item is available.  this fronts a Core Data boolean
+	var isAvailable: Bool { isAvailable_ }
 	
 	// whether the item is on the list.  this fronts a Core Data boolean,
 	// but when changed from true to false, it signals a purchase, so update
@@ -60,8 +63,9 @@ extension Item {
 	
 	// the color = the color of its associated location
 	var uiColor: UIColor {
-		location_?.uiColor ?? UIColor(displayP3Red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
+		location.uiColor //?? UIColor(displayP3Red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
 	}
+	
 	
 	// MARK: - Useful Fetch Requests
 	
@@ -168,7 +172,7 @@ extension Item {
 	
 	// toggles the availability flag for an item
 	func toggleAvailableStatus() {
-		isAvailable = !isAvailable
+		isAvailable_ = !isAvailable_
 		Item.saveChanges()
 	}
 
@@ -179,20 +183,20 @@ extension Item {
 	}
 
 	func markAvailable() {
-		isAvailable = true
+		isAvailable_ = true
 		Item.saveChanges()
 	}
 
 	
 	func updateValues(from editableData: EditableItemData) {
-		name = editableData.name
-		quantity = editableData.quantity
-		onList = editableData.onList
-		isAvailable = editableData.isAvailable
+		name_ = editableData.name
+		quantity_ = Int32(editableData.quantity)
+		onList_ = editableData.onList
+		isAvailable_ = editableData.isAvailable
 		// if we are currently associated with a Location, then set new location
-		// (which breaks the previous association with a location
-		location = editableData.location
-		// last thing: the associated Location may want to know about this
+		// (which breaks the previous association of this Item with a location)
+		location_ = editableData.location
+		// last thing: the associated Location may want to know about this?
 		//location?.objectWillChange.send()
 	}
 

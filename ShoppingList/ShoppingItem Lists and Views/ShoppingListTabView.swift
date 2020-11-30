@@ -158,6 +158,16 @@ or multi-section shopping list view.
 
 } // end of ShoppingListTabView
 
+// MARK: - A Generic SectionData struct
+
+// the notion of this struct is that we use it to tell us what to draw for a single
+// section: its title and the items in the section
+struct SectionData<T: Hashable>: Identifiable, Hashable {
+	var id: Int { hashValue }
+	let title: String
+	let items: [T]
+}
+
 // MARK: - Shopping List Display
 
 // this shows itemsToBePurchased as either a single section or as multiple
@@ -181,14 +191,6 @@ struct shoppingListView: View {
 	// this is how we tell whether an item is currently in the process of being "checked"
 	@State private var itemsChecked = [Item]()
 	
-	// the notion of this struct is that we use it to tell us what to draw for a single
-	// section: its title and the items in the section
-	struct SectionData: Identifiable, Hashable {
-		var id: Int { hashValue }
-		let title: String
-		let items: [Item]
-	}
-		
 	var body: some View {
 		Form {
 			ForEach(sectionData(multiSectionDisplay: multiSectionDisplay)) { section in
@@ -216,7 +218,7 @@ struct shoppingListView: View {
 	// the idea of this function is to break out the itemsToBePurchased by section,
 	// according to whether the list is displayed as a single section or in multiple
 	// sections (one for each Location that contains shopping items on the list)
-	func sectionData(multiSectionDisplay: Bool) -> [SectionData] {
+	func sectionData(multiSectionDisplay: Bool) -> [SectionData<Item>] {
 		
 		// the easy case first: one section with a title and all the items.
 		if !multiSectionDisplay {
@@ -229,7 +231,7 @@ struct shoppingListView: View {
 		// with Locations as the keys.
 		let dict = Dictionary(grouping: itemsToBePurchased.compactMap({$0}), by: { $0.location })
 		// now assemble the data by location visitationOrder
-		var completedSectionData = [SectionData]()
+		var completedSectionData = [SectionData<Item>]()
 		for key in dict.keys.sorted() {
 			completedSectionData.append(SectionData(title: key.name, items: dict[key]!))
 		}

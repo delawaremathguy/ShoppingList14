@@ -26,6 +26,8 @@ struct EditableItemData {
 	var onList: Bool = true
 	var isAvailable = true
 	
+	var dateText = "" // for display only, not editable
+	
 	// this copies all the editable data from an incoming Item.  this looks fairly
 	// benign, but its in the lines below that crashes did/could occur in earlier versions
 	// because of the main, underlying problem: if an item is deleted somewhere outside
@@ -41,6 +43,9 @@ struct EditableItemData {
 		location = item.location
 		onList = item.onList
 		isAvailable = item.isAvailable
+		if item.hasBeenPurchased {
+			dateText = item.dateLastPurchased.dateText(style: .medium)
+		}
 	}
 	
 	// provides basic init, but can be tweaked in case you want to provide

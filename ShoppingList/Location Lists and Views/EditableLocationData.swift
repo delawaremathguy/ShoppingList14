@@ -22,10 +22,10 @@ struct EditableLocationData {
 	init(location: Location) {
 		locationName = location.name
 		visitationOrder = Int(location.visitationOrder)
-		red = location.red
-		green = location.green
-		blue = location.blue
-		opacity = location.opacity
+		red = location.red_
+		green = location.green_
+		blue = location.blue_
+		opacity = location.opacity_
 	}
 	
 	mutating func updateColor(from color: Color) {

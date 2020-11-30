@@ -117,7 +117,7 @@ struct AddorModifyLocationView: View {
 		if !dataHasBeenLoaded {
 			if let location = editableLocation {
 				editableData = EditableLocationData(location: location)
-				editableColor = Color(.sRGB, red: location.red, green: location.green, blue: location.blue, opacity: location.opacity)
+				editableColor = Color(location.uiColor)
 			} // else we already have default, editable data set up right
 			dataHasBeenLoaded = true
 		}

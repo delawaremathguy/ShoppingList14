@@ -21,9 +21,9 @@ struct LocationCodableProxy: Codable {
 	init(from location: Location) {
 		name = location.name
 		visitationOrder = location.visitationOrder
-		red = location.red
-		green = location.green
-		blue = location.blue
-		opacity = location.opacity
+		red = location.red_
+		green = location.green_
+		blue = location.blue_
+		opacity = location.opacity_
 	}
 }
