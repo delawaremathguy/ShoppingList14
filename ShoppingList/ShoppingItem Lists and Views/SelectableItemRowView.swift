@@ -52,7 +52,6 @@ struct SelectableItemRowView: View {
 				} else {
 					Text(itemData.name)
 						.italic()
-						.foregroundColor(Color(.systemGray3))
 						.strikethrough()
 				}
 				

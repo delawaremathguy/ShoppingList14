@@ -22,42 +22,19 @@ extension Location: Comparable {
 	
 	// MARK: - Computed properties
 	
-	// name: fronts Core Data attribute name_
+	// name: fronts Core Data attribute name_ that is optional
 	var name: String {
 		get { name_ ?? "Unknown Name" }
 		set { name_ = newValue }
 	}
 	
-	// red: fronts Core Data attribute red_
-	var red: Double {
-		get { red_ }
-		set { red_ = newValue }
-	}
-	
-	// green: fronts Core Data attribute green_
-	var green: Double {
-		get { green_ }
-		set { green_ = newValue }
-	}
-
-	// blue: fronts Core Data attribute blue_
-	var blue: Double {
-		get { blue_ }
-		set { blue_ = newValue }
-	}
-
-	// opacity: fronts Core Data attribute opacity_
-	var opacity: Double {
-		get {opacity_ }
-		set { opacity_ = newValue }
-	}
-
-	// visitationOrder: fronts Core Data attribute visitationOrder_
+	// visitationOrder: fronts Core Data attribute visitationOrder_ that is Int32
 	var visitationOrder: Int {
 		get { Int(visitationOrder_) }
 		set { visitationOrder_ = Int32(newValue) }
 	}
 	
+	// items: fronts Core Data attribute items_ that is an NSSet
 	var items: [Item] {
 		if let items = items_ as? Set<Item> {
 			return items.sorted(by: { $0.name < $1.name })
@@ -65,11 +42,12 @@ extension Location: Comparable {
 		return []
 	}
 	
+	// simplified test of "is the unknown location"
 	var isUnknownLocation: Bool { visitationOrder_ == kUnknownLocationVisitationOrder }
 	
-	
+	// this coalesces the four uiColor components into a single uiColor
 	var uiColor: UIColor {
-		UIColor(red: CGFloat(red_), green: CGFloat(green_), blue: CGFloat(blue_), alpha: CGFloat(opacity_))
+		UIColor(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: CGFloat(opacity))
 	}
 
 	
@@ -126,10 +104,10 @@ extension Location: Comparable {
 		let unknownLocation = Location(context: PersistentStore.shared.context)
 		unknownLocation.id = UUID()
 		unknownLocation.name_ = kUnknownLocationName
-		unknownLocation.red_ = 0.5
-		unknownLocation.green_ = 0.5
-		unknownLocation.blue_ = 0.5
-		unknownLocation.opacity_ = 0.5
+		unknownLocation.red = 0.5
+		unknownLocation.green = 0.5
+		unknownLocation.blue = 0.5
+		unknownLocation.opacity = 0.5
 		unknownLocation.visitationOrder_ = kUnknownLocationVisitationOrder
 	}
 
@@ -154,6 +132,8 @@ extension Location: Comparable {
 	// the default status on a delete is to always save changes out to disk
 	// the only time not to do this (saveChanges = false) is if you delete a bunch
 	// of locations all at the same time.
+	//
+	// one note here: we'll assume you want to save this change by default.
 	static func delete(_ location: Location, saveChanges: Bool = true) {
 		// you cannot delete the unknownLocation
 		guard location.visitationOrder_ != kUnknownLocationVisitationOrder else { return }
@@ -169,7 +149,8 @@ extension Location: Comparable {
 		for item in itemsAtThisLocation {
 			item.location = theUnknownLocation
 		}
-		// and finish the deletion and make sure the context has gets cleaned up.
+		// and finish the deletion and make sure the context has gets cleaned up
+		// right now in memory.  then save if requested
 		context?.delete(location)
 		context?.processPendingChanges()
 		// save to disk if requested
@@ -199,10 +180,10 @@ extension Location: Comparable {
 	func updateValues(from editableData: EditableLocationData) {
 		name_ = editableData.locationName
 		visitationOrder_ = Int32(editableData.visitationOrder)
-		red_ = editableData.red
-		green_ = editableData.green
-		blue_ = editableData.blue
-		opacity_ = editableData.opacity
+		red = editableData.red
+		green = editableData.green
+		blue = editableData.blue
+		opacity = editableData.opacity
 	}
 
 	static func saveChanges() {

@@ -53,18 +53,6 @@ or multi-section shopping list view.
 
 				if itemsToBePurchased.count == 0 {
 					EmptyListView(listName: "Shopping")
-//				} else if multiSectionDisplay {
-//					SLSimpleHeaderView(label: "Items Remaining: \(itemsToBePurchased.count)")
-//					MultiSectionShoppingListView(itemsToBePurchased: itemsToBePurchased,
-//																			 isConfirmationAlertShowing: $isConfirmationAlertShowing,
-//																			 itemToDelete: $itemToDelete)
-//				} else {
-//					//SLSimpleHeaderView(label: "Items Listed: \(viewModel.itemCount)")
-//					Rectangle()
-//						.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
-//					SingleSectionShoppingListView(itemsToBePurchased: itemsToBePurchased,
-//																				isConfirmationAlertShowing: $isConfirmationAlertShowing,
-//																				itemToDelete: $itemToDelete)
 				} else {
 					shoppingListView(itemsToBePurchased: itemsToBePurchased,
 																	multiSectionDisplay: multiSectionDisplay,
@@ -107,7 +95,6 @@ or multi-section shopping list view.
 				)
 			}
 
-			
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())
 			.onAppear {
@@ -165,7 +152,7 @@ or multi-section shopping list view.
 			itemsToBePurchased.forEach({ $0.toggleOnListStatus() })
 			operationIsMoveToOtherList = false
 		} else if let item = itemToDelete {
-			Item.delete(item: item, saveChanges: true)
+			Item.delete(item)
 		}
 	}
 
@@ -251,8 +238,12 @@ struct shoppingListView: View {
 	
 	func handleItemTapped(_ item: Item) {
 		if !itemsChecked.contains(item) {
+			// put into our list of what's about to be removed, and because
+			// itemsChecked is a @State variable, we will see a momentary
+			// animation showing the change.
 			itemsChecked.append(item)
-			DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+			// queue the actual removal to allow animation to run
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.40) {
 				item.toggleOnListStatus()
 				itemsChecked.removeAll(where: { $0 == item })
 			}

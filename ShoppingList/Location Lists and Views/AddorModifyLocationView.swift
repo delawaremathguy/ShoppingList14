@@ -78,7 +78,7 @@ struct AddorModifyLocationView: View {
 			Alert(title: Text("Delete \'\(editableLocation!.name)\'?"),
 						message: Text("Are you sure you want to delete this location?"),
 						primaryButton: .cancel(Text("No")),
-						secondaryButton: .destructive(Text("Yes"), action: deleteLocation)
+						secondaryButton: .destructive(Text("Yes"), action: { deleteAndDismiss(editableLocation!) })
 			)}
 	}
 	
@@ -86,13 +86,11 @@ struct AddorModifyLocationView: View {
 		return editableLocation == nil ? Text("Add New Location") : Text("Modify Location")
 	}
 	
-	func deleteLocation() {
-		if let location = editableLocation {
-			Location.delete(location)
-			presentationMode.wrappedValue.dismiss()
-		}
+	func deleteAndDismiss(_ location: Location) {
+		Location.delete(location)
+		presentationMode.wrappedValue.dismiss()
 	}
-	
+
 	// the cancel button
 	func cancelButton() -> some View {
 		Button(action : { presentationMode.wrappedValue.dismiss() }){

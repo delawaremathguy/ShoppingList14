@@ -27,7 +27,7 @@ struct MainView: View {
 				Text("Shopping List")
 			}.tag(1)
 			
-			PurchasedTabView()
+			PurchasedItemsTabView()
 				.tabItem {
 					Image(systemName: "purchased")
 					Text("Purchased")

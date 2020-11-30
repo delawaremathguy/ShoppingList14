@@ -14,7 +14,7 @@ import SwiftUI
 // catalog, of sorts, although we only show items that we know about
 // that are not already on the shopping list.
 
-struct PurchasedTabView: View {
+struct PurchasedItemsTabView: View {
 	
 	// this is the @FetchRequest that ties this view to CoreData
 	@FetchRequest(fetchRequest: Item.fetchAllItems(onList: false))
@@ -97,7 +97,8 @@ struct PurchasedTabView: View {
 						Alert(title: Text("Delete \'\(itemToDelete!.name)\'?"),
 									message: Text("Are you sure you want to delete this item?"),
 									primaryButton: .cancel(Text("No")),
-									secondaryButton: .destructive(Text("Yes"), action: deleteSelectedItem)
+									secondaryButton: .destructive(Text("Yes"),
+																		action: { Item.delete(itemToDelete!) })
 						)}
 					//.listStyle(PlainListStyle())
 					
@@ -152,19 +153,17 @@ struct PurchasedTabView: View {
 	
 	func handleItemTapped(_ item: Item) {
 		if !itemsChecked.contains(item) {
+			// put into our list of what's about to be removed, and because
+			// itemsChecked is a @State variable, we will see a momentary
+			// animation showing the change.
 			itemsChecked.append(item)
-			DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+			// queue the actual removal to allow animation to run
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.40) {
 				item.toggleOnListStatus()
 				itemsChecked.removeAll(where: { $0 == item })
 			}
 		}
 	}
-	
-	func deleteSelectedItem() {
-		if let item = itemToDelete {
-			Item.delete(item: item, saveChanges: true)
-		}
-	}
-	
+
 }
 

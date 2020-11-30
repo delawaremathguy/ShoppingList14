@@ -70,14 +70,14 @@ func writeAsJSON<T>(items: [T], to filename: String) where T: CodableStructRepre
 
 func populateDatabaseFromJSON() {
 	// it sure is easy to do with HWS's Bundle extension (!)
-	let codableLocations: [LocationCodable] = Bundle.main.decode(from: kLocationsFilename)
+	let codableLocations: [LocationCodableProxy] = Bundle.main.decode(from: kLocationsFilename)
 	insertNewLocations(from: codableLocations)
-	let codableItems: [ItemCodable] = Bundle.main.decode(from: kItemsFilename)
+	let codableItems: [ItemCodableProxy] = Bundle.main.decode(from: kItemsFilename)
 	insertNewItems(from: codableItems)
 	Item.saveChanges()
 }
 
-func insertNewItems(from codableItems: [ItemCodable]) {
+func insertNewItems(from codableItems: [ItemCodableProxy]) {
 	
 	// get all Locations that are not the unknown location
 	// group by name for lookup below when adding an item to a location
@@ -104,7 +104,7 @@ func insertNewItems(from codableItems: [ItemCodable]) {
 }
 
 // used to insert data from JSON files in the app bundle
-func insertNewLocations(from codableLocations: [LocationCodable]) {
+func insertNewLocations(from codableLocations: [LocationCodableProxy]) {
 	for codableLocation in codableLocations {
 		let newLocation = Location.addNewLocation() // new UUID created here
 		newLocation.name = codableLocation.name
@@ -113,7 +113,6 @@ func insertNewLocations(from codableLocations: [LocationCodable]) {
 		newLocation.green = codableLocation.green
 		newLocation.blue = codableLocation.blue
 		newLocation.opacity = codableLocation.opacity
-//		NotificationCenter.default.post(name: .locationAdded, object: newLocation)
 	}
 }
 
@@ -125,13 +124,13 @@ func deleteAllData() {
 	let items = Item.allItems()
 	for item in items {
 		context = item.managedObjectContext
-		Item.delete(item: item)
+		Item.delete(item, saveChanges: false)
 	}
 	
 	let locations = Location.allLocations(userLocationsOnly: true)
 	for location in locations {
 		context = location.managedObjectContext
-		Location.delete(location)
+		Location.delete(location, saveChanges: false)
 	}
 	
 	context?.processPendingChanges()
@@ -139,7 +138,7 @@ func deleteAllData() {
 }
 
 
-// this is a way to find out where the CoreData database lives,
+// this is a cute way to find out where the CoreData database lives,
 // primarily for use in the simulator
 //func printCoreDataDBPath() {
 //	let path = FileManager
@@ -157,13 +156,13 @@ func deleteAllData() {
 
 extension Location: CodableStructRepresentable {
 	var codableProxy: some Encodable & Decodable {
-		return LocationCodable(from: self)
+		return LocationCodableProxy(from: self)
 	}
 }
 
 extension Item: CodableStructRepresentable {
 	var codableProxy: some Encodable & Decodable {
-		return ItemCodable(from: self)
+		return ItemCodableProxy(from: self)
 	}
 }
 

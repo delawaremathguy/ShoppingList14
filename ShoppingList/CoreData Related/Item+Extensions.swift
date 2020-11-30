@@ -26,25 +26,27 @@ extension Item {
 		set { name_ = newValue }
 	}
 	
-	// whether the item is on the list.  this fronts a Core Data optional attribute
-	var onList: Bool {
+	// whether the item is on the list.  this fronts a Core Data boolean,
+	// but when changed from true to false, it signals a purchase, so update
+	// the lastDatePurchased
+	var onList: Bool { 
 		get { onList_ }
-		set { onList_ = newValue }
-	}
-	
-	// whether the item is available.  this fronts a Core Data optional attribute
-	var isAvailable: Bool {
-		get { isAvailable_ }
-		set { isAvailable_ = newValue }
+		set {
+			onList_ = newValue
+			if !onList_ { // just moved off list, so record date
+				dateLastPurchased_ = Date()
+			}
+		}
 	}
 	
 	// quantity of the item.   this fronts a Core Data optional attribute
+	// but we need to do an Int <--> Int32 conversion
 	var quantity: Int {
 		get { Int(quantity_) }
 		set { quantity_ = Int32(newValue) }
 	}
 	
-	// item's associated location.  this fronts a Core Data optional attribute
+	// an item's associated location.  this fronts a Core Data optional attribute
 	var location: Location {
 		get { location_! }
 		set { location_ = newValue }
@@ -110,35 +112,6 @@ extension Item {
 		return [Item]()
 	}
 	
-//	static func purchasedItemsFetchRequest() -> [Item] {
-//		let context = PersistentStore.shared.context
-//		let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
-//		fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name_", ascending: true)]
-//		fetchRequest.predicate = NSPredicate(format: "onList_ == %d", false, Calendar.current.startOfDay(for: Date()) as CVarArg)
-//		do {
-//			let items = try context.fetch(fetchRequest)
-//			return items
-//		}
-//		catch let error as NSError {
-//			print("Error getting items purchased today : \(error.localizedDescription), \(error.userInfo)")
-//		}
-//		return [Item]()
-//	}
-	
-//	static func currentShoppingList(onList: Bool) -> [Item] {
-//		let context = PersistentStore.shared.context
-//		let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
-//		fetchRequest.predicate = NSPredicate(format: "onList == %d", onList)
-//		do {
-//			let items = try context.fetch(fetchRequest)
-//			return items
-//		}
-//		catch let error as NSError {
-//			print("Error getting Items on the list: \(error.localizedDescription), \(error.userInfo)")
-//		}
-//		return [Item]()
-//	}
-	
 	// addNewItem is the user-facing add of a new entity.  since these are
 	// Identifiable objects, this makes sure we give the entity a unique id, then
 	// hand it back so the user can fill in what's important to them.
@@ -149,23 +122,38 @@ extension Item {
 		return newItem
 	}
 
+	// saveChanges calls back through the PersistentStore
 	static func saveChanges() {
 		PersistentStore.shared.saveContext()
 	}
 
 	
-	// this is a little tricky to understand:
+	// this sequence of deletion is a little tricky to understand !
 	// deleting an item in Core Data doesn't really delete it ... it sort of hangs around
-	// a little bit, eventually getting removed (likely once the actual save goes out
-	// to disk).  this confuses the hell out of a @FetchRequest, which doesn't seem to
-	// get the message right away, and so handling an objectWillChange message can
-	// make it try to use what is really a non-existent shopping item.
+	// a little bit, eventually getting removed (likely in the next available event loop, if
+	// that's what they still call it).  what you can find, in some cases, is a zombine reference
+	// to a deleted object for which .isDeleted is false and .isFault is true -- but it will
+	// shortly go away from the CD memory graph when CD gets caught up with all changes.
 	//
-	// so this new code, which seems to work (he says, confidently) is to call
-	// processPendingChanges() which syncs up the object graph in memory right away and this,
-	// apparently, is enough to to get the message out to everyone.
-	
-	static func delete(item: Item, saveChanges: Bool = false) {
+	// this is a real problem for SwiftUI.  if any view is holding a reference to a
+	// deleted CD object, and its body property is called by SwiftUI, you have problems,
+	// so its particularly helpful if you always nil-coalesce CD optionals in your view code
+	// (asking for item.name_! when item has been deleted will cause a force-unwrap, because
+	// the item's in-memory representation has been zeroed out and name_ is nil).
+	//
+	// the typical problem is this: View A is driven by a @FetchRequest for Items; it
+	// draws a list of those items, with each item appearing in its own subview, View B, for which
+	// the item is marked as an @ObservedObject.  an item is deleted here; View A detects the change,
+	// but apparently doesn't yet know about the deletion until CD tidies itself up. View A redraws,
+	// causing View B to be re-evaluated with a now, non-existent object.
+	//
+	// so i now make a call to processPendingChanges() to sync up the object graph in memory
+	// right away.  this, apparently, is enough to avoid most problems.  unfortunately,
+	// there may still be a little work to do in the future on this, so using nil-coalescing
+	// code is highly recommended.
+	//
+	// one note here: we'll assume you want to save this change by default.
+	static func delete(_ item: Item, saveChanges: Bool = true) {
 		// remove the reference to this item from its associated location
 		// by resetting its (real, Core Data) location to nil
 		item.location_ = nil
@@ -178,18 +166,15 @@ extension Item {
 		}
 	}
 	
-	// changes availability flag for an item
+	// toggles the availability flag for an item
 	func toggleAvailableStatus() {
-		isAvailable.toggle()
+		isAvailable = !isAvailable
 		Item.saveChanges()
 	}
 
 	// changes onList flag for an item
 	func toggleOnListStatus() {
-		onList.toggle()
-		if !onList { // just moved off list, so record date
-			dateLastPurchased = Date()
-		}
+		onList = !onList
 		Item.saveChanges()
 	}
 

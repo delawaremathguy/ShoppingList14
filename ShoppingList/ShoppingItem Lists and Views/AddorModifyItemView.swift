@@ -97,7 +97,7 @@ struct AddorModifyItemView: View {
 				Alert(title: Text("Delete \'\(editableItem!.name)\'?"),
 							message: Text("Are you sure you want to delete this item?"),
 							primaryButton: .cancel(Text("No")),
-							secondaryButton: .destructive(Text("Yes"), action: deleteItem)
+							secondaryButton: .destructive(Text("Yes"), action: { deleteAndDismiss(editableItem!) })
 				)}
 	}
 		
@@ -147,11 +147,9 @@ struct AddorModifyItemView: View {
 	
 	// called after confirmation to delete an item.
 	
-	func deleteItem() {
-		if let item = editableItem {
-			Item.delete(item: item, saveChanges: true)
-			presentationMode.wrappedValue.dismiss()
-		}
+	func deleteAndDismiss(_ item: Item) {
+		Item.delete(item)
+		presentationMode.wrappedValue.dismiss()
 	}
 }
 

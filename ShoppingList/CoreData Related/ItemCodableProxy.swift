@@ -13,7 +13,7 @@ import Foundation
 // there's some assumption here that location names are unique, because by representing
 // an Item in JSON, we're asking that the item can be later hooked back up
 // to its Location
-struct ItemCodable: Codable {
+struct ItemCodableProxy: Codable {
 	var name: String
 	var onList: Bool
 	var isAvailable: Bool

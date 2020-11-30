@@ -10,7 +10,7 @@ import Foundation
 
 // this is a simple struct to extract only the fields of a Location
 // that we would import or export in such a way that the result is Codable
-struct LocationCodable: Codable {
+struct LocationCodableProxy: Codable {
 	var name: String
 	var visitationOrder: Int
 	var red: Double
