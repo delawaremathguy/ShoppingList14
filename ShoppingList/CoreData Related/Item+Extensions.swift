@@ -50,9 +50,15 @@ extension Item {
 	}
 	
 	// an item's associated location.  this fronts a Core Data optional attribute
+	// if you change an item's location, the old and the new Location may want to
+	// know that some of their computed properties might be invalidated
 	var location: Location {
 		get { location_! }
-		set { location_ = newValue }
+		set {
+			location.objectWillChange.send()
+			location_ = newValue
+			location_?.objectWillChange.send()
+		}
 	}
 	
 	// the name of its associated location
@@ -188,7 +194,7 @@ extension Item {
 	}
 
 	
-	func updateValues(from editableData: EditableItemData) {
+	private func updateValues(from editableData: EditableItemData) {
 		name_ = editableData.name
 		quantity_ = Int32(editableData.quantity)
 		onList_ = editableData.onList
@@ -196,8 +202,10 @@ extension Item {
 		// if we are currently associated with a Location, then set new location
 		// (which breaks the previous association of this Item with a location)
 		location_ = editableData.location
-		// last thing: the associated Location may want to know about this?
-		//location?.objectWillChange.send()
+		// last thing: the associated Location may want to know about a change
+		// in one of its items, since there are computed properties on Location
+		// such as the number of items
+		location_?.objectWillChange.send()
 	}
 
 	// updates data for an Item that the user has directed from an Add or Modify View.

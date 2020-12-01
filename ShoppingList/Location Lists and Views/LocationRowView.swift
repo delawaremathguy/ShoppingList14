@@ -17,7 +17,7 @@ struct LocationRowData {
 	
 	init(location: Location) {
 		name = location.name
-		itemCount = location.items.count
+		itemCount = location.itemCount
 		visitationOrder = location.visitationOrder
 		uiColor = location.uiColor
 	}

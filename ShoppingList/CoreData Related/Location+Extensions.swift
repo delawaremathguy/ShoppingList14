@@ -23,15 +23,25 @@ extension Location: Comparable {
 	// MARK: - Computed properties
 	
 	// name: fronts Core Data attribute name_ that is optional
+	// if you change an location's name, its associated items may want to
+	// know that some of their computed locationName properties have been invalidated
 	var name: String {
 		get { name_ ?? "Unknown Name" }
-		set { name_ = newValue }
+		set {
+			name_ = newValue
+			items.forEach({ $0.objectWillChange.send() })
+		}
 	}
 	
 	// visitationOrder: fronts Core Data attribute visitationOrder_ that is Int32
+	// if you change an location's visitationOrder, its associated items may want to
+	// know that some of their computed visitationOrder property has been invalidated
 	var visitationOrder: Int {
 		get { Int(visitationOrder_) }
-		set { visitationOrder_ = Int32(newValue) }
+		set {
+			visitationOrder_ = Int32(newValue)
+			items.forEach({ $0.objectWillChange.send() })
+		}
 	}
 	
 	// items: fronts Core Data attribute items_ that is an NSSet
@@ -42,10 +52,15 @@ extension Location: Comparable {
 		return []
 	}
 	
+	// itemCount: comuted property from Core Data items_
+	var itemCount: Int { items_?.count ?? 0 }
+	
 	// simplified test of "is the unknown location"
 	var isUnknownLocation: Bool { visitationOrder_ == kUnknownLocationVisitationOrder }
 	
-	// this coalesces the four uiColor components into a single uiColor
+	// this collects the four uiColor components into a single uiColor
+	// if you change a location's uiColor, its associated items will want to
+	// know that their uiColor computed properties have been invalidated
 	var uiColor: UIColor {
 		get { UIColor(red: CGFloat(red_), green: CGFloat(green_), blue: CGFloat(blue_), alpha: CGFloat(opacity_)) }
 		set {
@@ -54,11 +69,11 @@ extension Location: Comparable {
 				green_ = Double(components[1])
 				blue_ = Double(components[2])
 				opacity_ = Double(components[3])
+				items.forEach({ $0.objectWillChange.send() })
 			}
 		}
 	}
 
-	
 	// MARK: - Useful Fetch Request
 	
 	class func fetchAllLocations() -> NSFetchRequest<Location> {
@@ -151,9 +166,11 @@ extension Location: Comparable {
 		let context = location.managedObjectContext
 		let itemsAtThisLocation = location.items
 		
-		// reset location associated with all of these to the unknownLocation
-		// (which in turn, removes the current association with location)
+		// reset location associated with each of these to the unknownLocation
+		// (which in turn, removes the current association with location). additionally,
+		// this could affect each item's computed properties
 		let theUnknownLocation = Location.unknownLocation()!
+		itemsAtThisLocation.forEach({ $0.location = theUnknownLocation })
 		for item in itemsAtThisLocation {
 			item.location = theUnknownLocation
 		}
@@ -186,12 +203,19 @@ extension Location: Comparable {
 	// MARK: - Object Methods
 	
 	func updateValues(from editableData: EditableLocationData) {
+		
+		// we first make these changes directly in Core Data
 		name_ = editableData.locationName
 		visitationOrder_ = Int32(editableData.visitationOrder)
 		red_ = editableData.red
 		green_ = editableData.green
 		blue_ = editableData.blue
 		opacity_ = editableData.opacity
+		
+		// items associated with this location may want to know about
+		// (some of) these changes.  reason: items rely on knowing some computed
+		// properties such as color, location name, and visitationOrder.
+		items.forEach({ $0.objectWillChange.send() })
 	}
 
 	static func saveChanges() {

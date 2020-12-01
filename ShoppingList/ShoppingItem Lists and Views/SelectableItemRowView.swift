@@ -33,7 +33,7 @@ struct SelectableItemRowView: View {
 		self.sfSymbolName = sfSymbolName
 		self.respondToTapOnSelector = respondToTapOnSelector
 		
-		//print("SelectableItemRowView instantiated for \(item.name)")
+		print("SelectableItemRowView instantiated for \(item.name)")
 	}
 	
 	var body: some View {

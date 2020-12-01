@@ -48,16 +48,16 @@ AddorModifyItemView inside its own NavigationView (so the Picker will work!)
 				
 /* ---------
 2. we display either a "List is Empty" view, a single-section shopping list view
-or multi-section shopping list view.
+or multi-section shopping list view.  the display has some complexity to it because
+of the sectioning, so we push it off to a specialized View.
 ----------*/
 
 				if itemsToBePurchased.count == 0 {
 					EmptyListView(listName: "Shopping")
 				} else {
-					shoppingListView(itemsToBePurchased: itemsToBePurchased,
-																	multiSectionDisplay: multiSectionDisplay,
-																	isConfirmationAlertShowing: $isConfirmationAlertShowing,
-																	itemToDelete: $itemToDelete)
+					ShoppingListView(multiSectionDisplay: multiSectionDisplay,
+													 isConfirmationAlertShowing: $isConfirmationAlertShowing,
+													 itemToDelete: $itemToDelete)
 				}
 				
 /* ---------
@@ -158,98 +158,4 @@ or multi-section shopping list view.
 
 } // end of ShoppingListTabView
 
-// MARK: - A Generic SectionData struct
 
-// the notion of this struct is that we use it to tell us what to draw for a single
-// section: its title and the items in the section
-struct SectionData<T: Hashable>: Identifiable, Hashable {
-	var id: Int { hashValue }
-	let title: String
-	let items: [T]
-}
-
-// MARK: - Shopping List Display
-
-// this shows itemsToBePurchased as either a single section or as multiple
-// sections, one section for each Location.  it uses a somewhat complicated
-// Form/ForEach/Section/ForEach construct to draw out the list and requires
-// some preliminary work to perform the sectioning.  each item that appears
-// has a NavigationLink and a contextMenu on it.
-
-struct shoppingListView: View {
-	
-	// all items on the shopping list
-	var itemsToBePurchased: FetchedResults<Item>
-	// display format: one big section, or sectioned by Location
-	var multiSectionDisplay: Bool
-	// hooks back to the ShoppingListTabView enclosing view to
-	// support deletion from a context menu
-	@Binding var isConfirmationAlertShowing: Bool
-	@Binding var itemToDelete: Item?
-	
-	// this is a temporary holding array for items being moved to the other list
-	// this is how we tell whether an item is currently in the process of being "checked"
-	@State private var itemsChecked = [Item]()
-	
-	var body: some View {
-		Form {
-			ForEach(sectionData(multiSectionDisplay: multiSectionDisplay)) { section in
-				Section(header: Text(section.title).textCase(.none)) {
-					// display items in this location
-					ForEach(section.items) { item in
-						// display a single row here for 'item'
-						NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
-							SelectableItemRowView(item: item, selected: itemsChecked.contains(item),
-																		sfSymbolName: "purchased",
-																		respondToTapOnSelector:  { handleItemTapped(item) })
-								.contextMenu {
-									itemContextMenu(item: item, deletionTrigger: {
-										itemToDelete = item
-										isConfirmationAlertShowing = true
-									})
-								} // end of contextMenu
-						} // end of NavigationLink
-					} // end of ForEach
-				} // end of Section
-			} // end of ForEach
-		}  // end of Form
-	} // end of body: some View
-	
-	// the idea of this function is to break out the itemsToBePurchased by section,
-	// according to whether the list is displayed as a single section or in multiple
-	// sections (one for each Location that contains shopping items on the list)
-	func sectionData(multiSectionDisplay: Bool) -> [SectionData<Item>] {
-		
-		// the easy case first: one section with a title and all the items.
-		if !multiSectionDisplay {
-			return [SectionData(title: "Items Remaining: \(itemsToBePurchased.count)",
-													items: itemsToBePurchased.sorted(by: { $0.visitationOrder < $1.visitationOrder }))
-			]
-		}
-		
-		// for a multi-section list, break out all the items into a dictionary
-		// with Locations as the keys.
-		let dict = Dictionary(grouping: itemsToBePurchased.compactMap({$0}), by: { $0.location })
-		// now assemble the data by location visitationOrder
-		var completedSectionData = [SectionData<Item>]()
-		for key in dict.keys.sorted() {
-			completedSectionData.append(SectionData(title: key.name, items: dict[key]!))
-		}
-		return completedSectionData
-	}
-	
-	func handleItemTapped(_ item: Item) {
-		if !itemsChecked.contains(item) {
-			// put into our list of what's about to be removed, and because
-			// itemsChecked is a @State variable, we will see a momentary
-			// animation showing the change.
-			itemsChecked.append(item)
-			// queue the actual removal to allow animation to run
-			DispatchQueue.main.asyncAfter(deadline: .now() + 0.40) {
-				item.toggleOnListStatus()
-				itemsChecked.removeAll(where: { $0 == item })
-			}
-		}
-	}
-	
-}

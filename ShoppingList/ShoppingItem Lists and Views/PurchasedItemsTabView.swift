@@ -48,51 +48,33 @@ struct PurchasedItemsTabView: View {
 						AddorModifyItemView(addItemToShoppingList: false)
 					}
 				}
-				
+
+				Rectangle()
+					.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
+
+				// 2. purchased items in two sections (today's purchases and everything else)
 				if purchasedItems.count == 0 {
 					EmptyListView(listName: "Purchased")
 				} else {
-					
-					Rectangle()
-						.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
 					Form {
-						
-						// 1. Items purchased today
-						Section(header: Text(todaySectionTitle()).textCase(.none)) {
-							// think about sorting this section in order of purchase ???
-							ForEach(purchasedItems.filter({ qualifiedItem($0, today: true) })) { item in
-								NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
-									SelectableItemRowView(item: item, selected: itemsChecked.contains(item),
-																				sfSymbolName: "cart",
-																				respondToTapOnSelector: { handleItemTapped(item) })
-										.contextMenu {
-											itemContextMenu(item: item, deletionTrigger: {
-												itemToDelete = item
-												isDeleteItemAlertShowing = true
-											})
-										} // end of contextMenu
-								} // end of NavigationLink
-							} // end of ForEach
-						} // end of Section
-						
-						// 2. all items purchased earlier
-						Section(header: Text(otherPurchasesSectionTitle()).textCase(.none)) {
-							ForEach(purchasedItems.filter({ qualifiedItem($0, today: false) })) { item in
-								NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
-									SelectableItemRowView(item: item, selected: itemsChecked.contains(item),
-																				sfSymbolName: "cart",
-																				respondToTapOnSelector: { handleItemTapped(item) })
-										.contextMenu {
-											itemContextMenu(item: item,
-																							deletionTrigger: {
-																								itemToDelete = item
-																								isDeleteItemAlertShowing = true
-																							})
-										} // end of contextMenu
-								} // end of NavigationLink
-							} // end of ForEach
-						} // end of Section
-						
+						ForEach(sectionData()) { sectionData in
+							Section(header: Text(sectionData.title).textCase(.none)) {
+								ForEach(sectionData.items) { item in
+									NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
+										SelectableItemRowView(item: item, selected: itemsChecked.contains(item),
+																					sfSymbolName: "cart",
+																					respondToTapOnSelector: { handleItemTapped(item) })
+											.contextMenu {
+												itemContextMenu(item: item,
+																				deletionTrigger: {
+																					itemToDelete = item
+																					isDeleteItemAlertShowing = true
+																				})
+											} // end of contextMenu
+									} // end of NavigationLink
+								} // end of ForEach
+							} // end of Section
+						} // end of ForEach						
 					}  // end of Form
 					.alert(isPresented: $isDeleteItemAlertShowing) {
 						Alert(title: Text("Delete \'\(itemToDelete!.name)\'?"),
@@ -116,34 +98,7 @@ struct PurchasedItemsTabView: View {
 		}
 		.onDisappear { print("PurchasedTabView disappear") }
 	}
-	
-	func qualifiedItem(_ item: Item, today: Bool) -> Bool {
-		if !searchText.appearsIn(item.name) {
-			return false
-		} else if today {
-			return item.dateLastPurchased >= Calendar.current.startOfDay(for: Date())
-		} else {
-			return item.dateLastPurchased < Calendar.current.startOfDay(for: Date())
-		}
-	}
-	
-	func todaySectionTitle() -> String {
-		let count = purchasedItems.filter({ qualifiedItem($0, today: true) }).count
-		if searchText.isEmpty {
-		 return "Items Purchased Today: \(count)"
-		}
-		return "Items Purchased Today containing \"\(searchText)\": \(count)"
-	}
-	
-	func otherPurchasesSectionTitle() -> String {
-		let count = purchasedItems.filter({ qualifiedItem($0, today: false) }).count
-		if searchText.isEmpty {
-			return "Items Purchased Earlier: \(count)"
-		}
-		return "Items Purchased Earlier containing \"\(searchText)\": \(count)"
-	}
-
-	
+		
 	func toolbarButton() -> some View {
 		Button(action: { isAddNewItemSheetShowing = true }) {
 			Image(systemName: "plus")
@@ -158,12 +113,39 @@ struct PurchasedItemsTabView: View {
 			// itemsChecked is a @State variable, we will see a momentary
 			// animation showing the change.
 			itemsChecked.append(item)
-			// queue the actual removal to allow animation to run
+			// queue the removal to allow animation to run
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.40) {
 				item.toggleOnListStatus()
 				itemsChecked.removeAll(where: { $0 == item })
 			}
 		}
+	}
+	
+	// the idea of this function is to break out the purchased Items into
+	// 2 sections: those purchased today, and everything else
+	func sectionData() -> [SectionData] {
+		// reduce items by search criteria
+		let searchQualifiedItems = purchasedItems.filter({ searchText.appearsIn($0.name) })
+		
+		// break these out according to Today and eall the others
+		let startOfToday = Calendar.current.startOfDay(for: Date())
+		let itemsToday = searchQualifiedItems.filter({ $0.dateLastPurchased >= startOfToday })
+		let allOlderItems = searchQualifiedItems.filter({ $0.dateLastPurchased < startOfToday })
+		
+		// determine titles
+		var section1Title = "Items Purchased Today: \(itemsToday.count)"
+		if !searchText.isEmpty {
+			section1Title = "Items Purchased Today containing \"\(searchText)\": \(itemsToday.count)"
+		}
+		var section12Title = "Items Purchased Earlier: \(allOlderItems.count)"
+		if !searchText.isEmpty {
+			section12Title = "Items Purchased Earlier containing \"\(searchText)\": \(allOlderItems.count)"
+		}
+		
+		// return two sections only
+		return [SectionData(title: section1Title, items: itemsToday),
+						SectionData(title: section12Title,items: allOlderItems)
+		]
 	}
 
 }
