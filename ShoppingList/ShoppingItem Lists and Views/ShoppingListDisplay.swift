@@ -11,8 +11,24 @@ import SwiftUI
 
 // MARK: - A Generic SectionData struct
 
-// the notion of this struct is that we use it to tell us what to draw for a single
-// section: its title and the items to show in the section.
+// in sectioned data display, one consisting of sections and with each section being
+// itself a list, you usually work with a structure that looks like this:
+//
+// List {
+//   ForEach(sections) { section in
+//     Section(header: Text("title for this section")) {
+//	     ForEach(section.items) { item in
+//         // display the item for this row in this section
+//       }
+//     }
+//   }
+// }
+//
+// so the notion of this struct is that we use it to say what to draw in each
+// section: its title and an array of items to show in the section.  then, just
+// rearrange your data as a [SectionData] and "plug it in" to the structure
+// above.
+
 struct SectionData: Identifiable, Hashable {
 	var id: Int { hashValue }
 	let title: String
@@ -67,7 +83,7 @@ struct ShoppingListView: View {
 					ForEach(section.items) { item in
 						// display a single row here for 'item'
 						NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
-							SelectableItemRowView(item: item, selected: itemsChecked.contains(item),
+							SelectableItemRowView(rowData: SelectableItemRowData(item: item), selected: itemsChecked.contains(item),
 																		sfSymbolName: "purchased",
 																		respondToTapOnSelector:  { handleItemTapped(item) })
 								.contextMenu {
@@ -100,7 +116,7 @@ struct ShoppingListView: View {
 		let dict = Dictionary(grouping: itemsToBePurchased, by: { $0.location })
 		// now assemble the data by location visitationOrder
 		var completedSectionData = [SectionData]()
-		for key in dict.keys.sorted() {
+		for key in dict.keys.sorted() { // sorted is, of course, by visitationOrder
 			completedSectionData.append(SectionData(title: key.name, items: dict[key]!))
 		}
 		return completedSectionData

@@ -8,12 +8,15 @@
 
 import SwiftUI
 
-// this is a struct to transport all the incoming data about a Location that we will display
+// MARK: - LocationRowData Definition
+// this is a struct to transport all the incoming data about a Location that we
+// will display.  see the commentary over in SelectableItemRowData.swift about whay
+// we do this.
 struct LocationRowData {
-	var name: String = ""
-	var itemCount: Int = 0
-	var visitationOrder: Int = 0
-	var uiColor = UIColor()
+	let name: String
+	let itemCount: Int
+	let visitationOrder: Int
+	let uiColor: UIColor
 	
 	init(location: Location) {
 		name = location.name
@@ -22,6 +25,8 @@ struct LocationRowData {
 		uiColor = location.uiColor
 	}
 }
+
+// MARK: - LocationRowView
 
 struct LocationRowView: View {
 	 var rowData: LocationRowData

@@ -12,6 +12,43 @@ import UIKit
 
 extension Item {
 	
+	/* Discussion
+	
+	Notice that all except one of the Core Data attributes on an Item that
+	appear in the CD model with an underscore (_) at the end of their name.
+	(the only exception is "id" because tweaking that name is a problem because
+	of conformance to Identifiable.)
+	
+	my general theory of the case is that no one outside of this class should really
+	be touching these attributes directly, especially SwiftUI views.  apart from
+	smoothing out the awkwardness of nil-coalescing in some cases, these are some
+	attributes of an Item which, when changed, not only generate a reactive effect
+	out there in SwiftUI views that watch for Item changes (e.g., via a @FetchRequest
+	of as an @Observed object) -- but also should trigger a reactive effect on
+	some SwiftUI views that involve the item's associated location.
+	
+	the same is true for Locations.  changing an attribute of a Location directly may at
+	times require triggering a SwiftUI reaction involving the items associated with the Location.
+	
+	example: the ShoppingListTabView creates SelectableItemRowView structs for SwiftUI, and
+	each displays information about an item, including the associated location's name.  we
+	get the location's name using a computed property on Item that cleanly nil-coalesces the value.
+	
+	importantly, these SelectableItemRowView views are routinely created and destroyed, and they
+	will (only) get redrawn if the @FetchRequest that drives the ShoppingListTabView gets an
+	objectWillChange.send() from an Item.
+	
+	here, then, is the problem: if you change a Location's name, the locationName computed
+	property of each associated Item now has been updated and those SelectableItemRowViews
+	must get redrawn.  so each item associated with the location must generate an
+	objectWillChange.send() message.  (in fact, i think only one item need to do this ...)
+	
+	also, think what happens when you change a location's visitationOrder.  potentially, that
+	causes the entire ShoppingListTabView to restructure itself; that won't happen unless
+	changing a location's visitationOrder also generates some item.objectWillChange.send().
+	
+	*/
+	
 	// MARK: - Computed Properties
 	
 	// the date last purchased.  this fronts a Core Data optional attribute
@@ -55,7 +92,7 @@ extension Item {
 	var location: Location {
 		get { location_! }
 		set {
-			location.objectWillChange.send()
+			location_?.objectWillChange.send()
 			location_ = newValue
 			location_?.objectWillChange.send()
 		}
@@ -69,7 +106,7 @@ extension Item {
 	
 	// the color = the color of its associated location
 	var uiColor: UIColor {
-		location.uiColor //?? UIColor(displayP3Red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
+		location_?.uiColor ?? UIColor(displayP3Red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
 	}
 	
 	
@@ -146,10 +183,11 @@ extension Item {
 	// shortly go away from the CD memory graph when CD gets caught up with all changes.
 	//
 	// this is a real problem for SwiftUI.  if any view is holding a reference to a
-	// deleted CD object, and its body property is called by SwiftUI, you have problems,
-	// so its particularly helpful if you always nil-coalesce CD optionals in your view code
+	// deleted CD object, and its body property is called by SwiftUI using that reference,
+	// you have problems, so its particularly helpful if you always nil-coalesce CD optionals
 	// (asking for item.name_! when item has been deleted will cause a force-unwrap, because
 	// the item's in-memory representation has been zeroed out and name_ is nil).
+	// ... see the Discussion above!
 	//
 	// the typical problem is this: View A is driven by a @FetchRequest for Items; it
 	// draws a list of those items, with each item appearing in its own subview, View B, for which
@@ -201,10 +239,11 @@ extension Item {
 		isAvailable_ = editableData.isAvailable
 		// if we are currently associated with a Location, then set new location
 		// (which breaks the previous association of this Item with a location)
-		location_ = editableData.location
-		// last thing: the associated Location may want to know about a change
+		// note: the associated Location(s) may want to know about a change
 		// in one of its items, since there are computed properties on Location
-		// such as the number of items
+		// such as the number of items that will be invalidated
+		location_?.objectWillChange.send()
+		location_ = editableData.location
 		location_?.objectWillChange.send()
 	}
 

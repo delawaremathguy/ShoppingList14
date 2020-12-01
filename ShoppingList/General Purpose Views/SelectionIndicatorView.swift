@@ -37,8 +37,3 @@ struct SelectionIndicatorView: View {
 	}
 }
 
-struct SelectionIndicatorView_Previews: PreviewProvider {
-    static var previews: some View {
-			SelectionIndicatorView(selected: true, uiColor: UIColor.black)
-    }
-}

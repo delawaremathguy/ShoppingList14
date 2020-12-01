@@ -56,12 +56,14 @@ struct PurchasedItemsTabView: View {
 				if purchasedItems.count == 0 {
 					EmptyListView(listName: "Purchased")
 				} else {
+					// notice use of sectioning strategy that is described in ShoppingListDisplay.swift
 					Form {
 						ForEach(sectionData()) { sectionData in
 							Section(header: Text(sectionData.title).textCase(.none)) {
 								ForEach(sectionData.items) { item in
+									// display of a single item
 									NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
-										SelectableItemRowView(item: item, selected: itemsChecked.contains(item),
+										SelectableItemRowView(rowData: SelectableItemRowData(item: item), selected: itemsChecked.contains(item),
 																					sfSymbolName: "cart",
 																					respondToTapOnSelector: { handleItemTapped(item) })
 											.contextMenu {
@@ -82,9 +84,7 @@ struct PurchasedItemsTabView: View {
 									primaryButton: .cancel(Text("No")),
 									secondaryButton: .destructive(Text("Yes"),
 																		action: { Item.delete(itemToDelete!) })
-						)}
-					//.listStyle(PlainListStyle())
-					
+						)}					
 				} // end of if-else
 			} // end of VStack
 			.navigationBarTitle("Purchased List")
