@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import CoreData
 
 // MARK: - View Definition
 

@@ -45,7 +45,7 @@ struct SelectableItemRowData {
 // SwiftUI holding a reference to that item.  consequently, trying to use
 // item.name_! results in a force-unwrap of a nil.
 //
-// you can gloss over this part by instead using item.name which is nil-coalesced
+// you can gloss over this part by instead using item.name which is nil-coalesced,
 // to at least give you something; but if you are using your own, non-Core Data object,
 // i don't know what would happen -- so this would be just a bandaid to make SwiftUI and
 // Core Data play nice together on deletions.
@@ -53,7 +53,7 @@ struct SelectableItemRowData {
 // so i tried #2: pass the item & copy the data to local variables.  now, even though we
 // might have a reference to a deleted CD object, we captured its data when instantiated
 // and use that data to drive the view.  that means you would create this view with
-// something like "SelectableItemRowView(item: item, ..."  now the problem is that the
+// something like "SelectableItemRowView(item: item, ...", but now the problem is that the
 // parent view will not refresh this view when the parent redraws, because it looks like
 // this will be the same view as before.  (that's my best guess)
 //
@@ -79,9 +79,10 @@ struct SelectableItemRowView: View {
 	// un-comment this init and you'll see how often these row views are created.
 	//
 	// my suggested test: with an item appearing on the shopping list, go over to the
-	// Locatiobs tab, select the location where the item is listed, tap on the item in the
+	// Locations tab, select the location where the item is listed, tap on the item in the
 	// list of items at that location, change the quantity and flip the isAvailable switch,
-	// tap save, and watch the output!  go back to the shopping list: the item is properly updated.
+	// tap save, and watch the output!  go back to the shopping list: the item is properly
+	// updated because the whole view was recreated from scratch.
 //	init(rowData: SelectableItemRowData, selected: Bool,
 //			 sfSymbolName: String, respondToTapOnSelector: @escaping () -> Void) {
 //		// copy item data to local variables

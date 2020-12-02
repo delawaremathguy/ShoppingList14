@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import CoreData
 
 // the MainView is where the app begins.  it is a tab view with four tabs.
 // a fifth tab also appears if kShowDevToolsTab is true (this is set in code
