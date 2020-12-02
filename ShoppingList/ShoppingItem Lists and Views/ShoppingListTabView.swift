@@ -35,7 +35,7 @@ struct ShoppingListTabView: View {
 /* ---------
 1. add new item "button" is at top.  note that this will put up the
 AddorModifyItemView inside its own NavigationView (so the Picker will work!)
-----------*/
+---------- */
 				
 				Button(action: { isAddNewItemSheetShowing = true }) {
 					Text("Add New Item")
@@ -43,14 +43,17 @@ AddorModifyItemView inside its own NavigationView (so the Picker will work!)
 						.padding(10)
 				}
 				.sheet(isPresented: $isAddNewItemSheetShowing) {
-					NavigationView { AddorModifyItemView(addItemToShoppingList: true) }
+					NavigationView { AddorModifyItemView() }
 				}
+				
+				Rectangle()
+					.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
 				
 /* ---------
 2. we display either a "List is Empty" view, a single-section shopping list view
 or multi-section shopping list view.  the display has some complexity to it because
 of the sectioning, so we push it off to a specialized View.
-----------*/
+---------- */
 
 				if itemsToBePurchased.count == 0 {
 					EmptyListView(listName: "Shopping")
@@ -62,7 +65,7 @@ of the sectioning, so we push it off to a specialized View.
 				
 /* ---------
 3. for non-empty lists, we have a few buttons at the end for bulk operations
-----------*/
+---------- */
 
 				if itemsToBePurchased.count > 0 {
 					Rectangle()

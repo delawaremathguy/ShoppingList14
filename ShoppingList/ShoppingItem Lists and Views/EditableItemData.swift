@@ -19,14 +19,13 @@ struct EditableItemData {
 	// the id of the Item, if any, associated with this data collection
 	// (nil if data for a new item that does not yet exist)
 	var id: UUID? = nil
-	// all of the values here provide suitable defaults for a new shopping item
+	// all of the values here provide suitable defaults for a new item
 	var name: String = ""
 	var quantity: Int = 1
 	var location = Location.unknownLocation()!
 	var onList: Bool = true
 	var isAvailable = true
-	
-	var dateText = "" // for display only, not editable
+	var dateText = "" // for display only, not actually editable
 	
 	// this copies all the editable data from an incoming Item.  this looks fairly
 	// benign, but its in the lines below that crashes did/could occur in earlier versions
@@ -48,10 +47,9 @@ struct EditableItemData {
 		}
 	}
 	
-	// provides basic init, but can be tweaked in case you want to provide
-	// a default (for an item yet to be created) that's not on the shopping list
-	init(onList: Bool = true) {
-		self.onList = onList
+	// provides init for a new Item -- makes sure it will go to shopping list by default
+	init() {
+		self.onList = true
 	}
 	
 	var canBeSaved: Bool { name.count > 0 }

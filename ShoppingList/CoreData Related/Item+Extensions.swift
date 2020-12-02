@@ -47,6 +47,10 @@ extension Item {
 	causes the entire ShoppingListTabView to restructure itself; that won't happen unless
 	changing a location's visitationOrder also generates some item.objectWillChange.send().
 	
+	bottom line: front (all?) attributes of an entity by SwiftUI variables ... except for id ...
+	and don't let SwiftUI views (or any other code outside of files like this CD class file)
+	touch attributes directly.
+	
 	*/
 	
 	// MARK: - Computed Properties

@@ -20,7 +20,7 @@ struct AddorModifyItemView: View {
 	// addItemToShoppingList just means that by default, a new item will be added to
 	// the shopping list, and so this is true.
 	// however, if inserting a new item from the Purchased item list,
-	// this will be set to false. the user can override here if they wish.
+	// you might want the new item to go to the Puchased item list
 	var addItemToShoppingList: Bool = true
 	
 	// this editableData stuct contains all of the fields of an Item that
@@ -123,7 +123,7 @@ struct AddorModifyItemView: View {
 			} else {
 				// just be sure the default data is tweaked to place a new item on
 				// the right list by default, depending on how this view was created
-				editableData = EditableItemData(onList: addItemToShoppingList)
+				editableData = EditableItemData()
 			}
 			// and be sure we don't do this again (!)
 			editableDataInitialized = true

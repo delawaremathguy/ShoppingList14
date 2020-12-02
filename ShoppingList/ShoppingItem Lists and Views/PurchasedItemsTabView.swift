@@ -34,25 +34,32 @@ struct PurchasedItemsTabView: View {
 	var body: some View {
 		NavigationView {
 			VStack(spacing: 0) {
-				SearchBarView(text: $searchText)
 				
-				// 1. add new item "button" is at top.  note that this will put up the AddorModifyItemView
-				// inside its own NavigationView (so the Picker will work!)
+/* ---------
+1. add new item "button" is at top.  note that this will put up the
+AddorModifyItemView inside its own NavigationView (so the Picker will work!)
+---------- */
+
+				SearchBarView(text: $searchText)
+
 				Button(action: { isAddNewItemSheetShowing = true }) {
 					Text("Add New Item")
 						.foregroundColor(Color.blue)
 						.padding(10)
 				}
 				.sheet(isPresented: $isAddNewItemSheetShowing) {
-					NavigationView {
-						AddorModifyItemView(addItemToShoppingList: false)
-					}
+					NavigationView { AddorModifyItemView() }
 				}
 
 				Rectangle()
 					.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
 
-				// 2. purchased items in two sections (today's purchases and everything else)
+/* ---------
+2. we display either a "List is Empty" view, or the sectioned list of purchased
+items.  there is some complexity here, so review the ShoppingListDisplay.swift
+for more discussion about sectioning
+---------- */
+
 				if purchasedItems.count == 0 {
 					EmptyListView(listName: "Purchased")
 				} else {
@@ -94,11 +101,12 @@ struct PurchasedItemsTabView: View {
 		.navigationViewStyle(StackNavigationViewStyle())
 		.onAppear {
 			print("PurchasedTabView appear")
-			searchText = ""			//viewModel.loadItems()
+			searchText = ""
 		}
 		.onDisappear { print("PurchasedTabView disappear") }
 	}
 		
+	// makes a simple "+" to add a new item
 	func toolbarButton() -> some View {
 		Button(action: { isAddNewItemSheetShowing = true }) {
 			Image(systemName: "plus")
