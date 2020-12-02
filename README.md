@@ -107,11 +107,11 @@ The CoreData model has only two entities named `Item` and `Location`, with every
 
 ### App Architecture Comment
 
-As I said above, this app started out as a few SwiftUI views driven by @FetchRequests, but that eventually ran into trouble when deleting Core Data objects.  Next, I tried to insert a little Combine into the app (e.g., a view driven by a list of Locations would tuen the list into a subscriber to each of the Locations in the list), but there were problems with that as well.  
+As I said above, this app started out as a few SwiftUI views driven by @FetchRequests, but that eventually ran into trouble when deleting Core Data objects.  Next, I tried to insert a little Combine into the app (e.g., a view driven by a list of Locations would turn the list into a subscriber to each of the Locations in the list), but there were problems with that as well.  
 
 I finally settled on more of an MVVM-style architecture, posting internal notifications through the NotificationCenter that an `Item` or a `Location` has either been created, or edited, or is about to be deleted.  View models would react appropriately.
 
-That design worked in  version 1.0 of ShoppingList, but I decided that I should go back and revisit the design again.  What always bothered me about the current state of SwiftUI views using @FetchRequest was that they need to know or understand that the data they process comes from Core Data, as well as expose some of the gritty details of Core Data (e.g. @FetchRequests needed to know about SortDescriptors and keyPaths) and possibly know whento unwrap or test for nil on values.
+That design worked in  version 1.0 of ShoppingList, but I decided that I should go back and revisit the design again.  What always bothered me about the current state of SwiftUI views using @FetchRequest was that they need to know or understand that the data they process comes from Core Data, as well as expose some of the gritty details of Core Data (e.g. @FetchRequests needed to know about SortDescriptors and keyPaths) and possibly know when to unwrap or test for nil on values.
 
 The design here lives somewhere between MVVM and basic, @FetchRequest-driven SwiftUI views.  My stated goal of the redesigned code is that 
 
@@ -122,6 +122,21 @@ The design here lives somewhere between MVVM and basic, @FetchRequest-driven Swi
 I have found a way to make this happen in the redesign, and I think the result works quite well.
 
 Please be sure to read about some subtleties of this rewrite in the code.
+
+###  View Updating Issues
+
+I built this project in public initially as an experiment, to simply get a lot of practice with SwiftUI, and to look more deeply and perhaps offer some suggested code to the folks who keep running into what I call SwiftUI's **generic problem**:
+
+> An item appears in View A; it is edited in View B (perhaps appearing as a subview of Vew A, or as a detail view via a NavigationLink or a .sheet presentation); but its appearance in View A does not get updated properly in response to an edit.  
+
+SwiftUI does a lot of the updating for you automatically, but the situation is more tricky when using Core Data because the model data consists of objects (classes), not structs.  
+
+SwiftUI does provide `@FetchRequest` and `@ObservedObject` and `@EnvironmentObject` and `@StateObject` (and the Combine framework if you go deeper), but the updating problem is not completely solved just by sprinkling @ObservedObject property wrappers around in your code.  It matters in SwiftUI whether you pass around structs or classes among SwiftUI Views, and exactly how you pass them.  What I have learned is that *SwiftUI really wants you to use structs, but Core Data is all about objects*.  
+
+
+Indeed, the biggest issue that I found in the early days of this app involved handling updates following a **deletion** of a Core Data object.  My conclusion was (and remains) that @FetchRequest and SwiftUI don't always interact that well with respect to Core Data deletions.  That is exactly what drove me to the architecture you will find looking back at the original ShoppingList project. 
+
+However, the architecture of ShoppingList14 is now, at the main level, more the expected architecture of a @FetchRequest-driven SiftUI interface.  But it's cleaner!  It accommodates the issues associated with joining these two technologies, insulating Views both from deletions (*I belive*) and reliance of something like @ObservedObject to insure proper updating (*I believe*).  Please be sure to work your way through the code, where you will find several comments that discuss these accommodations.
 
 
 ## Future Work
@@ -135,19 +150,7 @@ A more energetic improvement would be to expand the database and the app's UI to
 However, no matter what I produce from this point onward, I am certainly not at all interested in creating the next, killer shopping list app or moving any of this to the App Store.  *The world really does not need a new list-making app*.  But, if you want to take this code and run with it ... go right ahead.
 
 
-##  View Updating Issues
 
-I built this project in public initially as an experiment, in order to simply get a lot of practice with SwiftUI, and to look more deeply and perhaps offer some suggested code to the folks who keep running into what I call SwiftUI's **generic problem**:
-
-> An item appears in View A; it is edited in View B (perhaps appearing as a subview of Vew A, or as a detail view via a NavigationLink or a .sheet presentation); but its appearance in View A does not get updated properly in response to an edit.  
-
-SwiftUI does a lot of the updating for you automatically, but the situation is more tricky when using Core Data because the model data consists of objects (classes), not structs.  SwiftUI does provide `@FetchRequest` and `@ObservedObject` and `@EnvironmentObject` and `@StateObject` (and Combine if you go deeper), but the updating problem is not completely solved just by sprinkling @ObservedObject property wrappers around in your code.  It matters in SwiftUI whether you pass around structs or classes among SwiftUI Views, and exactly how you pass them.  What I have learned is that *SwiftUI really wants you to use structs, but Core Data is all about objects*.  
-
-
-Indeed, the biggest issue that I found in the early days of this app involved updates following a **deletion** of a Core Data object.  My conclusion was (and remains) that @FetchRequest and SwiftUI don't always interact that well with respect to Core Data deletions, and that is what drove me to the architecture and my reliance on using the NotificationCenter that you will find in this app. (*I have extensive comments in the code about the problems I faced*).
-
-
-* I think that my current use of notifications and a "view model" as a direct replacment of @FetchRequest provides a solution to much of the **generic problem** in the distributed SwiftUI situation that occurs in *this* app.  It works for me; you must decide if any of this is something that might work for you.
 
 
 
@@ -155,7 +158,7 @@ Indeed, the biggest issue that I found in the early days of this app involved up
 
 The project is what it is -- a project that began trying to learn how to best use SwiftUI with a Core Data store. On a basic level, understanding the SwiftUI lifecycle of how Views come and go turned out to be a major undertaking.  On the Core Data side, using @FetchRequest was the obvious, right thing -- until it wasn't.  Then adding a few sprinkles of Combine looked like the right thing -- until it wasn't.  I learned a lot ... and that was the point of this project.
 
-The current 
+Nevertheless, this upgrade to the original ShoppingList has returned to where it started: using SwiftUI views driven by a @FetchRequest.  The code may be easier to follow for beginning developers (there are no sophisitcated "view models"), while at the same time I have tried to point out important points about how SwiftUI and @FetchRequest really do interact (*at least I think I have*).
 
 
 Feel free to contact me about questions and comments, or post an Issue here on GitHub.
@@ -163,9 +166,9 @@ Feel free to contact me about questions and comments, or post an Issue here on G
 
 ## License
 
-* The SearchBarView in the Purchased items view was created by Simon Ng.  It appeared in [an article in AppCoda](https://www.appcoda.com/swiftui-search-bar/) and is copyright ©2020 by AppCoda. You can find it on GitHub under AppCoda/SwiftUISearchBar. 
+* The SearchBarView in the Purchased items view was created by Simon Ng.  It appeared in [an article in AppCoda](https://www.appcoda.com/swiftui-search-bar/) and is copyright ©2020 by AppCoda. You can find it on GitHub as [AppCoda/SwiftUISearchBar](https://github.com/AppCoda/SwiftUISearchBar). 
 * The app icon was created by Wes Breazell from [the Noun Project](https://thenounproject.com). 
 * The extension I use on Bundle to load JSON files is due to Paul Hudson (@twostraws, [hackingwithswift.com](https://hackingwithswift.com)) 
 
-Otherwise, almost all of the code is original,  and it's yours if you want it -- please see LICENSE for the usual details and disclaimers.
+Otherwise, almost all of the code is original, and it's yours if you want it -- please see LICENSE for the usual details and disclaimers.
 
