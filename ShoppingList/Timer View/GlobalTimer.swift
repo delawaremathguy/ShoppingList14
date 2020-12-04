@@ -15,7 +15,7 @@ import Foundation
 // have to call my wife with a question about which brand of salad dressing to get.
 // this boolean determines this behaviour (so my preference is "false")
 
-var kDisableTimerWhenAppIsNotActive = false
+let kDisableTimerWhenAppIsNotActive = false
 
 // note: if you don't disable the timer when in the background, what we're really
 // doing is remembering how much time we had accumulated before we went into the
@@ -52,8 +52,8 @@ class InStoreTimer: ObservableObject {
 	// the heart of a timer object is a Timer, if one is active
 	private weak var timer: Timer? = nil
 
-	// these are internals of the timer.  when did it last start; when did it last
-	// shut down; what state is it in; and how much time it had accumulated before
+	// these are the internals of the timer: when did it last start; when did it last
+	// shut down; what state is it in; and how much time had it accumulated before
 	// it last shut down up.
 	private var previouslyAccumulatedTime: TimeInterval = 0
 	private var startDate: Date? = nil
@@ -61,7 +61,7 @@ class InStoreTimer: ObservableObject {
 	private var state: SLTimerMode = .stopped
 			
 	// this is what people need to see: its accumulated time, which is the sum of
-	// any accumulated time plus any current run time.  it gets updated by the timer
+	// any the previouslyAccumulatedTime plus any current run time.  it gets updated by the timer
 	// while running every second, which causes a subscriber to see the update.
 	@Published var totalAccumulatedTime: TimeInterval = 0
 

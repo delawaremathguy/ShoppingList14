@@ -23,7 +23,7 @@
 		D64898E924B0E95E008FE512 /* PersistentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64898E824B0E95E008FE512 /* PersistentStore.swift */; };
 		D648D349246388C100CD881B /* Location+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D648D348246388C100CD881B /* Location+Extensions.swift */; };
 		D65721B32464591700E4AAAF /* AddorModifyLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65721B22464591700E4AAAF /* AddorModifyLocationView.swift */; };
-		D65A509F2565789900D43229 /* String+Extnesions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65A509E2565789900D43229 /* String+Extnesions.swift */; };
+		D65A509F2565789900D43229 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65A509E2565789900D43229 /* String+Extensions.swift */; };
 		D65C931824C5DC9B003E6EB7 /* GlobalTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65C931724C5DC9B003E6EB7 /* GlobalTimer.swift */; };
 		D66FF35424926B6400B3ABC8 /* DevToolsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66FF35324926B6400B3ABC8 /* DevToolsTabView.swift */; };
 		D66FF3562492E67100B3ABC8 /* SLCenteredButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66FF3552492E67100B3ABC8 /* SLCenteredButton.swift */; };
@@ -66,7 +66,7 @@
 		D648D348246388C100CD881B /* Location+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Location+Extensions.swift"; sourceTree = "<group>"; };
 		D65721B22464591700E4AAAF /* AddorModifyLocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddorModifyLocationView.swift; sourceTree = "<group>"; };
 		D65A15D22465A137004ACCBB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		D65A509E2565789900D43229 /* String+Extnesions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extnesions.swift"; sourceTree = "<group>"; };
+		D65A509E2565789900D43229 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		D65C931724C5DC9B003E6EB7 /* GlobalTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalTimer.swift; sourceTree = "<group>"; };
 		D6661E0A25645D2200BA47E9 /* ShoppingList 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "ShoppingList 2.xcdatamodel"; sourceTree = "<group>"; };
 		D66FF35324926B6400B3ABC8 /* DevToolsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevToolsTabView.swift; sourceTree = "<group>"; };
@@ -167,7 +167,7 @@
 			children = (
 				D6AE3642246F035400F7A237 /* Bundle+Extensions.swift */,
 				D612E16024898EBB007E1412 /* Array+Extensions.swift */,
-				D65A509E2565789900D43229 /* String+Extnesions.swift */,
+				D65A509E2565789900D43229 /* String+Extensions.swift */,
 				D6F29CA7257544C900A0E3E0 /* Date+Extensions.swift */,
 			);
 			path = "Convenience Extensions";
@@ -303,7 +303,7 @@
 				D60F14A724686BA80077AD3F /* ItemCodableProxy.swift in Sources */,
 				D6B8A95424636711005F8EF2 /* MainView.swift in Sources */,
 				D6DE39BD247314B40013F9B4 /* SLFormLabelText.swift in Sources */,
-				D65A509F2565789900D43229 /* String+Extnesions.swift in Sources */,
+				D65A509F2565789900D43229 /* String+Extensions.swift in Sources */,
 				D6F375D62485593D005559E6 /* LocationRowView.swift in Sources */,
 				D6931D6C24C4C60900A61BB6 /* TimerTabView.swift in Sources */,
 				D610C3BE2451D8DC009F7F36 /* Item+Extensions.swift in Sources */,

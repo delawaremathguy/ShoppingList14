@@ -28,6 +28,9 @@ struct PurchasedItemsTabView: View {
 	@State private var itemToDelete: Item?
 	@State private var isAddNewItemSheetShowing = false
 
+	// what "today" means for this view
+	@State private var startOfToday = Calendar.current.startOfDay(for: Date())
+	
 	@State private var itemsChecked = [Item]()
 	
 	
@@ -99,11 +102,27 @@ for more discussion about sectioning
 			
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())
-		.onAppear {
-			print("PurchasedTabView appear")
-			searchText = ""
-		}
+		.onAppear(perform: handleOnAppear)
 		.onDisappear { print("PurchasedTabView disappear") }
+	}
+	
+	func handleOnAppear() {
+		print("PurchasedTabView appear")
+		// clear searchText, get a clean screen
+		searchText = ""
+		// recompute what "today" means; we could be coming on-screen a few days after
+		// last using the app and, if no changes are made to trigger the @FetchRequest
+		// that drives this view, we could be displaying the two sections based on what
+		// "today" meant the last time the app was used.  so resetting the @State
+		// variable would redraw the list for what is really "today."  however, i am not
+		// sure this is bullet-proof; the app could come into the foreground with this
+		// view showing and would not execute an .onAppear() -- but navigating away from
+		// and returning to this view would clean up the graphics.
+		let today = Calendar.current.startOfDay(for: Date())
+		//print(today.dateText(style: .long))
+		if today != startOfToday {
+			startOfToday = today
+		}
 	}
 		
 	// makes a simple "+" to add a new item
@@ -135,8 +154,7 @@ for more discussion about sectioning
 		// reduce items by search criteria
 		let searchQualifiedItems = purchasedItems.filter({ searchText.appearsIn($0.name) })
 		
-		// break these out according to Today and eall the others
-		let startOfToday = Calendar.current.startOfDay(for: Date())
+		// break these out according to Today and all the others
 		let itemsToday = searchQualifiedItems.filter({ $0.dateLastPurchased >= startOfToday })
 		let allOlderItems = searchQualifiedItems.filter({ $0.dateLastPurchased < startOfToday })
 		

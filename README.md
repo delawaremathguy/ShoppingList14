@@ -40,7 +40,7 @@ The main screen is a TabView, to show
 
 For the first two tabs, tapping on the circular button on the leading edge of an item's display moves a shopping item from one list to the other list (from "on the shopping list" to "purchased" and vice-versa).  
 
-Tapping on any item (*not the leading circular button*) in either list lets you edit it for name, quantity, assign/edit the store location in which it is found, or even delete the item.  Long pressing on an item gives you a contextMenu to let you move items between lists, toggle between the item being available and not available, or directly delete the item.  (*Items not available will have a strike-thorugh, italic presentation on screen*.)
+Tapping on any item (*not the leading circular button*) in either list lets you edit it for name, quantity, assign/edit the store location in which it is found, or even delete the item.  Long pressing on an item gives you a contextMenu to let you move items between lists, toggle between the item being available and not available, or directly delete the item.  (*Items not available will have a strike-through, italic presentation on screen*.)
 
 The shopping list is sorted by the visitation order of the locations, and then alphabetically within each location.  Items in the shopping list cannot be otherwise re-ordered, although all items in the same Location have the same user-assignable color as a form of grouping.  Tapping on the leading icon in the navigation bar will toggle the display from a simple, one-section list, to a multi-section list.
 
@@ -89,7 +89,7 @@ Here are some of the major, code-level changes:
 
 * comments throughout the code have been updated -- some with expanded detail on why something is being done the way it is being done.
 
-* The basic architecture of the app has been simplified.  What started out in Version 1.0 as a few views with simple @FetchRequests finished using an MVVM-style architecture and Notfications that completely avoided using @FetchRequest.  Version 2.0 of the app has now become ... *wait for it* ... an app having a few views with simple @FetchRequests.  This is shocking!  *See the App Architecture comments below*.
+* The basic architecture of the app has been simplified.  What started out in Version 1.0 as a few views with simple @FetchRequests finished using an MVVM-style architecture and Notifications that completely avoided using @FetchRequest.  Version 2.0 of the app has now become ... *wait for it* ... an app having a few views with simple @FetchRequests.  This is shocking!  *See the App Architecture comments below*.
 
 * Views now effect changes to Items and Locations by calling class functions defined on `Item` and `Location` directly, which then are handled appropriately by the Core Data classes (as if they were acting as view models).
 
@@ -99,13 +99,13 @@ Here are some of the major, code-level changes:
 
 The CoreData model has only two entities named `Item` and `Location`, with every `Item` having a to-one relationship to a `Location` (the inverse is to-many).
 
-* `Item`s have an id (UUID), a name, a quantity, a boolean that indicates whether the item is on the list for today's shopping exercise, or not on the list (and so available in the purchased list for future promotion to the shopping list), and also a boolean that provides an italic, strike-through appearance for the item when false (sometimes an item is on the list, but not available today, and I want to remember that when planning the future shopping list).  New to this project is the addition of a Date for an Item to keep track of when the Item was last purchsed.
+* `Item`s have an id (UUID), a name, a quantity, a boolean that indicates whether the item is on the list for today's shopping exercise, or not on the list (and so available in the purchased list for future promotion to the shopping list), and also a boolean that provides an italic, strike-through appearance for the item when false (sometimes an item is on the list, but not available today, and I want to remember that when planning the future shopping list).  New to this project is the addition of a Date for an Item to keep track of when the Item was last purchased.
 
 * `Location`s have an id (UUID), a name, a visitation order (an integer, as in, go to the dairy first, then the deli, then the canned vegetables, etc), and then values red, green, blue, opacity to define a color that is used to color every item listed in the shopping list. 
 
-* Almost all of the attribute names for the `Item` and `Location` enities are different from before, and are "fronted" using (computed) variables in the Item and Location classes.  Example: the Item entity has a `name_` attribute (a String) in the Core Data model, but we define a set/get variable `name` in Item+Extensions.swift of type `String` to make it available to all code outside of the Core Data bubble, as it were, to read and write the name.  (Reading `name` does a nil-coalesce of the optional `name_` property of the Item class in Swift.)  You will read about this strategy of fronting Core Data atrributes in code comments.
+* Almost all of the attribute names for the `Item` and `Location` entities are different from before, and are "fronted" using (computed) variables in the Item and Location classes.  Example: the Item entity has a `name_` attribute (a String) in the Core Data model, but we define a set/get variable `name` in Item+Extensions.swift of type `String` to make it available to all code outside of the Core Data bubble, as it were, to read and write the name.  (Reading `name` does a nil-coalesce of the optional `name_` property of the Item class in Swift.)  You will read about this strategy of fronting Core Data attributes in code comments.
 
-* This updated app has added a version 2 and then also a version 3 to the Core Data datamodel, to handle these renaming issues and to add a dateLastPurchased attribute to every Item. (It is a lighweight migration.)
+* This updated app has added a version 2 and then also a version 3 to the Core Data datamodel, to handle these renaming issues and to add a dateLastPurchased attribute to every Item. (It is a lightweight migration.)
 
 ### App Architecture
 
@@ -133,7 +133,7 @@ Please be sure to read about some subtleties of this redesign directly in the so
 
 I built this project in public initially as an experiment, to simply get a lot of practice with SwiftUI, and to look more deeply and perhaps offer some suggested code to the folks who keep running into what I call SwiftUI's **generic problem**:
 
-> An item appears in View A; it is edited in View B (perhaps appearing as a subview of Vew A, or as a detail view via a NavigationLink or a .sheet presentation); but its appearance in View A does not get updated properly in response to an edit.  
+> An item appears in View A; it is edited in View B (perhaps appearing as a subview of View A, or as a detail view via a NavigationLink or a .sheet presentation); but its appearance in View A does not get updated properly in response to an edit.  
 
 SwiftUI does a lot of the updating for you automatically, but the situation is more tricky when using Core Data because the model data consists of objects (classes), not structs.  
 

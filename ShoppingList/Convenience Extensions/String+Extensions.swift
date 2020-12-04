@@ -1,5 +1,5 @@
 //
-//  String+Extnesions.swift
+//  String+Extensions.swift
 //  ShoppingList
 //
 //  Created by Jerry on 11/18/20.
