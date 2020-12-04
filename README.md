@@ -1,16 +1,16 @@
 #  About "ShoppingList14"
 
-This is a simple, iOS app to process a shopping list that you can take to the grocery store with you, and move items off the list as you pick them up.  It persists data in CoreData.  The project should be compiled with XCode 12.2 or later and run on iOS14.2 or later.
+This is a simple iOS app to process a shopping list that you can take to the grocery store with you, and move items off the list as you pick them up.  It persists data in CoreData.  The project should be compiled with XCode 12.2 or later and run on iOS14.2 or later.
 
 * An [earlier version of this project](https://github.com/delawaremathguy/ShoppingList) is available that works with XCode 11.7/iOS 13.7.  If you have not yet made the move to XCode 12.2 and iOS 14.2, you should use this earlier project instead.
 
-Feel free to use this as is, to develop further,  to completely ignore, or even just to inspect and then send me a note or post an Issue to tell me I am doing this all wrong.  
+Feel free to use this as is, to develop further,  to completely ignore, or even just to inspect and then send me a note or Post an Issue to tell me I am doing this all wrong.  
 
 
 ## First Public Update for iOS 14: December 4, 2020
 
 
-XCode 12 has finally stabilized (?), and I have also upgraded my iPhone to a more stable iOS14.2.  So I felt it safe to make some refinements and possibly use features of iOS 14 in updating this project.  I also just got a new iPad Air 4, so the time has come to work on iPad implementation.  
+XCode 12 has finally stabilized (?), and I have also upgraded my iPhone to a more stable iOS14.2.  So I felt it safe to make some refinements and possibly use features of iOS 14 in updating this project.  I also just purchased a new iPad Air 4, so perhaps the time has come to work on iPad implementation.  
 
 This repository has been built using XCode 12.2 and will run under iOS 14.2, and I am now regularly using this updated app on my iPhone.
 
@@ -83,15 +83,15 @@ Here are some of the major, code-level changes:
 
 * Each `Item` now has a `dateLastPurchased` property that is reset to "today" whenever you move an item off the shopping list.
 
-* There have been other name changes to the Core Data model (you will read about these and why they were made in the code) and I have versioned the model. Although I *believe* that previous CD models will migrate data from earlier models, I *cannot guarantee this, based on my own experience*.  Unfortunately, I lost data during migration on my own device (from V1 to V2) due to some combination of using the new App structure, or issues in XCode.
+* There have been other name changes to the Core Data model (you will read about these and why they were made in the code) and I have versioned the model. Although I *believe* that previous CD models will migrate data from earlier models, I *cannot guarantee this, based on my own experience*.  Unfortunately, I lost data during migration on my own device (from V1 to V2) due to some combination of using the new App structure, or mixing versions of XCode with the version of iOS on my phone.
 
-* Many code changes have been made or simplified
+* Many code changes have been made and much has been simplified.
 
 * comments throughout the code have been updated -- some with expanded detail on why something is being done the way it is being done.
 
-* The basic architecture of the app has been simplified.  What started out in Version 1.0 as a few views with simple @FetchRequests finished with more of a strict, MVVM-style architecture using Notfications that completely avoided using @FetchRequest.  Version 2.0 of the app has now morphed into ... *wait for it* ... an app having a few views with simple @FetchRequests.  This is shocking!  *See the App Architecture comments below*.
+* The basic architecture of the app has been simplified.  What started out in Version 1.0 as a few views with simple @FetchRequests finished using an MVVM-style architecture and Notfications that completely avoided using @FetchRequest.  Version 2.0 of the app has now become ... *wait for it* ... an app having a few views with simple @FetchRequests.  This is shocking!  *See the App Architecture comments below*.
 
-* Views now effect changes to Items and Locations by calling class functions defined on `Item` and `Location` directly, which then are handled appropriately by the Core Data classes as if they were acting as view models.
+* Views now effect changes to Items and Locations by calling class functions defined on `Item` and `Location` directly, which then are handled appropriately by the Core Data classes (as if they were acting as view models).
 
 * There are no "view models," as such, in this code, nor is there any use of the NotificationCenter.
 
@@ -103,27 +103,29 @@ The CoreData model has only two entities named `Item` and `Location`, with every
 
 * `Location`s have an id (UUID), a name, a visitation order (an integer, as in, go to the dairy first, then the deli, then the canned vegetables, etc), and then values red, green, blue, opacity to define a color that is used to color every item listed in the shopping list. 
 
-* Almost all of the attribute names for the `Item` and `Location` enities are different from before, and are "fronted" using (computed) variables in the Item and Location classes.  Example: the Item entity has a `name_` attribute (a String) in the Core Data model, but we define a set/get variable `name` in Item+Extensions.swift of type `String` to make it available to all code outside of the Core Data bubble, as it were, to read and write the name.  (Reading `name` does a nil-coalesce on the optional `name_` property of the Item class in Swift.)  You will read about this strategy of fronting Core Data atrributes in code comments.
+* Almost all of the attribute names for the `Item` and `Location` enities are different from before, and are "fronted" using (computed) variables in the Item and Location classes.  Example: the Item entity has a `name_` attribute (a String) in the Core Data model, but we define a set/get variable `name` in Item+Extensions.swift of type `String` to make it available to all code outside of the Core Data bubble, as it were, to read and write the name.  (Reading `name` does a nil-coalesce of the optional `name_` property of the Item class in Swift.)  You will read about this strategy of fronting Core Data atrributes in code comments.
 
-* This version of the app has added versions 2 and then also 3 of the Core Data datamodel, to handle these renaming issues and to add a dateLastPurchased attribute to every Item.
+* This updated app has added a version 2 and then also a version 3 to the Core Data datamodel, to handle these renaming issues and to add a dateLastPurchased attribute to every Item. (It is a lighweight migration.)
 
 ### App Architecture
 
-As I said above, this app started out as a few SwiftUI views driven by @FetchRequests, but that eventually ran into trouble when deleting Core Data objects.  For example, if a View has an @ObservedObject reference to a Core Data object and that object is deleted, you could be in some serious trouble.  And there are also timing issues in Core Data deletions: the in-memory object graph doesn't always get updated right away for some operations, which means SwiftUI could be trying to reference something that doesn't really exist.
+As I said above, this app started out as a few SwiftUI views driven by @FetchRequests, but that eventually ran into trouble when deleting Core Data objects.  For example, if a View has an @ObservedObject reference to a Core Data object and that object is deleted (while the view is still alive in SwiftUI), you could be in some serious trouble.  And there are also timing issues in Core Data deletions: the in-memory object graph doesn't always get updated right away for delete operations, which means SwiftUI could be trying to reference something that doesn't really exist.
 
 Next, I tried to insert a little Combine into the app (e.g., a view driven by a list of Locations would make the list a subscriber to each of the Locations in the list), but there were problems with that as well.  
 
-I finally settled on more of an MVVM-style architecture, managing the list of Items or Locations myself instead of letting @FetchRequest handle that list, and using internal notifications posted through the NotificationCenter that an `Item` or a `Location` has either been created, or edited, or is about to be deleted.  View models would react appropriately.
+I finally settled on more of an MVVM-style architecture, managing the list of Items or Locations myself, instead of letting @FetchRequest handle that list.  And I used internal notifications posted through the NotificationCenter that an `Item` or a `Location` has either been created, or edited, or is about to be deleted, so that view models could react appropriately.
 
-That design worked in version 1.0 of ShoppingList, but I decided that I should go back and revisit the design again.  What always bothered me about the current state of SwiftUI view code using @FetchRequest is that such a view often needs to understand that the data they process comes from Core Data, and must know some of the gritty details of Core Data (e.g. @FetchRequests needed to know about sortDescriptors and keyPaths) and possibly know when to unwrap or test for nil on values.
+That design worked in version 1.0 of ShoppingList, but I decided that I should go back and revisit the design again.  What always bothered me about the current state of SwiftUI view code that I see that uses @FetchRequest is that such a view often needs to understand that the data they process comes from Core Data.  The view must also know some of the gritty details of Core Data (e.g. @FetchRequests needed to know about sortDescriptors and keyPaths) and possibly know when to unwrap or test for nil on values.
 
-The design in this app now lives somewhere between MVVM and a basic, @FetchRequest-driven SwiftUI app structure.  My stated goal of all SwiftUI view code is that 
+The design in this app now lives somewhere between MVVM and a basic, @FetchRequest-driven SwiftUI app structure.  My goal in getting to this structure is that all SwiftUI views should follow these three rules: 
 
-* no SwiftUI view should ever know that its data comes from Core Data and should never access raw attributes of a CD object directly
+* a View should never "really" know that its data comes from Core Data;
 
-* no SwiftUI view should ever need to `import CoreData`.  
+* a View should never access or manipulate attributes of a CD object directly; and
 
-I have found a way to make this happen in the  current design, and I think the result works quite well.
+* the associated "View.swift" file that defines the View should not need to  `import CoreData`.  
+
+The code of this app **follows the three rules above**, and I think the result works quite well.
 
 Please be sure to read about some subtleties of this redesign directly in the source code.
 
@@ -141,22 +143,20 @@ SwiftUI does provide `@FetchRequest` and `@ObservedObject` and `@EnvironmentObje
 
 The SwiftUI view management system is designed to destroy views when no longer needed and recreate them as needed -- view creation is very cheap and efficient.  However, if a view has an object reference ... well ... that view can't be destroyed so easily, and so SwiftUI hangs on to it and *you* take on the responsibility to keep the view updated.  Often, you do that using @ObservedObject, but then you cannot very easily delete the object while this view is alive.  And if you don't use @ObservedObject, that view will not be updated for you by SwiftUI should its parent ever get redrawn.
 
-Finally, the architecture of ShoppingList14 is now, at the main level, more the expected architecture of a @FetchRequest-driven SwiftUI interface, while addressing the subtlety above involving views and object reference.  Please be sure to work your way through the code, where you will find several, extended comments that discuss these accommodations.
+Finally, the architecture of ShoppingList14 is now, at the main level, more the expected architecture of a @FetchRequest-driven SwiftUI interface, while addressing the subtlety above involving views and object references.  Please be sure to work your way through the code, where you will find several, extended comments that discuss these accommodations.
 
 
 ## Future Work
 
-Some things I may continue to work on in the future include adding CloudKit, real support for iPad, and data export (e.g., to email or print a copy of a shopping list).  However, perhaps these are best left to the energetic reader.
+Some things I may continue to work on in the future include adding CloudKit, real support for iPad, and data export (e.g., to email or print a copy of a shopping list).  However, I do not expect to be posting such improvements here, and some of these suggestions are best left to the reader as a challenge.
 
-* Hint: It is easy to handle the email piece, since there are several "mail views for SwiftUI" already on Github. [This is one from Mohammad Rahchamani](https://github.com/mohammad-rahchamani/MailView) that I have used in another project and it works quite easily for any SwiftUI app.)
+* Note: It is easy to handle the email piece, since there are several "mail views for SwiftUI" already on Github. [This is one from Mohammad Rahchamani](https://github.com/mohammad-rahchamani/MailView) that I have used in another project and it works quite easily for any SwiftUI app.)
 
-A more energetic improvement would be to expand the database and the app's UI to support multiple "Stores," each of which has many "Locations," and "Items" would have a many-to-many relationship with "Locations" so one item can be available in many Stores. I do now shop at several different stores, so as a user, the idea is of some interest ...
+A more energetic improvement would be to expand the database and the app's UI to support multiple "Stores," each of which has many "Locations," and "Items" would have a many-to-many relationship with "Locations," so one item can be available in many Stores. I do now shop at several different stores, so as a user, the idea is of *some* interest ...
 
-However, no matter what I produce from this point onward, I am certainly not at all interested in creating the next, killer shopping list app or moving any of this to the App Store.  *The world really does not need a new list-making app*.  But, if you want to take this code and run with it ... go right ahead.
+However, no matter what I might post from this point onward, please know that:
 
-
-
-
+* I am not at all interested in creating the next, killer shopping list app or in moving any of this to the App Store.  *The world really does not need a new list-making app*.  
 
 
 ## Closing
