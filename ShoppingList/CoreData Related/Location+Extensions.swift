@@ -186,10 +186,7 @@ extension Location: Comparable {
 	
 	static func updateData(for location: Location?, using editableData: EditableLocationData) {
 		// if the incoming item is not nil, then this is just a straight update.
-		// otherwise, we must create the new Location here and add it to
-		// our list of locations
-		
-		// if location is nil, it's a signal to add a new item with the packaged data
+		// otherwise, we must create the new Location here and add it
 		if let location = location {
 			location.updateValues(from: editableData)
 		} else {
@@ -199,6 +196,11 @@ extension Location: Comparable {
 		
 		saveChanges()
 	}
+	
+	static func saveChanges() {
+		PersistentStore.shared.saveContext()
+	}
+
 	
 	// MARK: - Object Methods
 	
@@ -215,12 +217,19 @@ extension Location: Comparable {
 		// items associated with this location may want to know about
 		// (some of) these changes.  reason: items rely on knowing some computed
 		// properties such as color, location name, and visitationOrder.
-		items.forEach({ $0.objectWillChange.send() })
+
+		//items.forEach({ $0.objectWillChange.send() })
+		
+		// i have commented-out the line above and replaced it with the following,
+		// which reassigns the current location of each item to "self," which IS
+		// its current location.  i'm not sure, but this does get the right
+		// "objectWillChange" message to trigger on each item so that an item's
+		// computed properties for name, visitationOrder, and uiColor are
+		// consistent.
+		
+		items.forEach({ $0.location = self })
 	}
 
-	static func saveChanges() {
-		PersistentStore.shared.saveContext()
-	}
 	
 	
 }

@@ -51,7 +51,7 @@ struct SectionData: Identifiable, Hashable {
 // of the list).
 struct ShoppingListView: View {
 	
-	// this is the @FetchRequest that ties this view to CoreData Items
+	// this is the @FetchRequest that ties this view to CoreData Items.
 	// comment: this is a subview of the parent ShoppingListTabView, which
 	// already has its own @FetchRequest to drive that view.  we could "pass"
 	// that into this subview, but there are some syntax subtleties; plus, it's
@@ -61,7 +61,7 @@ struct ShoppingListView: View {
 	private var itemsToBePurchased: FetchedResults<Item>
 
 	// display format: one big section of Items, or sectioned by Location?
-	var multiSectionDisplay: Bool
+	@Binding var multiSectionDisplay: Bool
 	
 	// state variables to control showing confirmation of a delete, which is
 	// one of three context menu actions that can be applied to an item

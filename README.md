@@ -12,9 +12,11 @@ Feel free to use this as is, to develop further,  to completely ignore, or even 
 
 XCode 12 has finally stabilized (?), and I have also upgraded my iPhone to a more stable iOS14.2.  So I felt it safe to make some refinements and possibly use features of iOS 14 in updating this project.  I also just purchased a new iPad Air 4, so perhaps the time has come to work on iPad implementation.  
 
-This repository has been built using XCode 12.2 and will run under iOS 14.2, and I am now regularly using this updated app on my iPhone.
+This repository has been built using XCode 12.2 and will run under iOS 14.2. Please be sure to read the What's New in ShoppingList14 section below, primarily for implementation and code-level changes.
 
-Please be sure to read the What's New in ShoppingList14 section below, primarily for implementation and code-level changes.
+### update Monday, December 7.
+
+* Fixed an updating issue for `Item` when dsiplayed in the shopping list or the purchased item list.  In some cases, edits to an associated Location were not being properly reflected in the Item for its `locationName`, `visitationOrder`, and `uiColor`.  See comments in `Location.updateValues`.
 
 
 

@@ -92,7 +92,7 @@ extension Item {
 	
 	// an item's associated location.  this fronts a Core Data optional attribute
 	// if you change an item's location, the old and the new Location may want to
-	// know that some of their computed properties might be invalidated
+	// know that some of their computed properties could be invalidated
 	var location: Location {
 		get { location_! }
 		set {

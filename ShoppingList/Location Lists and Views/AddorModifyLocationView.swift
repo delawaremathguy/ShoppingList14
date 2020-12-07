@@ -105,9 +105,11 @@ struct AddorModifyLocationView: View {
 	}
 
 	func commitData() {
+		// copies the SwiftUI Color to the editablrData (which has RGB-A components)
 		editableData.updateColor(from: editableColor)
-		Location.updateData(for: editableLocation, using: editableData)
+		// and update Location (includes case of creating a new Location if necessary)
 		presentationMode.wrappedValue.dismiss()
+		Location.updateData(for: editableLocation, using: editableData)
 	}
 
 	func loadData() {
