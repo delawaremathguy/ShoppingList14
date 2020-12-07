@@ -73,7 +73,8 @@ for more discussion about sectioning
 								ForEach(sectionData.items) { item in
 									// display of a single item
 									NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
-										SelectableItemRowView(rowData: SelectableItemRowData(item: item), selected: itemsChecked.contains(item),
+										SelectableItemRowView(rowData: SelectableItemRowData(item: item),
+																					selected: itemsChecked.contains(item),
 																					sfSymbolName: "cart",
 																					respondToTapOnSelector: { handleItemTapped(item) })
 											.contextMenu {

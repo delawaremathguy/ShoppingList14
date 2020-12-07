@@ -47,17 +47,7 @@ struct LocationsTabView: View {
 						ForEach(locations) { location in
 							NavigationLink(destination: AddorModifyLocationView(editableLocation: location)) {
 								LocationRowView(rowData: LocationRowData(location: location))
-									.contextMenu {
-										Button(action: {
-											if !location.isUnknownLocation {
-												locationToDelete = location
-												showDeleteConfirmation = true
-											}
-										}) {
-											Text(location.isUnknownLocation ? "(Cannot be deleted)" : "Delete This Location")
-											Image(systemName: location.isUnknownLocation ? "trash.slash" : "trash")
-										}
-									} // end of .contextMenu
+									.contextMenu { contextMenuButton(for: location) }
 							} // end of NavigationLink
 						} // end of ForEach
 					} // end of Section
@@ -84,6 +74,21 @@ struct LocationsTabView: View {
 			Image(systemName: "plus")
 				.resizable()
 				.frame(width: 20, height: 20)
+		}
+	}
+	
+	// a convenient way to build this context menu without having it in-line
+	// in the view code above
+	@ViewBuilder
+	func contextMenuButton(for location: Location) -> some View {
+		Button(action: {
+			if !location.isUnknownLocation {
+				locationToDelete = location
+				showDeleteConfirmation = true
+			}
+		}) {
+			Text(location.isUnknownLocation ? "(Cannot be deleted)" : "Delete This Location")
+			Image(systemName: location.isUnknownLocation ? "trash.slash" : "trash")
 		}
 	}
 		

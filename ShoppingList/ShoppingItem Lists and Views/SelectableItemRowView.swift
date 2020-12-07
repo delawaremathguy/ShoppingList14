@@ -36,13 +36,13 @@ struct SelectableItemRowData {
 // 2. pass the item and copy the necessary data from the item into local variables
 // 3. pass the item's data
 //
-// it seems that the "right approach" is #1, hold on to the item as an @Observed
+// it seems that the "right approach" should be #1, hold on to the item as an @Observed
 // obect.  this is a problem should the item be deleted: because Item comes from
 // Core Data, when it is deleted it does not go away immediately, but instead
 // becomes an in-memory blob of zeroed-out data for which .isDeleted = false
 // and .isFault = true.  and even despite calling processPendingEvents to try to
 // clean up Core Data after a deletion, this View is still out there somewhere in
-// SwiftUI holding a reference to that item.  consequently, trying to use
+// SwiftUI, holding a reference to that item.  consequently, trying to use
 // item.name_! results in a force-unwrap of a nil.
 //
 // you can gloss over this part by instead using item.name which is nil-coalesced,
@@ -57,8 +57,13 @@ struct SelectableItemRowData {
 // parent view will not refresh this view when the parent redraws, because it looks like
 // this will be the same view as before.  (that's my best guess)
 //
-// option #3 works: create the view with
-// "SelectableItemRowView(rowData: SelectableItemRowData(item: item), ..." and apparently
+// in short: if you "pass" an object reference to a View, you own that view and not
+// SwiftUI; SwiftUI will hold on to this view as long as it holds on to the parent
+// view.  adding @ObservedObject allows you to listen for changes and
+// redraw as needed (SwiftUI will not do it for you)
+//
+// option #3 works: create this view with
+// "SelectableItemRowView(rowData: SelectableItemRowData(item: item), ..." -- apparently
 // this is enough to make SwiftUI see this as a pure struct without object references
 // and therefore freely destroys and later recreates this view (and indeed all row views)
 // when the parent's @FetchRequest gets triggered by an item's change.
@@ -76,11 +81,12 @@ struct SelectableItemRowView: View {
 	
 	// this init need not appear -- it was used for testing purposes, but if you are
 	// interested in partially understanding my explanation above (assuming it's on the mark),
-	// un-comment this init and you'll see how often these row views are created.
+	// un-comment this init and you'll see how often these row views are created and later
+	// re-created after having been destroyed.
 	//
 	// my suggested test: with an item appearing on the shopping list, go over to the
 	// Locations tab, select the location where the item is listed, tap on the item in the
-	// list of items at that location, change the quantity and flip the isAvailable switch,
+	// list of items at that location, change the item's quantity and flip the isAvailable switch,
 	// tap save, and watch the output!  go back to the shopping list: the item is properly
 	// updated because the whole view was recreated from scratch.
 //	init(rowData: SelectableItemRowData, selected: Bool,

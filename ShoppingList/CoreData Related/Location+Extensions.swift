@@ -171,14 +171,11 @@ extension Location: Comparable {
 		// this could affect each item's computed properties
 		let theUnknownLocation = Location.unknownLocation()!
 		itemsAtThisLocation.forEach({ $0.location = theUnknownLocation })
-		for item in itemsAtThisLocation {
-			item.location = theUnknownLocation
-		}
 		// and finish the deletion and make sure the context has gets cleaned up
 		// right now in memory.  then save if requested
 		context?.delete(location)
 		context?.processPendingChanges()
-		// save to disk if requested
+		// save to disk unless not requested (default is to do the save)
 		if saveChanges {
 			PersistentStore.shared.saveContext()
 		}
@@ -192,8 +189,7 @@ extension Location: Comparable {
 		} else {
 			let newLocation = Location.addNewLocation()
 			newLocation.updateValues(from: editableData)
-		}
-		
+		}		
 		saveChanges()
 	}
 	
