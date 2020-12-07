@@ -216,7 +216,7 @@ extension Location: Comparable {
 		
 		// items associated with this location may want to know about
 		// (some of) these changes.  reason: items rely on knowing some computed
-		// properties such as color, location name, and visitationOrder.
+		// properties such as uiColor, locationName, and visitationOrder.
 
 		//items.forEach({ $0.objectWillChange.send() })
 		
@@ -225,9 +225,9 @@ extension Location: Comparable {
 		// its current location.  i'm not sure, but this does get the right
 		// "objectWillChange" message to trigger on each item so that an item's
 		// computed properties for name, visitationOrder, and uiColor are
-		// consistent.
+		// consistently displayed.
 		
-		items.forEach({ $0.location = self })
+		items.forEach({ $0.location_ = self })
 	}
 
 	
