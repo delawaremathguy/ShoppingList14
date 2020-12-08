@@ -213,15 +213,22 @@ extension Location: Comparable {
 		// items associated with this location may want to know about
 		// (some of) these changes.  reason: items rely on knowing some computed
 		// properties such as uiColor, locationName, and visitationOrder.
-
+		// usually, what i would do is this, to be sure that anyone who is
+		// observing an Item knows about the Location update:
+		
 		//items.forEach({ $0.objectWillChange.send() })
 		
-		// i have commented-out the line above and replaced it with the following,
-		// which reassigns the current location of each item to "self," which IS
-		// its current location.  i'm not sure, but this does get the right
-		// "objectWillChange" message to trigger on each item so that an item's
-		// computed properties for name, visitationOrder, and uiColor are
-		// consistently displayed.
+		// in the design of this app, however, there are no @ObservedObject references
+		// to Items (reason: deletions are a real problem, as noted elsewhere).
+		// however, the ShoppingListTabView and the PurchasedItemsTabView need to
+		// be updated, and these views are driven by @FetchRequests.  problem: sending on
+		// objectWillChange message is not picked up by a @FetchRequest -- @FR is
+		// based on NSFetchedResultsController and reacts to changes to Core Data attributes
+		// only -- so i will trick these views into updating by "making a change" to each Item
+		// entity associated with this Location (!)
+		// but what do you change? we'll reset each Item's location to be this location.
+		// and this works!  the assignment is picked up by Core Data and @FetchRequests
+		// that involve these items.
 		
 		items.forEach({ $0.location_ = self })
 	}
