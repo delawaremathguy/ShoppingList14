@@ -1,5 +1,5 @@
 //
-//  Array+Extensions.swift
+//  Sequence+Extensions.swift
 //  ShoppingList
 //
 //  Created by Jerry on 6/4/20.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension Array {
+extension Sequence {
 	
 	// count the number of elements that satisy a given boolean condition
 	func count(where selector: (Element) -> Bool) -> Int {
