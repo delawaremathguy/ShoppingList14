@@ -44,7 +44,7 @@ struct AddorModifyItemView: View {
 	var body: some View {
 		Form {
 			// Section 1. Basic Information Fields
-			Section(header: Text("Basic Information").textCase(.none)) {
+			Section(header: Text("Basic Information").sectionHeader()) {
 				
 				HStack(alignment: .firstTextBaseline) {
 					SLFormLabelText(labelText: "Name: ")
@@ -87,7 +87,7 @@ struct AddorModifyItemView: View {
 			
 			// Section 2. Item Management (Delete), if present
 			if editableItem != nil {
-				Section(header: Text("Shopping Item Management").textCase(.none)) {
+				Section(header: Text("Shopping Item Management").sectionHeader()) {
 					SLCenteredButton(title: "Delete This Shopping Item",
 													 action: { showDeleteConfirmation = true })
 						.foregroundColor(Color.red)

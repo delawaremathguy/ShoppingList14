@@ -76,8 +76,8 @@ struct DevToolsTabView: View {
 			.navigationBarTitle("Dev Tools")
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())
-		.onAppear { print("DevToolsTabView appear") }
-		.onDisappear { print("DevToolsTabView disappear") }
+		.onAppear() { print("DevToolsTabView appear") }
+		.onDisappear() { print("DevToolsTabView disappear") }
 	} // end of body
 	
 }

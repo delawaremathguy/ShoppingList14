@@ -29,12 +29,13 @@
 		D66FF3562492E67100B3ABC8 /* SLCenteredButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66FF3552492E67100B3ABC8 /* SLCenteredButton.swift */; };
 		D677946224D58F34006EB9CF /* EditableLocationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D677946124D58F34006EB9CF /* EditableLocationData.swift */; };
 		D6931D6C24C4C60900A61BB6 /* TimerTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6931D6B24C4C60900A61BB6 /* TimerTabView.swift */; };
+		D6AAFF8A2582778E00B1CBAC /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6AAFF892582778E00B1CBAC /* View+Extensions.swift */; };
 		D6ADB3B2247C266F00376271 /* locations.json in Resources */ = {isa = PBXBuildFile; fileRef = D6ADB3B1247C266E00376271 /* locations.json */; };
 		D6ADB3B4247C267900376271 /* items.json in Resources */ = {isa = PBXBuildFile; fileRef = D6ADB3B3247C267900376271 /* items.json */; };
 		D6AE3643246F035400F7A237 /* Bundle+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6AE3642246F035400F7A237 /* Bundle+Extensions.swift */; };
 		D6B8A95424636711005F8EF2 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6B8A95324636711005F8EF2 /* MainView.swift */; };
 		D6B8A9562463693D005F8EF2 /* LocationsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6B8A9552463693D005F8EF2 /* LocationsTabView.swift */; };
-		D6C75D3324B4B123003E445B /* ViewBuildingCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C75D3224B4B123003E445B /* ViewBuildingCode.swift */; };
+		D6C75D3324B4B123003E445B /* ContextMenuBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C75D3224B4B123003E445B /* ContextMenuBuilder.swift */; };
 		D6C7685C2572B3B500E0F4B0 /* SelectableItemRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C7685B2572B3B500E0F4B0 /* SelectableItemRowView.swift */; };
 		D6C91D8724A8EC09008C8DFF /* EditableItemData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C91D8624A8EC09008C8DFF /* EditableItemData.swift */; };
 		D6DE39BD247314B40013F9B4 /* SLFormLabelText.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6DE39BC247314B40013F9B4 /* SLFormLabelText.swift */; };
@@ -73,12 +74,13 @@
 		D66FF3552492E67100B3ABC8 /* SLCenteredButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLCenteredButton.swift; sourceTree = "<group>"; };
 		D677946124D58F34006EB9CF /* EditableLocationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableLocationData.swift; sourceTree = "<group>"; };
 		D6931D6B24C4C60900A61BB6 /* TimerTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerTabView.swift; sourceTree = "<group>"; };
+		D6AAFF892582778E00B1CBAC /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		D6ADB3B1247C266E00376271 /* locations.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = locations.json; sourceTree = "<group>"; };
 		D6ADB3B3247C267900376271 /* items.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = items.json; sourceTree = "<group>"; };
 		D6AE3642246F035400F7A237 /* Bundle+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+Extensions.swift"; sourceTree = "<group>"; };
 		D6B8A95324636711005F8EF2 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		D6B8A9552463693D005F8EF2 /* LocationsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationsTabView.swift; sourceTree = "<group>"; };
-		D6C75D3224B4B123003E445B /* ViewBuildingCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewBuildingCode.swift; sourceTree = "<group>"; };
+		D6C75D3224B4B123003E445B /* ContextMenuBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuBuilder.swift; sourceTree = "<group>"; };
 		D6C7685B2572B3B500E0F4B0 /* SelectableItemRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableItemRowView.swift; sourceTree = "<group>"; };
 		D6C91D8624A8EC09008C8DFF /* EditableItemData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableItemData.swift; sourceTree = "<group>"; };
 		D6DE39BC247314B40013F9B4 /* SLFormLabelText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLFormLabelText.swift; sourceTree = "<group>"; };
@@ -169,6 +171,7 @@
 				D612E16024898EBB007E1412 /* Array+Extensions.swift */,
 				D65A509E2565789900D43229 /* String+Extensions.swift */,
 				D6F29CA7257544C900A0E3E0 /* Date+Extensions.swift */,
+				D6AAFF892582778E00B1CBAC /* View+Extensions.swift */,
 			);
 			path = "Convenience Extensions";
 			sourceTree = "<group>";
@@ -180,7 +183,7 @@
 				D6F29CAA2575982300A0E3E0 /* ShoppingListDisplay.swift */,
 				D6EF557C246D7421007D636B /* PurchasedItemsTabView.swift */,
 				D6450BD6245F49DB0074DA16 /* AddorModifyItemView.swift */,
-				D6C75D3224B4B123003E445B /* ViewBuildingCode.swift */,
+				D6C75D3224B4B123003E445B /* ContextMenuBuilder.swift */,
 				D6C91D8624A8EC09008C8DFF /* EditableItemData.swift */,
 				D6C7685B2572B3B500E0F4B0 /* SelectableItemRowView.swift */,
 			);
@@ -310,11 +313,12 @@
 				D60F14A924686D710077AD3F /* LocationCodableProxy.swift in Sources */,
 				D62B88322451162D0051A7CE /* ShoppingListTabView.swift in Sources */,
 				D6AE3643246F035400F7A237 /* Bundle+Extensions.swift in Sources */,
+				D6AAFF8A2582778E00B1CBAC /* View+Extensions.swift in Sources */,
 				D63C05562566B9DE000A63FC /* ShoppingListApp.swift in Sources */,
 				D677946224D58F34006EB9CF /* EditableLocationData.swift in Sources */,
 				D612E16124898EBB007E1412 /* Array+Extensions.swift in Sources */,
 				D6EF5587246D97C3007D636B /* Development.swift in Sources */,
-				D6C75D3324B4B123003E445B /* ViewBuildingCode.swift in Sources */,
+				D6C75D3324B4B123003E445B /* ContextMenuBuilder.swift in Sources */,
 				D66FF35424926B6400B3ABC8 /* DevToolsTabView.swift in Sources */,
 				D6F29CAB2575982300A0E3E0 /* ShoppingListDisplay.swift in Sources */,
 				D6C91D8724A8EC09008C8DFF /* EditableItemData.swift in Sources */,

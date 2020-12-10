@@ -8,12 +8,12 @@
 
 import Foundation
 
-// this gives me a way to collect all the data for an Item that i might want
-// to edit.  it defaults to having values appropriate for a new item upon
-// creation, or can be initialized from a Item.  this is something
+// this gives me a way to collect all the data for an Item that i might want to edit
+// (or even just display).  it defaults to having values appropriate for a new item upon
+// creation, and can be initialized from a Item.  this is something
 // i can then hand off to an edit view.  at some point, that edit view will
-// want to update an Item with this data, so we also provide an extension
-// on Item to copy this data back to a Item.
+// want to update an Item with this data, so see the class function
+// Item.update(using editableData: EditableItemData)
 
 struct EditableItemData {
 	// the id of the Item, if any, associated with this data collection
@@ -47,10 +47,8 @@ struct EditableItemData {
 		}
 	}
 	
-	// provides init for a new Item -- makes sure it will go to shopping list by default
-	init() {
-		self.onList = true
-	}
+	// provides init for a new Item -- but all values are properly defaulted above
+	init() { }
 	
 	var canBeSaved: Bool { name.count > 0 }
 }

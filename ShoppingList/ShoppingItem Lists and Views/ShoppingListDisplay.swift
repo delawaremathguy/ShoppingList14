@@ -11,7 +11,7 @@ import SwiftUI
 
 // MARK: - A Generic SectionData struct
 
-// in sectioned data display, one consisting of sections and with each section being
+// in a sectioned data display, one consisting of sections and with each section being
 // itself a list, you usually work with a structure that looks like this:
 //
 // List {
@@ -61,6 +61,7 @@ struct ShoppingListView: View {
 	private var itemsToBePurchased: FetchedResults<Item>
 
 	// display format: one big section of Items, or sectioned by Location?
+	// (not sure we need a Binding here ... we only read the value)
 	@Binding var multiSectionDisplay: Bool
 	
 	// state variables to control showing confirmation of a delete, which is
@@ -77,8 +78,8 @@ struct ShoppingListView: View {
 	
 	var body: some View {
 		Form {
-			ForEach(sectionData(multiSectionDisplay: multiSectionDisplay)) { section in
-				Section(header: Text(section.title).textCase(.none)) {
+			ForEach(sectionData()) { section in
+				Section(header: Text(section.title).sectionHeader()) {
 					// display items in this location
 					ForEach(section.items) { item in
 						// display a single row here for 'item'
@@ -100,10 +101,10 @@ struct ShoppingListView: View {
 		}  // end of Form
 	} // end of body: some View
 	
-	// the idea of this function is to break out the itemsToBePurchased by section,
+	// the purpose of this function is to break out the itemsToBePurchased by section,
 	// according to whether the list is displayed as a single section or in multiple
 	// sections (one for each Location that contains shopping items on the list)
-	func sectionData(multiSectionDisplay: Bool) -> [SectionData] {
+	func sectionData() -> [SectionData] {
 		
 		// the easy case first: one section with a title and all the items.
 		if !multiSectionDisplay {
@@ -117,7 +118,7 @@ struct ShoppingListView: View {
 		let dict = Dictionary(grouping: itemsToBePurchased, by: { $0.location })
 		// now assemble the data by location visitationOrder
 		var completedSectionData = [SectionData]()
-		for key in dict.keys.sorted() { // sorted is, of course, by visitationOrder
+		for key in dict.keys.sorted() { // sorted by Location is, of course, by visitationOrder
 			completedSectionData.append(SectionData(title: key.name, items: dict[key]!))
 		}
 		return completedSectionData
@@ -125,11 +126,11 @@ struct ShoppingListView: View {
 	
 	func handleItemTapped(_ item: Item) {
 		if !itemsChecked.contains(item) {
-			// put into our list of what's about to be removed, and because
+			// put the item into our list of what's about to be removed, and because
 			// itemsChecked is a @State variable, we will see a momentary
 			// animation showing the change.
 			itemsChecked.append(item)
-			// queue the actual removal to allow animation to run
+			// and we queue the actual removal long enough to allow animation to finish
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.40) {
 				item.toggleOnListStatus()
 				itemsChecked.removeAll(where: { $0 == item })

@@ -59,7 +59,7 @@ AddorModifyItemView inside its own NavigationView (so the Picker will work!)
 
 /* ---------
 2. we display either a "List is Empty" view, or the sectioned list of purchased
-items.  there is some complexity here, so review the ShoppingListDisplay.swift
+items.  there is some complexity here, so review the ShoppingListDisplay.swift code
 for more discussion about sectioning
 ---------- */
 
@@ -69,7 +69,7 @@ for more discussion about sectioning
 					// notice use of sectioning strategy that is described in ShoppingListDisplay.swift
 					Form {
 						ForEach(sectionData()) { sectionData in
-							Section(header: Text(sectionData.title).textCase(.none)) {
+							Section(header: Text(sectionData.title).sectionHeader()) {
 								ForEach(sectionData.items) { item in
 									// display of a single item
 									NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
@@ -104,7 +104,7 @@ for more discussion about sectioning
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())
 		.onAppear(perform: handleOnAppear)
-		.onDisappear { print("PurchasedTabView disappear") }
+		.onDisappear() { print("PurchasedTabView disappear") }
 	}
 	
 	func handleOnAppear() {
@@ -130,8 +130,6 @@ for more discussion about sectioning
 	func toolbarButton() -> some View {
 		Button(action: { isAddNewItemSheetShowing = true }) {
 			Image(systemName: "plus")
-				.resizable()
-				.frame(width: 20, height: 20)
 		}
 	}
 	

@@ -51,7 +51,7 @@ AddorModifyItemView inside its own NavigationView (so the Picker will work!)
 				
 /* ---------
 2. we display either a "List is Empty" view, a single-section shopping list view
-or multi-section shopping list view.  the display has some complexity to it because
+or multi-section shopping list view.  the list display has some complexity to it because
 of the sectioning, so we push it off to a specialized View.
 ---------- */
 
@@ -100,11 +100,8 @@ of the sectioning, so we push it off to a specialized View.
 
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())
-			.onAppear {
-				print("ShoppingListTabView appear")
-				//viewModel.loadItems()
-			}
-			.onDisappear { print("ShoppingListTabView disappear") }
+		.onAppear() { print("ShoppingListTabView appear") }
+		.onDisappear() { print("ShoppingListTabView disappear") }
 		
 	} // end of body: some View
 	

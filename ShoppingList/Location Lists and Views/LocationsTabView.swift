@@ -10,11 +10,11 @@ import SwiftUI
 
 struct LocationsTabView: View {
 	
-	// this is the @FetchRequest that ties this view to CoreData Locatiopns
+	// this is the @FetchRequest that ties this view to CoreData Locations
 	@FetchRequest(fetchRequest: Location.fetchAllLocations())
 	private var locations: FetchedResults<Location>
 		
-	// local state to trigger showing a sheet to add a new location
+	// local state to trigger a sheet to appear to add a new location
 	@State private var isAddNewLocationSheetShowing = false
 	
 	// support for context menu deletion: a boolean to control showing an
@@ -43,7 +43,7 @@ struct LocationsTabView: View {
 				
 				// 2. then the list of locations
 				Form {
-					Section(header: Text("Locations Listed: \(locations.count)").textCase(.none)) {
+					Section(header: Text("Locations Listed: \(locations.count)").sectionHeader()) {
 						ForEach(locations) { location in
 							NavigationLink(destination: AddorModifyLocationView(editableLocation: location)) {
 								LocationRowView(rowData: LocationRowData(location: location))
@@ -62,18 +62,17 @@ struct LocationsTabView: View {
 							primaryButton: .cancel(Text("No")),
 							secondaryButton: .destructive(Text("Yes"), action: { Location.delete(locationToDelete!) })
 				)}
-			.onAppear { print("LocationsTabView appear") }
-			.onDisappear { print("LocationsTabView disappear") }
+			.onAppear() { print("LocationsTabView appear") }
+			.onDisappear() { print("LocationsTabView disappear") }
 
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())
 	} // end of var body: some View
 	
+	// defines the usual "+" button to add a Location
 	func toolbarButton() -> some View {
 		Button(action: { isAddNewLocationSheetShowing = true }) {
 			Image(systemName: "plus")
-				.resizable()
-				.frame(width: 20, height: 20)
 		}
 	}
 	
