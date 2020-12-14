@@ -145,7 +145,9 @@ SwiftUI does provide `@FetchRequest` and `@ObservedObject` and `@EnvironmentObje
 
 The SwiftUI view management system is designed to destroy views when no longer needed and recreate them as needed -- view creation is very cheap and efficient.  However, if a view has an object reference ... well ... that view can't be destroyed so easily, and so SwiftUI hangs on to it and *you* take on the responsibility to keep the view updated.  Often, you do that using @ObservedObject, but then you cannot very easily delete the object while this view is alive.  And if you don't use @ObservedObject, that view will not be updated for you by SwiftUI should its parent ever get redrawn.
 
-Finally, the architecture of ShoppingList14 is now, at the main level, more the expected architecture of a @FetchRequest-driven SwiftUI interface, while addressing the subtlety above involving views and object references.  Please be sure to work your way through the code, where you will find several, extended comments that discuss these accommodations.
+* If you look through the code, you'll find that I do not pass objects (class references) to views and I never use @ObservedObject.  There is only one place in the code (documented in the comments) where a view update issue must be handled using a little bit of trickery -- see `Location.updateValues` in Locations+Extensions.swift.
+
+Finally, the architecture of ShoppingList14 is now, at the main level, more the expected architecture of a @FetchRequest-driven SwiftUI interface, while addressing the subtleties above involving views and object references.  Please be sure to work your way through the code, where you will find several, extended comments that discuss these accommodations.
 
 
 ## Future Work
