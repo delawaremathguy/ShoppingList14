@@ -18,7 +18,7 @@ This repository has been built using XCode 12.2 and will run under iOS 14.2. Ple
 
 * Fixed an updating issue for `Item` when displayed in the shopping list or the purchased item list.  In some cases, edits to its associated Location were not being properly reflected for the Item's `locationName`, `visitationOrder`, and `uiColor`.  See comments in `Location.updateValues`.
 
-* *Updates to documentation, comments within the code, cosmetic changes, and code updates for optimization and clarity will not necessairly be reported here*. *Plase always check the age of the most recent commit above*.
+* *Updates to documentation, comments within the code, cosmetic changes, and code updates for optimization and clarity will not necessairly be reported here*. *Please always check the age of the most recent commit above*.
 
 
 
