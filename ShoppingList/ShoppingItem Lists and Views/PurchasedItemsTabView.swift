@@ -93,8 +93,7 @@ for more discussion about sectioning
 						Alert(title: Text("Delete \'\(itemToDelete!.name)\'?"),
 									message: Text("Are you sure you want to delete this item?"),
 									primaryButton: .cancel(Text("No")),
-									secondaryButton: .destructive(Text("Yes"),
-																		action: { Item.delete(itemToDelete!) })
+									secondaryButton: .destructive(Text("Yes"), action: { Item.delete(itemToDelete!) })
 						)}					
 				} // end of if-else
 			} // end of VStack

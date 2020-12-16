@@ -8,6 +8,60 @@
 
 import SwiftUI
 
+// this is a struct to collect the data needed to run the confirmation alert
+// that we use to confirm that the user either wants to move all items off the list
+// (they might hit this button accidentally and lose the whole shopping list) or
+// delete an item.
+
+struct ConfirmationTrigger {
+	
+	enum AlertType {
+		case none
+		case moveAllOffShoppingList
+		case deleteItem(Item)
+	}
+	
+	var type: AlertType
+	var isConfirmationAlertShowing: Bool = false
+
+	mutating func trigger(type: AlertType) {
+		self.type = type
+		isConfirmationAlertShowing = true
+	}
+	
+	// strings to pass along to an alert when it comes up, depending on type
+	func title() -> String {
+		switch type {
+			case .none: return ""
+			case .moveAllOffShoppingList: return "Move All Items Off-List"
+			case .deleteItem(let item): return "Delete \'\(item.name)\'?"
+		}
+	}
+	
+	func message() -> String {
+		switch type {
+			case .none, .moveAllOffShoppingList: return ""
+			case .deleteItem(let item):
+				return "Are you sure you want to delete \'\(item.name)\'? This action cannot be undone"
+		}
+	}
+	
+	func cancelAction() {
+		// nothing
+	}
+	
+	func executeAction() {
+		switch type {
+			case .none:
+				break
+			case .moveAllOffShoppingList:
+				Item.moveAllItemsOffShoppingList()
+			case .deleteItem(let item):
+				Item.delete(item)
+		}
+	}
+}
+
 struct ShoppingListTabView: View {
 	
 	// this is the @FetchRequest that ties this view to CoreData Items
@@ -16,13 +70,9 @@ struct ShoppingListTabView: View {
 
 	// local state to trigger showing a sheet to add a new item
 	@State private var isAddNewItemSheetShowing = false
-	// local state to trigger an Alert to confirm either deleting
-	// an item, or moving all items off the list
-	@State private var isConfirmationAlertShowing = false
-	// which of these we do: move all off-list (true) or delete (false)
-	@State private var operationIsMoveToOtherList = false
-	// and in the case of a delete, which item we are deleting
-	@State private var itemToDelete: Item?
+	
+	// parameters to control triggering an Alert
+	@State private var confirmationTrigger = ConfirmationTrigger(type: .none)
 	
 	// local state for are we a multisection display or not.  the default here is false,
 	// but an eager developer could easily store this default value in UserDefaults (?)
@@ -59,8 +109,9 @@ of the sectioning, so we push it off to a specialized View.
 					EmptyListView(listName: "Shopping")
 				} else {
 					ShoppingListView(multiSectionDisplay: $multiSectionDisplay,
-													 isConfirmationAlertShowing: $isConfirmationAlertShowing,
-													 itemToDelete: $itemToDelete)
+//													 isConfirmationAlertShowing: $isConfirmationAlertShowing,
+//													 itemToDelete: $itemToDelete,
+													 confirmationTrigger: $confirmationTrigger)
 				}
 				
 /* ---------
@@ -72,9 +123,10 @@ of the sectioning, so we push it off to a specialized View.
 						.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
 					
 					SLCenteredButton(title: "Move All Items Off-list", action: {
+						confirmationTrigger.trigger(type: .moveAllOffShoppingList)
 						// setting these allow the Alert to come up with the right messages and actions
-						operationIsMoveToOtherList = true
-						isConfirmationAlertShowing = true
+//						operationIsMoveToOtherList = true
+//						isConfirmationAlertShowing = true
 						})
 						.padding([.bottom, .top], 6)
 					
@@ -92,11 +144,11 @@ of the sectioning, so we push it off to a specialized View.
 				ToolbarItem(placement: .navigationBarLeading, content: sectionDisplayButton)
 				ToolbarItem(placement: .navigationBarTrailing, content: addNewButton)
 			}
-			.alert(isPresented: $isConfirmationAlertShowing) {
-				Alert(title: Text(confirmationAlertTitle()),
-							message: Text(confirmationAlertMessage()),
-							primaryButton: .cancel(Text("No"), action: destructiveAlertCancel),
-							secondaryButton: .destructive(Text("Yes"), action: destructiveAlertAction)
+			.alert(isPresented: $confirmationTrigger.isConfirmationAlertShowing) {
+				Alert(title: Text(confirmationTrigger.title()),
+							message: Text(confirmationTrigger.message()),
+							primaryButton: .cancel(Text("No")),
+							secondaryButton: .destructive(Text("Yes"), action: confirmationTrigger.executeAction)
 				)
 			}
 
@@ -125,39 +177,6 @@ of the sectioning, so we push it off to a specialized View.
 		}
 	}
 	
-	// MARK: - Confirmation Alert Setup
-	
-	// these functions data to pass along to the confirmation alert that either deletes
-	// an item or moves all items off the list, based on the boolean "operationIsMoveToOtherList"
-	func confirmationAlertTitle() -> String {
-		if operationIsMoveToOtherList {
-			return "Move All Items Off-List"
-		} else {
-			return "Delete \'\(itemToDelete!.name)\'?"
-		}
-	}
-	
-	func confirmationAlertMessage() -> String {
-		if operationIsMoveToOtherList {
-			return ""
-		} else {
-			return "Are you sure you want to delete this item?"
-		}
-	}
-	
-	func destructiveAlertCancel() {
-		operationIsMoveToOtherList = false
-	}
-	
-	func destructiveAlertAction() {
-		if operationIsMoveToOtherList {
-			itemsToBePurchased.forEach({ $0.toggleOnListStatus() })
-			operationIsMoveToOtherList = false
-		} else if let item = itemToDelete {
-			Item.delete(item)
-		}
-	}
-
 } // end of ShoppingListTabView
 
 

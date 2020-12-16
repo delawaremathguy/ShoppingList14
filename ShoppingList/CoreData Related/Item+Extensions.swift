@@ -172,6 +172,22 @@ extension Item {
 		newItem.id = UUID()
 		return newItem
 	}
+	
+	// updates data for an Item that the user has directed from an Add or Modify View.
+	// if the incoming data is not assoicated with an item, we need to create it first
+	static func update(using editableData: EditableItemData) {
+		
+		// if we can find an Item with the right id, use it, else create one
+		if let item = allItems().first(where: { $0.id == editableData.id }) {
+			item.updateValues(from: editableData)
+		} else {
+			let newItem = Item.addNewItem()
+			newItem.updateValues(from: editableData)
+		}
+		
+		Item.saveChanges()
+	}
+
 
 	// saveChanges calls back through the PersistentStore
 	static func saveChanges() {
@@ -218,6 +234,15 @@ extension Item {
 		}
 	}
 	
+	static func moveAllItemsOffShoppingList() {
+		for item in allItems() where item.onList {
+			item.onList_ = false
+		}
+		Item.saveChanges()
+	}
+	
+	// MARK: - Object Methods
+	
 	// toggles the availability flag for an item
 	func toggleAvailableStatus() {
 		isAvailable_ = !isAvailable_
@@ -249,21 +274,6 @@ extension Item {
 		location_?.objectWillChange.send()
 		location_ = editableData.location
 		location_?.objectWillChange.send()
-	}
-
-	// updates data for an Item that the user has directed from an Add or Modify View.
-	// if the incoming data is not assoicated with an item, we need to create it first
-	static func update(using editableData: EditableItemData) {
-		
-		// if we can find an Item with the right id, use it, else create one
-		if let item = allItems().first(where: { $0.id == editableData.id }) {
-			item.updateValues(from: editableData)
-		} else {
-			let newItem = Item.addNewItem()
-			newItem.updateValues(from: editableData)
-		}
-		
-		Item.saveChanges()
 	}
 
 	

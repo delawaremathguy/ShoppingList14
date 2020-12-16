@@ -118,7 +118,7 @@ Next, I tried to insert a little Combine into the app (e.g., a view driven by a 
 
 I finally settled on more of an MVVM-style architecture, managing the list of Items or Locations myself, instead of letting @FetchRequest handle that list.  And I used internal notifications posted through the NotificationCenter that an `Item` or a `Location` has either been created, or edited, or is about to be deleted, so that view models could react appropriately.
 
-That design worked in version 1.0 of ShoppingList, but I decided that I should go back and revisit the design again.  What always bothered me about the current state of SwiftUI view code that I see that uses @FetchRequest is that such a view often needs to understand that the data they process comes from Core Data.  The view must also know some of the gritty details of Core Data (e.g. @FetchRequests needed to know about sortDescriptors and keyPaths) and possibly know when to unwrap or test for nil on values.
+That design worked in version 1.0 of ShoppingList, but I decided that I should go back and revisit the design again.  What always bothered me about the current state of SwiftUI view code that I see that uses @FetchRequest is that such a view often needs to understand that the data it processes come from Core Data.  The view must also know some of the gritty details of Core Data (e.g. @FetchRequests needed to know about sortDescriptors and keyPaths) and possibly know when to unwrap or test for nil values.
 
 The design in this app now lives somewhere between MVVM and a basic, @FetchRequest-driven SwiftUI app structure.  My goal in getting to this structure is that all SwiftUI views should follow these three rules: 
 
