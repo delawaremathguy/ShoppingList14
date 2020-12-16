@@ -99,7 +99,7 @@ for more discussion about sectioning
 				} // end of if-else
 			} // end of VStack
 			.navigationBarTitle("Purchased List")
-			.toolbar { toolbarButton() }
+			.toolbar { ToolbarItem(placement: .navigationBarLeading, content: addNewButton) }
 			
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())
@@ -127,7 +127,7 @@ for more discussion about sectioning
 	}
 		
 	// makes a simple "+" to add a new item
-	func toolbarButton() -> some View {
+	func addNewButton() -> some View {
 		Button(action: { isAddNewItemSheetShowing = true }) {
 			Image(systemName: "plus")
 		}

@@ -88,8 +88,10 @@ of the sectioning, so we push it off to a specialized View.
 
 			} // end of VStack
 			.navigationBarTitle("Shopping List")
-			.navigationBarItems(leading: leadingButton())
-			.toolbar { toolBarButton() }
+			.toolbar {
+				ToolbarItem(placement: .navigationBarLeading, content: sectionDisplayButton)
+				ToolbarItem(placement: .navigationBarTrailing, content: addNewButton)
+			}
 			.alert(isPresented: $isConfirmationAlertShowing) {
 				Alert(title: Text(confirmationAlertTitle()),
 							message: Text(confirmationAlertMessage()),
@@ -105,16 +107,16 @@ of the sectioning, so we push it off to a specialized View.
 		
 	} // end of body: some View
 	
-	// MARK: - NavigationBarItems
+	// MARK: - ToolbarItems
 	
 	// a "+" symbol to support adding a new item
-	func toolBarButton() -> some View {
+	func addNewButton() -> some View {
 		Button(action: { isAddNewItemSheetShowing = true })
 			{ Image(systemName: "plus") }
 	}
 	
 	// a toggle button to change section display mechanisms
-	func leadingButton() -> some View {
+	func sectionDisplayButton() -> some View {
 		Button(action: {
 			multiSectionDisplay.toggle()
 		}) {

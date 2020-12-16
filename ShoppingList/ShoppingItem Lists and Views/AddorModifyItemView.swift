@@ -96,16 +96,19 @@ struct AddorModifyItemView: View {
 			
 		} // end of Form
 			
-			.navigationBarTitle(barTitle(), displayMode: .inline)
-			.navigationBarBackButtonHidden(true)
-			.navigationBarItems(leading: cancelButton(), trailing: saveButton())
-			.onAppear(perform: loadData)
-			.alert(isPresented: $showDeleteConfirmation) {
-				Alert(title: Text("Delete \'\(editableItem!.name)\'?"),
-							message: Text("Are you sure you want to delete this item?"),
-							primaryButton: .cancel(Text("No")),
-							secondaryButton: .destructive(Text("Yes"), action: { deleteAndDismiss(editableItem!) })
-				)}
+		.navigationBarTitle(barTitle(), displayMode: .inline)
+		.navigationBarBackButtonHidden(true)
+		.toolbar {
+			ToolbarItem(placement: .cancellationAction, content: cancelButton)
+			ToolbarItem(placement: .confirmationAction, content: saveButton)
+		}
+		.onAppear(perform: loadData)
+		.alert(isPresented: $showDeleteConfirmation) {
+			Alert(title: Text("Delete \'\(editableItem!.name)\'?"),
+						message: Text("Are you sure you want to delete this item?"),
+						primaryButton: .cancel(Text("No")),
+						secondaryButton: .destructive(Text("Yes"), action: { deleteAndDismiss(editableItem!) })
+			)}
 	}
 		
 	func barTitle() -> Text {

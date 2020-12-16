@@ -55,7 +55,7 @@ struct LocationsTabView: View {
 				
 			} // end of VStack
 			.navigationBarTitle("Locations")
-			.toolbar { toolbarButton() }
+			.toolbar { ToolbarItem(placement: .navigationBarTrailing, content: addNewButton) }
 			.alert(isPresented: $showDeleteConfirmation) {
 				Alert(title: Text("Delete \'\(locationToDelete!.name)\'?"),
 							message: Text("Are you sure you want to delete this location?"),
@@ -70,7 +70,7 @@ struct LocationsTabView: View {
 	} // end of var body: some View
 	
 	// defines the usual "+" button to add a Location
-	func toolbarButton() -> some View {
+	func addNewButton() -> some View {
 		Button(action: { isAddNewLocationSheetShowing = true }) {
 			Image(systemName: "plus")
 		}

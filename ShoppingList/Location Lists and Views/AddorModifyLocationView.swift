@@ -72,7 +72,10 @@ struct AddorModifyLocationView: View {
 		.onAppear(perform: loadData)
 		.navigationBarTitle(barTitle(), displayMode: .inline)
 		.navigationBarBackButtonHidden(true)
-		.navigationBarItems(leading: cancelButton(), trailing: saveButton())
+		.toolbar {
+			ToolbarItem(placement: .cancellationAction, content: cancelButton)
+			ToolbarItem(placement: .confirmationAction, content: saveButton)
+		}
 		.alert(isPresented: $showDeleteConfirmation) {
 			Alert(title: Text("Delete \'\(editableLocation!.name)\'?"),
 						message: Text("Are you sure you want to delete this location?"),
