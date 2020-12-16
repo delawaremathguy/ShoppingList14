@@ -24,8 +24,10 @@ struct PurchasedItemsTabView: View {
 	// the action of the confirmation alert that you really do want to
 	// delete an item
 	@State private var searchText: String = ""
-	@State private var isDeleteItemAlertShowing: Bool = false
-	@State private var itemToDelete: Item?
+
+	// parameters to control triggering an Alert and defing what action
+	// to take upon confirmation
+	@State private var confirmationTrigger = ConfirmationTrigger(type: .none)
 	@State private var isAddNewItemSheetShowing = false
 
 	// what "today" means for this view
@@ -80,8 +82,7 @@ for more discussion about sectioning
 											.contextMenu {
 												itemContextMenu(item: item,
 																				deletionTrigger: {
-																					itemToDelete = item
-																					isDeleteItemAlertShowing = true
+																					confirmationTrigger.trigger(type: .deleteItem(item))
 																				})
 											} // end of contextMenu
 									} // end of NavigationLink
@@ -89,17 +90,12 @@ for more discussion about sectioning
 							} // end of Section
 						} // end of ForEach						
 					}  // end of Form
-					.alert(isPresented: $isDeleteItemAlertShowing) {
-						Alert(title: Text("Delete \'\(itemToDelete!.name)\'?"),
-									message: Text("Are you sure you want to delete this item?"),
-									primaryButton: .cancel(Text("No")),
-									secondaryButton: .destructive(Text("Yes"), action: { Item.delete(itemToDelete!) })
-						)}					
 				} // end of if-else
 			} // end of VStack
 			.navigationBarTitle("Purchased List")
 			.toolbar { ToolbarItem(placement: .navigationBarLeading, content: addNewButton) }
-			
+			.alert(isPresented: $confirmationTrigger.isAlertShowing) { confirmationTrigger.alert() }
+
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())
 		.onAppear(perform: handleOnAppear)

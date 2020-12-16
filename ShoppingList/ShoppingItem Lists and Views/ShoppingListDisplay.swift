@@ -63,12 +63,7 @@ struct ShoppingListView: View {
 	// display format: one big section of Items, or sectioned by Location?
 	// (not sure we need a Binding here ... we only read the value)
 	@Binding var multiSectionDisplay: Bool
-	
-	// state variables to control showing confirmation of a delete, which is
-	// one of three context menu actions that can be applied to an item
-//	@Binding var isConfirmationAlertShowing: Bool
-//	@Binding var itemToDelete: Item?
-	
+		
 	// state variable to control triggering confirmation of a delete, which is
 	// one of three context menu actions that can be applied to an item
 	@Binding var confirmationTrigger: ConfirmationTrigger

@@ -17,10 +17,9 @@ struct LocationsTabView: View {
 	// local state to trigger a sheet to appear to add a new location
 	@State private var isAddNewLocationSheetShowing = false
 	
-	// support for context menu deletion: a boolean to control showing an
-	// alert, and the location to delete after confirmation
-	@State private var locationToDelete: Location?
-	@State private var showDeleteConfirmation = false
+	// parameters to control triggering an Alert and defing what action
+	// to take upon confirmation
+	@State private var confirmationTrigger = ConfirmationTrigger(type: .none)
 	
 	var body: some View {
 		NavigationView {
@@ -56,12 +55,7 @@ struct LocationsTabView: View {
 			} // end of VStack
 			.navigationBarTitle("Locations")
 			.toolbar { ToolbarItem(placement: .navigationBarTrailing, content: addNewButton) }
-			.alert(isPresented: $showDeleteConfirmation) {
-				Alert(title: Text("Delete \'\(locationToDelete!.name)\'?"),
-							message: Text("Are you sure you want to delete this location?"),
-							primaryButton: .cancel(Text("No")),
-							secondaryButton: .destructive(Text("Yes"), action: { Location.delete(locationToDelete!) })
-				)}
+			.alert(isPresented: $confirmationTrigger.isAlertShowing) { confirmationTrigger.alert() }
 			.onAppear() { print("LocationsTabView appear") }
 			.onDisappear() { print("LocationsTabView disappear") }
 
@@ -82,8 +76,7 @@ struct LocationsTabView: View {
 	func contextMenuButton(for location: Location) -> some View {
 		Button(action: {
 			if !location.isUnknownLocation {
-				locationToDelete = location
-				showDeleteConfirmation = true
+				confirmationTrigger.trigger(type: .deleteLocation(location))
 			}
 		}) {
 			Text(location.isUnknownLocation ? "(Cannot be deleted)" : "Delete This Location")

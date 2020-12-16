@@ -7,19 +7,20 @@ This is a simple iOS app to process a shopping list that you can take to the gro
 Feel free to use this as is, to develop further,  to completely ignore, or even just to inspect and then send me a note or Post an Issue to tell me I am doing this all wrong.  
 
 
-## First Public Update for iOS 14: December 4, 2020
+## First Public Update for iOS 14: 4 December, 2020
 
 
-XCode 12 has finally stabilized (?), and I have also upgraded my iPhone to a more stable iOS14.2.  So I felt it safe to make some refinements and possibly use features of iOS 14 in updating this project.  I also just purchased a new iPad Air 4, so perhaps the time has come to work on iPad implementation.  
+XCode 12 has finally stabilized (?), and I have also upgraded my iPhone to a more stable iOS14.2.  So I felt it safe to make some refinements and possibly use features of iOS 14 in updating this project.  
 
-This repository has been built using XCode 12.2 and will run under iOS 14.2. Please be sure to read the What's New in ShoppingList14 section below, primarily for implementation and code-level changes.  Here are some recent updates of note since the release of December 4 (e.g., bug fixes). 
+This repository has been built using XCode 12.2 and will run under iOS 14.2. Please be sure to read the What's New in ShoppingList14 section below, primarily for implementation and code-level changes.  Here are recent updates either of importance (e.g., *bug fixes*) or of possible coding interest (e.g., *code consolidation or reorganization*) since the release of December 4:
 
-### Update of Monday, December 7.
+### Update of 16 December.
+
+* Consolidated the code in ShoppingListTabView, PurchasedItemsTabView, LocationsTabView, AddOrModifyItemView, and AddOrModifyLocationView to centralize a common rubric for opening an Alert that confirms a destructive action.  The logic and code for implementing this is very simple. *See ConfirmationTrigger.swift*.
+
+### Update of 7 December.
 
 * Fixed an updating issue for `Item` when displayed in the shopping list or the purchased item list.  In some cases, edits to its associated Location were not being properly reflected for the Item's `locationName`, `visitationOrder`, and `uiColor`.  See comments in `Location.updateValues`.
-
-*Updates to documentation, comments within the code, cosmetic changes, and code updates for optimization and clarity will not necessarily be reported here. Please always check the age of the most recent commit above*.
-
 
 
 ## General App Structure

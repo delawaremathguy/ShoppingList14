@@ -8,59 +8,6 @@
 
 import SwiftUI
 
-// this is a struct to collect the data needed to run the confirmation alert
-// that we use to confirm that the user either wants to move all items off the list
-// (they might hit this button accidentally and lose the whole shopping list) or
-// delete an item.
-
-struct ConfirmationTrigger {
-	
-	enum AlertType {
-		case none
-		case moveAllOffShoppingList
-		case deleteItem(Item)
-	}
-	
-	var type: AlertType
-	var isConfirmationAlertShowing: Bool = false
-
-	mutating func trigger(type: AlertType) {
-		self.type = type
-		isConfirmationAlertShowing = true
-	}
-	
-	// strings to pass along to an alert when it comes up, depending on type
-	func title() -> String {
-		switch type {
-			case .none: return ""
-			case .moveAllOffShoppingList: return "Move All Items Off-List"
-			case .deleteItem(let item): return "Delete \'\(item.name)\'?"
-		}
-	}
-	
-	func message() -> String {
-		switch type {
-			case .none, .moveAllOffShoppingList: return ""
-			case .deleteItem(let item):
-				return "Are you sure you want to delete \'\(item.name)\'? This action cannot be undone"
-		}
-	}
-	
-	func cancelAction() {
-		// nothing
-	}
-	
-	func executeAction() {
-		switch type {
-			case .none:
-				break
-			case .moveAllOffShoppingList:
-				Item.moveAllItemsOffShoppingList()
-			case .deleteItem(let item):
-				Item.delete(item)
-		}
-	}
-}
 
 struct ShoppingListTabView: View {
 	
@@ -71,7 +18,8 @@ struct ShoppingListTabView: View {
 	// local state to trigger showing a sheet to add a new item
 	@State private var isAddNewItemSheetShowing = false
 	
-	// parameters to control triggering an Alert
+	// parameters to control triggering an Alert and definig what action
+	// to take upon confirmation
 	@State private var confirmationTrigger = ConfirmationTrigger(type: .none)
 	
 	// local state for are we a multisection display or not.  the default here is false,
@@ -144,13 +92,7 @@ of the sectioning, so we push it off to a specialized View.
 				ToolbarItem(placement: .navigationBarLeading, content: sectionDisplayButton)
 				ToolbarItem(placement: .navigationBarTrailing, content: addNewButton)
 			}
-			.alert(isPresented: $confirmationTrigger.isConfirmationAlertShowing) {
-				Alert(title: Text(confirmationTrigger.title()),
-							message: Text(confirmationTrigger.message()),
-							primaryButton: .cancel(Text("No")),
-							secondaryButton: .destructive(Text("Yes"), action: confirmationTrigger.executeAction)
-				)
-			}
+			.alert(isPresented: $confirmationTrigger.isAlertShowing) { confirmationTrigger.alert() }
 
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())

@@ -33,10 +33,10 @@ struct AddorModifyItemView: View {
 	// and the editableData is appropriately set
 	@State private var editableDataInitialized = false
 	
-	// showDeleteConfirmation controls whether a Delete This Shopping Item button appear
-	// to confirm deletion of an Item
-	@State private var showDeleteConfirmation: Bool = false
-	
+	// parameters to control triggering an Alert and definig what action
+	// to take upon confirmation
+	@State private var confirmationTrigger = ConfirmationTrigger(type: .none)
+
 	// we need all locations so we can populate the Picker
 	let locations = Location.allLocations(userLocationsOnly: false).sorted(by: <)
 
@@ -89,7 +89,11 @@ struct AddorModifyItemView: View {
 			if editableItem != nil {
 				Section(header: Text("Shopping Item Management").sectionHeader()) {
 					SLCenteredButton(title: "Delete This Shopping Item",
-													 action: { showDeleteConfirmation = true })
+													 action: { confirmationTrigger.trigger(
+														          type: .deleteItem(editableItem!),
+																			completion: { presentationMode.wrappedValue.dismiss() })
+													 }
+					)
 						.foregroundColor(Color.red)
 				}
 			} // end of Section
@@ -103,12 +107,7 @@ struct AddorModifyItemView: View {
 			ToolbarItem(placement: .confirmationAction, content: saveButton)
 		}
 		.onAppear(perform: loadData)
-		.alert(isPresented: $showDeleteConfirmation) {
-			Alert(title: Text("Delete \'\(editableItem!.name)\'?"),
-						message: Text("Are you sure you want to delete this item?"),
-						primaryButton: .cancel(Text("No")),
-						secondaryButton: .destructive(Text("Yes"), action: { deleteAndDismiss(editableItem!) })
-			)}
+		.alert(isPresented: $confirmationTrigger.isAlertShowing) { confirmationTrigger.alert() }
 	}
 		
 	func barTitle() -> Text {

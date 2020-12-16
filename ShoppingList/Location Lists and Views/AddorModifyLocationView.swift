@@ -30,10 +30,10 @@ struct AddorModifyLocationView: View {
 	// we wont be reloading the editableData and the editableColor
 	@State private var dataHasBeenLoaded = false
 	
-	// showDeleteConfirmation controls whether an Alert will appear
-	// to confirm deletion of a Location
-	@State private var showDeleteConfirmation: Bool = false
-	
+	// parameters to control triggering an Alert and definig what action
+	// to take upon confirmation
+	@State private var confirmationTrigger = ConfirmationTrigger(type: .none)
+
 	var body: some View {
 		Form {
 			// 1: Name, Visitation Order, Colors
@@ -58,8 +58,12 @@ struct AddorModifyLocationView: View {
 			// Section 2: Delete button, if present (must be editing a user location)
 			if editableLocation != nil && editableData.visitationOrder != kUnknownLocationVisitationOrder  {
 				Section(header: Text("Location Management").sectionHeader()) {
-					SLCenteredButton(title: "Delete This Location", action: { showDeleteConfirmation = true })
-						.foregroundColor(Color.red)
+					SLCenteredButton(title: "Delete This Location",
+													 action: { confirmationTrigger.trigger(
+														type: .deleteLocation(editableLocation!),
+														completion: { presentationMode.wrappedValue.dismiss() })
+													 }
+					).foregroundColor(Color.red)
 				}
 			} // end of Section 2
 			
@@ -76,12 +80,7 @@ struct AddorModifyLocationView: View {
 			ToolbarItem(placement: .cancellationAction, content: cancelButton)
 			ToolbarItem(placement: .confirmationAction, content: saveButton)
 		}
-		.alert(isPresented: $showDeleteConfirmation) {
-			Alert(title: Text("Delete \'\(editableLocation!.name)\'?"),
-						message: Text("Are you sure you want to delete this location?"),
-						primaryButton: .cancel(Text("No")),
-						secondaryButton: .destructive(Text("Yes"), action: { deleteAndDismiss(editableLocation!) })
-			)}
+		.alert(isPresented: $confirmationTrigger.isAlertShowing) { confirmationTrigger.alert() }
 	}
 	
 	func barTitle() -> Text {
