@@ -18,7 +18,7 @@ struct ShoppingListTabView: View {
 	// local state to trigger showing a sheet to add a new item
 	@State private var isAddNewItemSheetShowing = false
 	
-	// parameters to control triggering an Alert and definig what action
+	// parameters to control triggering an Alert and defining what action
 	// to take upon confirmation
 	@State private var confirmationTrigger = ConfirmationTrigger(type: .none)
 	
@@ -57,8 +57,6 @@ of the sectioning, so we push it off to a specialized View.
 					EmptyListView(listName: "Shopping")
 				} else {
 					ShoppingListView(multiSectionDisplay: $multiSectionDisplay,
-//													 isConfirmationAlertShowing: $isConfirmationAlertShowing,
-//													 itemToDelete: $itemToDelete,
 													 confirmationTrigger: $confirmationTrigger)
 				}
 				
@@ -72,9 +70,6 @@ of the sectioning, so we push it off to a specialized View.
 					
 					SLCenteredButton(title: "Move All Items Off-list", action: {
 						confirmationTrigger.trigger(type: .moveAllOffShoppingList)
-						// setting these allow the Alert to come up with the right messages and actions
-//						operationIsMoveToOtherList = true
-//						isConfirmationAlertShowing = true
 						})
 						.padding([.bottom, .top], 6)
 					

@@ -22,6 +22,8 @@ extension Location: Comparable {
 	
 	// MARK: - Computed properties
 	
+	// ** please see the associated discussion over in Item+Extensions.swift **
+	
 	// name: fronts Core Data attribute name_ that is optional
 	// if you change an location's name, its associated items may want to
 	// know that some of their computed locationName properties have been invalidated
@@ -44,7 +46,8 @@ extension Location: Comparable {
 		}
 	}
 	
-	// items: fronts Core Data attribute items_ that is an NSSet
+	// items: fronts Core Data attribute items_ that is an NSSet, and turns it into
+	// a Swift array
 	var items: [Item] {
 		if let items = items_ as? Set<Item> {
 			return items.sorted(by: { $0.name < $1.name })
@@ -52,7 +55,7 @@ extension Location: Comparable {
 		return []
 	}
 	
-	// itemCount: comuted property from Core Data items_
+	// itemCount: computed property from Core Data items_
 	var itemCount: Int { items_?.count ?? 0 }
 	
 	// simplified test of "is the unknown location"
@@ -62,7 +65,9 @@ extension Location: Comparable {
 	// if you change a location's uiColor, its associated items will want to
 	// know that their uiColor computed properties have been invalidated
 	var uiColor: UIColor {
-		get { UIColor(red: CGFloat(red_), green: CGFloat(green_), blue: CGFloat(blue_), alpha: CGFloat(opacity_)) }
+		get {
+			UIColor(red: CGFloat(red_), green: CGFloat(green_), blue: CGFloat(blue_), alpha: CGFloat(opacity_))
+		}
 		set {
 			if let components = newValue.cgColor.components {
 				red_ = Double(components[0])
@@ -152,7 +157,7 @@ extension Location: Comparable {
 		return nil
 	}
 	
-	// the default status on a delete is to always save changes out to disk
+	// the default status on a delete is to always save changes out to disk.
 	// the only time not to do this (saveChanges = false) is if you delete a bunch
 	// of locations all at the same time.
 	//
@@ -171,7 +176,7 @@ extension Location: Comparable {
 		// this could affect each item's computed properties
 		let theUnknownLocation = Location.unknownLocation()!
 		itemsAtThisLocation.forEach({ $0.location = theUnknownLocation })
-		// and finish the deletion and make sure the context has gets cleaned up
+		// now finish the deletion and make sure the context has gets cleaned up
 		// right now in memory.  then save if requested
 		context?.delete(location)
 		context?.processPendingChanges()
@@ -214,18 +219,21 @@ extension Location: Comparable {
 		// (some of) these changes.  reason: items rely on knowing some computed
 		// properties such as uiColor, locationName, and visitationOrder.
 		// usually, what i would do is this, to be sure that anyone who is
-		// observing an Item knows about the Location update:
+		// observing an Item as an @ObservedObject knows about the Location update:
 		
-		//items.forEach({ $0.objectWillChange.send() })
+		items.forEach({ $0.objectWillChange.send() })
 		
 		// in the design of this app, however, there are no @ObservedObject references
-		// to Items (reason: deletions are a real problem, as noted elsewhere).
-		// however, the ShoppingListTabView and the PurchasedItemsTabView need to
-		// be updated, and these views are driven by @FetchRequests.  problem: sending on
-		// objectWillChange message is not picked up by a @FetchRequest -- @FR is
-		// based on NSFetchedResultsController and reacts to changes to Core Data attributes
-		// only -- so i will trick these views into updating by "making a change" to each Item
-		// entity associated with this Location (!)
+		// to Items.  however, the ShoppingListTabView and the PurchasedItemsTabView need to
+		// be updated, and these views are driven by @FetchRequests.
+		//
+		// problem: sending on objectWillChange message is not picked up by a @FetchRequest.
+		// an @FR is based on NSFetchedResultsController and reacts to changes to Core Data attributes
+		// only (it does not observe its objects like an @ObservableObject would)
+		//
+		// so i will trick these views into updating by "making a change" to each Item
+		// entity associated with this Location (!)  WARNING: it's a little bit of a hack.
+		//
 		// but what do you change? we'll reset each Item's location to be this location.
 		// and this works!  the assignment is picked up by Core Data and @FetchRequests
 		// that involve these items.
@@ -233,7 +241,5 @@ extension Location: Comparable {
 		items.forEach({ $0.location_ = self })
 	}
 
-	
-	
 }
 

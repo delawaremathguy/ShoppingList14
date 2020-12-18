@@ -9,8 +9,8 @@
 
 import SwiftUI
 
-// this is a struct to centralize the data needed to run the confirmation alert
-// that we use to confirm that the user intends to
+// this is a struct to centralize the data needed to run the confirmation alerts
+// that i use whenever the user want to perform a destructive action, in these cases:
 //
 // (1) move all items off the list in the ShoppingListTabView (they might hit
 // this button accidentally and lose the whole shopping list) or
@@ -25,8 +25,8 @@ import SwiftUI
 
 struct ConfirmationTrigger {
 	
-	enum AlertType {
-		// an appropriate default that does nothing
+	enum ConfirmationAlertType {
+		// an appropriate default, but it should never trigger
 		case none
 		// the ShoppingListTabView needs this type
 		case moveAllOffShoppingList
@@ -39,18 +39,18 @@ struct ConfirmationTrigger {
 	}
 	
 	// the type of this confirmation alert
-	var type: AlertType
-	// its boolean-valued trigger, since .alert wants such a boolean
+	var type: ConfirmationAlertType
+	// its boolean-valued trigger, because .alert always wants such a boolean
 	var isAlertShowing: Bool = false
-	// and completion handler once we do what we do; the AddOrModify views want
-	// this so they can run the alert, delete an Item or Location, and then
-	// dismiss themseles after the deletion
+	// and a completion handler for after we do what we do. the AddOrModify views
+	// need this so they can run the alert, delete an Item or Location, and then
+	// dismiss themselves executing the deletion
 	var completion: (() -> ())?
 	
-	// once the user says "delete this Item," just call the trigger function, setting
-	// its type (and any necessary associated data) and adding an optional completion
-	// handler, depending on the call site
-	mutating func trigger(type: AlertType, completion: (() -> ())? = nil) {
+	// once the user wants to perform a destructive action, just call the trigger function,
+	// setting its type (and any necessary associated data) and perhaps tacking on an
+	// optional completion handler, depending on the call site
+	mutating func trigger(type: ConfirmationAlertType, completion: (() -> ())? = nil) {
 		self.type = type
 		self.completion = completion
 		isAlertShowing = true // this starts the SwiftUI chain of events to show the alert
@@ -75,13 +75,13 @@ struct ConfirmationTrigger {
 			case .none, .moveAllOffShoppingList:
 				return ""
 			case .deleteItem(let item):
-				return "Are you sure you want to delete \'\(item.name)\'? This action cannot be undone"
+				return "Are you sure you want to delete the Item named \'\(item.name)\'? This action cannot be undone"
 			case .deleteLocation(let location):
-				return "Are you sure you want to delete \'\(location.name)\'? This action cannot be undone"
+				return "Are you sure you want to delete the Location named \'\(location.name)\'? This action cannot be undone"
 		}
 	}
 	
-	// what to do after the user confirms the destructive action
+	// what to do after the user confirms the destructive action should be performed
 	func destructiveAction() {
 		switch type {
 			case .none: // should never really be called

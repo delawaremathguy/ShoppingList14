@@ -17,7 +17,7 @@ struct LocationsTabView: View {
 	// local state to trigger a sheet to appear to add a new location
 	@State private var isAddNewLocationSheetShowing = false
 	
-	// parameters to control triggering an Alert and defing what action
+	// parameters to control triggering an Alert and defining what action
 	// to take upon confirmation
 	@State private var confirmationTrigger = ConfirmationTrigger(type: .none)
 	

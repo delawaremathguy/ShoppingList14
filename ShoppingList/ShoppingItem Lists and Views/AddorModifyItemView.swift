@@ -20,12 +20,12 @@ struct AddorModifyItemView: View {
 	// addItemToShoppingList just means that by default, a new item will be added to
 	// the shopping list, and so this is true.
 	// however, if inserting a new item from the Purchased item list,
-	// you might want the new item to go to the Puchased item list
+	// you might want the new item to go to the Purchased item list (?)
 	var addItemToShoppingList: Bool = true
 	
 	// this editableData stuct contains all of the fields of an Item that
 	// can be edited here, so that we're not doing a "live edit" on the Item
-	// it  this will be defaulted properly in .onAppear()
+	// it is defaulted properly for a new Item
 	@State var editableData = EditableItemData()
 
 	// this indicates whether the editableData has been initialized from an incoming
@@ -33,7 +33,7 @@ struct AddorModifyItemView: View {
 	// and the editableData is appropriately set
 	@State private var editableDataInitialized = false
 	
-	// parameters to control triggering an Alert and definig what action
+	// parameters to control triggering an Alert and defining what action
 	// to take upon confirmation
 	@State private var confirmationTrigger = ConfirmationTrigger(type: .none)
 
@@ -83,7 +83,7 @@ struct AddorModifyItemView: View {
 					}
 				}
 
-			} // end of Section
+			} // end of Section 1
 			
 			// Section 2. Item Management (Delete), if present
 			if editableItem != nil {
@@ -95,8 +95,8 @@ struct AddorModifyItemView: View {
 													 }
 					)
 						.foregroundColor(Color.red)
-				}
-			} // end of Section
+				} // end of Section 2
+			} // end of if ...
 			
 		} // end of Form
 			

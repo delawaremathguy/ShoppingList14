@@ -14,42 +14,57 @@ extension Item {
 	
 	/* Discussion
 	
-	Notice that all except one of the Core Data attributes on an Item that
-	appear in the CD model with an underscore (_) at the end of their name.
-	(the only exception is "id" because tweaking that name is a problem because
-	of conformance to Identifiable.)
+	update 17 December: the misconception presented previously has been removed!
 	
-	my general theory of the case is that no one outside of this class should really
-	be touching these attributes directly, especially SwiftUI views.  apart from
-	smoothing out the awkwardness of nil-coalescing in some cases, these are some
-	attributes of an Item which, when changed, not only generate a reactive effect
-	out there in SwiftUI views that watch for Item changes (e.g., via a @FetchRequest
-	of as an @Observed object) -- but also should trigger a reactive effect on
-	some SwiftUI views that involve the item's associated location.
+	Notice that all except one of the Core Data attributes on an Item in the
+	CD model appear with an underscore (_) at the end of their name.
+	(the only exception is "id" because tweaking that name is a problem due to
+	conformance to Identifiable.)
 	
-	the same is true for Locations.  changing an attribute of a Location directly may at
-	times require triggering a SwiftUI reaction involving the items associated with the Location.
+	my general theory of the case is that no one outside of this class (and its Core
+	Data based brethren, like Location+Extensions.swift and PersistentStore.swift) should really
+	be touching these attributes directly -- and certainly no SwiftUI views should
+	ever touch these attributes directly.
 	
-	example: the ShoppingListTabView creates SelectableItemRowView structs for SwiftUI, and
-	each displays information about an item, including the associated location's name.  we
-	get the location's name using a computed property on Item that cleanly nil-coalesces the value.
+	therefore, i choose to "front" each of them in this file, as well as perhaps provide
+	other computed properties of interest.
 	
-	importantly, these SelectableItemRowView views are routinely created and destroyed, and they
-	will (only) get redrawn if the @FetchRequest that drives the ShoppingListTabView gets an
-	objectWillChange.send() from an Item.
+	doing do helps smooth out the awkwardness of nil-coalescing (we don't want SwiftUI views
+	continually writing item.name ?? "Unknown" all over the place); and in the case of an
+	item's quantity, "fronting" its quantity_ attribute smooths the transtion from
+	Int32 to Int.
 	
-	here, then, is the problem: if you change a Location's name, the locationName computed
-	property of each associated Item now has been updated and those SelectableItemRowViews
-	must get redrawn.  so each item associated with the location must generate an
-	objectWillChange.send() message.  (in fact, i think only one item need to do this ...)
+	we do allow SwiftUI views to write to these fronted properties; and because we front them,
+	we can appropriately act on the Core Data side, sometimes performing only simple Int --> Int32
+	conversion.  similarly, it we move an item off the shopping list, we can take the opportunity
+	then to timestamp the item as purchased.
 	
-	also, think what happens when you change a location's visitationOrder.  potentially, that
-	causes the entire ShoppingListTabView to restructure itself; that won't happen unless
-	changing a location's visitationOrder also generates some item.objectWillChange.send().
+	but there are also more cases to consider.  if you change an item's location, that
+	location will want to know about it, in case there are any SwiftUI views out there holding
+	that location as an @ObservedObject and that depend on any of its computed properties based
+	on its items.  indeed, without receiving an objectWillChange.send() message,
+	such a view would not redraw on its own.
 	
-	bottom line: front (all?) attributes of an entity by SwiftUI variables ... except for id ...
-	and don't let SwiftUI views (or any other code outside of files like this CD class file)
-	touch attributes directly.
+	the same is true for a Location.  changing an attribute of a Location may at times require
+	triggering a SwiftUI reaction involving the items associated with the Location, should any
+	views be holding those items as @ObservedObjects (because an Item has computed properties that
+	depend on its associated Location).
+	
+	as a result, you may see some code below (and also in Location+Extensions.swift) where, when
+	a SwiftUI view writes to one of the fronted properties of the Item, we also execute
+	location_?.objectWillChange.send().
+	
+  now, i wish that were all that was going on in this app; but i have no views in this app
+	having an @ObservedObject.  that might surprise you, and you'll see plenty of discussion
+	scattered throughout the project on this, but the generic problem remains in mixing Core Data
+	objects and @ObservedObject:
+	
+		if a SwiftUI view holds an item as an @ObservedObject and that object is deleted
+		while the view is still alive, the view is holding on to a zombie object and, depending
+		on how the view code accesses that object, your program may crash.
+
+	at least when you front all your Core Data attributes as i do below, the problem above
+	appears to not matter much (although it's still there, really).  that's something to think about.
 	
 	*/
 	
@@ -216,9 +231,9 @@ extension Item {
 	// causing View B to be re-evaluated with a now, non-existent object.
 	//
 	// so i now make a call to processPendingChanges() to sync up the object graph in memory
-	// right away.  this, apparently, is enough to avoid most problems.  unfortunately,
-	// there may still be a little work to do in the future on this, so using nil-coalescing
-	// code is highly recommended.
+	// right away.  this, apparently, is enough to avoid most problems, however, it
+	// is not a magic bullet, so no SwiftUI view should make a reference to an @ObservedObject's
+	// property directly unless it's been fronted by nil-coalescing code as you see above.
 	//
 	// one note here: we'll assume you want to save this change by default.
 	static func delete(_ item: Item, saveChanges: Bool = true) {
@@ -259,23 +274,14 @@ extension Item {
 		isAvailable_ = true
 		Item.saveChanges()
 	}
-
 	
 	private func updateValues(from editableData: EditableItemData) {
 		name_ = editableData.name
 		quantity_ = Int32(editableData.quantity)
 		onList_ = editableData.onList
 		isAvailable_ = editableData.isAvailable
-		// if we are currently associated with a Location, then set new location
-		// (which breaks the previous association of this Item with a location)
-		// note: the associated Location(s) may want to know about a change
-		// in one of its items, since there are computed properties on Location
-		// such as the number of items that will be invalidated
-		location_?.objectWillChange.send()
-		location_ = editableData.location
-		location_?.objectWillChange.send()
+		location = editableData.location
 	}
-
 	
 }
 

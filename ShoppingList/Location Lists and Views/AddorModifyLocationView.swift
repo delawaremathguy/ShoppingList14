@@ -94,20 +94,20 @@ struct AddorModifyLocationView: View {
 
 	// the cancel button
 	func cancelButton() -> some View {
-		Button(action : { presentationMode.wrappedValue.dismiss() }){
+		Button(action: { presentationMode.wrappedValue.dismiss() }){
 			Text("Cancel")
 		}
 	}
 	
 	// the save button
 	func saveButton() -> some View {
-		Button(action : { commitData() }){
+		Button(action: commitData){
 			Text("Save")
 		}
 	}
 
 	func commitData() {
-		// copies the SwiftUI Color to the editablrData (which has RGB-A components)
+		// copies the SwiftUI Color to the editableData (which has RGB-A components)
 		editableData.updateColor(from: editableColor)
 		// and update Location (includes case of creating a new Location if necessary)
 		presentationMode.wrappedValue.dismiss()
@@ -121,7 +121,7 @@ struct AddorModifyLocationView: View {
 			if let location = editableLocation {
 				editableData = EditableLocationData(location: location)
 				editableColor = Color(location.uiColor)
-			} // else we already have default, editable data set up right
+			} // else we already have default values, editable data is set up right
 			dataHasBeenLoaded = true
 		}
 	}

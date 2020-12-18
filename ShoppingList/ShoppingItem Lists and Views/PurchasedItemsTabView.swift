@@ -25,7 +25,7 @@ struct PurchasedItemsTabView: View {
 	// delete an item
 	@State private var searchText: String = ""
 
-	// parameters to control triggering an Alert and defing what action
+	// parameters to control triggering an Alert and defining what action
 	// to take upon confirmation
 	@State private var confirmationTrigger = ConfirmationTrigger(type: .none)
 	@State private var isAddNewItemSheetShowing = false
