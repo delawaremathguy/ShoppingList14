@@ -14,7 +14,9 @@ extension Item {
 	
 	/* Discussion
 	
-	update 17 December: the misconception presented previously has been removed!
+	update 17/18 December: better reorganization and removal of previous misconception!
+	
+	(1) Fronting of Core Data Attributes
 	
 	Notice that all except one of the Core Data attributes on an Item in the
 	CD model appear with an underscore (_) at the end of their name.
@@ -32,39 +34,67 @@ extension Item {
 	doing do helps smooth out the awkwardness of nil-coalescing (we don't want SwiftUI views
 	continually writing item.name ?? "Unknown" all over the place); and in the case of an
 	item's quantity, "fronting" its quantity_ attribute smooths the transtion from
-	Int32 to Int.
+	Int32 to Int.  indeed, in SwiftUI views, these Core Data objects should
+	appear just as objects, without any knowledge that they come from Core Data.
 	
 	we do allow SwiftUI views to write to these fronted properties; and because we front them,
-	we can appropriately act on the Core Data side, sometimes performing only simple Int --> Int32
-	conversion.  similarly, it we move an item off the shopping list, we can take the opportunity
+	we can appropriately act on the Core Data side, sometimes performing only a simple Int --> Int32
+	conversion.  similarly, if we move an item off the shopping list, we can take the opportunity
 	then to timestamp the item as purchased.
 	
-	but there are also more cases to consider.  if you change an item's location, that
-	location will want to know about it, in case there are any SwiftUI views out there holding
-	that location as an @ObservedObject and that depend on any of its computed properties based
-	on its items.  indeed, without receiving an objectWillChange.send() message,
-	such a view would not redraw on its own.
+	(2) Computed Properties Based on Relationships
 	
-	the same is true for a Location.  changing an attribute of a Location may at times require
-	triggering a SwiftUI reaction involving the items associated with the Location, should any
-	views be holding those items as @ObservedObjects (because an Item has computed properties that
-	depend on its associated Location).
+	the situation for SwiftUI becomes more complicated when one CD object has a computed property
+	based on something that's not a direct attribute of the object.  examples:
+	
+		-- an Item has a `locationName` computed property = the name of its associated Location
+	
+		-- a Location has an `itemCount` computed property = the count of its associated Items.
+	
+	for example, if a view holds on to (is a subscriber of) an Item as an @ObservedObject, and if
+	we change the name of its associated Location, the view will not see this change because it
+	is subscribed to changes on the Item (not the Location).
+	
+	assuming the view displays the name of the associated location using the item's locationName,
+	we must have the location tell all of its items that the locationName computed property is now
+	invalid and some views may need to be updated, in order to keep such a view in-sync.  thus
+	the location must execute
+	
+		items.forEach({ $0.objectWillChange.send() })
+	
+	the same holds true for a view that holds on to (is a subscriber of) an Location as an @ObservedObject.
+	if that view displays the number of items for the location, based on the computed property
+	`itemCount`, then when an Item is edited to change its location, the item must tell both its previous
+	and new locations about the change by executing objectWillChange.send() for those locations:
+	
+		(see the computed var location: Location setter below)
 	
 	as a result, you may see some code below (and also in Location+Extensions.swift) where, when
 	a SwiftUI view writes to one of the fronted properties of the Item, we also execute
 	location_?.objectWillChange.send().
 	
-  now, i wish that were all that was going on in this app; but i have no views in this app
-	having an @ObservedObject.  that might surprise you, and you'll see plenty of discussion
-	scattered throughout the project on this, but the generic problem remains in mixing Core Data
-	objects and @ObservedObject:
+	(3) @ObservedObjects and This App
 	
-		if a SwiftUI view holds an item as an @ObservedObject and that object is deleted
-		while the view is still alive, the view is holding on to a zombie object and, depending
-		on how the view code accesses that object, your program may crash.
+  after all the explanation above, it will be curious to many when you realize that there are NO
+	object references anywhere in this app that are marked as @ObservedObject.  why?
+	
+	you'll see plenty of discussion scattered throughout the project on this, but there's a problem
+	when mixing Core Data objects and @ObservedObject:
+	
+		if a SwiftUI view holds an Item as an @ObservedObject and that object is deleted while the
+		view is still alive, the view is then holding on to a zombie object.  depending on how the
+		view code accesses that object, your program may crash.
 
-	at least when you front all your Core Data attributes as i do below, the problem above
-	appears to not matter much (although it's still there, really).  that's something to think about.
+	when you front all your Core Data attributes as i do below, the problem above appears to smooth
+	over this problem, for the most part, but it's still there.  SwiftUI will get around to deleting that
+	item and its view, of course, but it may try to draw it off-screen first.  doing so will not cause a problem
+	if it does not unwrap an optional attribute of the object (and because i front all the CD attributes,
+	that would never happen in the view itself, even if i did use @ObservedObject).
+	
+	that's something to think about.  especially if you show a list ot items on the shopping list,
+	navigate to its detail view, and press "Delete this Item," because if the row view in the shopping list
+	that you navigated from held on to an item as an @ObservedObject, it's got a dead reference to the item
+	and SwiftUI could/will try to use that.
 	
 	*/
 	

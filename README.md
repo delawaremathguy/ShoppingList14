@@ -14,13 +14,14 @@ XCode 12 has finally stabilized (?), and I have also upgraded my iPhone to a mor
 
 This repository has been built using XCode 12.2 and will run under iOS 14.2. Please be sure to read the What's New in ShoppingList14 section below, primarily for implementation and code-level changes.  Here are recent updates either of importance (e.g., *bug fixes*) or of possible coding interest (e.g., *code consolidation or reorganization*) since the release of December 4:
 
-### Update of 16 December.
+### Update of 24 December.
 
-* Consolidated the code in ShoppingListTabView, PurchasedItemsTabView, LocationsTabView, AddOrModifyItemView, and AddOrModifyLocationView to centralize a common rubric for opening an Alert that confirms a destructive action.  The logic and code for implementing this is very simple. *See ConfirmationTrigger.swift*.
+* Rewrote much of the Discussion in `Item+Extensions.swift` to be, shall we say, *more accurate*.
 
-### Update of 7 December.
+### Previous Updates.
 
-* Fixed an updating issue for `Item` when displayed in the shopping list or the purchased item list.  In some cases, edits to its associated Location were not being properly reflected for the Item's `locationName`, `visitationOrder`, and `uiColor`.  See comments in `Location.updateValues`.
+* (16 Dec) Consolidated the code in ShoppingListTabView, PurchasedItemsTabView, LocationsTabView, AddOrModifyItemView, and AddOrModifyLocationView to centralize a common rubric for opening an Alert that confirms a destructive action.  The logic and code for implementing this is very simple. *See ConfirmationTrigger.swift*.
+* (7 Dec) Fixed an updating issue for `Item` when displayed in the shopping list or the purchased item list.  In some cases, edits to its associated Location were not being properly reflected for the Item's `locationName`, `visitationOrder`, and `uiColor`.  See comments in `Location.updateValues`.
 
 
 ## General App Structure
