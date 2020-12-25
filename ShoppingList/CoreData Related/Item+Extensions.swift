@@ -14,7 +14,7 @@ extension Item {
 	
 	/* Discussion
 	
-	update 17/18 December: better reorganization and removal of previous misconception!
+	update 25 December: better reorganization and removal of previous misconceptions!
 	
 	(1) Fronting of Core Data Attributes
 	
@@ -73,28 +73,25 @@ extension Item {
 	a SwiftUI view writes to one of the fronted properties of the Item, we also execute
 	location_?.objectWillChange.send().
 	
-	(3) @ObservedObjects and This App
+	(3) @ObservedObject References to Items
 	
-  after all the explanation above, it will be curious to many when you realize that there are NO
-	object references anywhere in this app that are marked as @ObservedObject.  why?
-	
-	you'll see plenty of discussion scattered throughout the project on this, but there's a problem
-	when mixing Core Data objects and @ObservedObject:
+	only the SelectableItemRowView ever has an @ObservedObject reference to an Item, and in development,
+	this view (or whatever this view was during development) this was a serious problem:
 	
 		if a SwiftUI view holds an Item as an @ObservedObject and that object is deleted while the
-		view is still alive, the view is then holding on to a zombie object.  depending on how the
+		view is still alive, the view is then holding on to a zombie object.  (Core Data does not immediately
+		save out its data to disk and update its in-memory object graph for a deletion.)  depending on how
 		view code accesses that object, your program may crash.
 
-	when you front all your Core Data attributes as i do below, the problem above appears to smooth
-	over this problem, for the most part, but it's still there.  SwiftUI will get around to deleting that
-	item and its view, of course, but it may try to draw it off-screen first.  doing so will not cause a problem
-	if it does not unwrap an optional attribute of the object (and because i front all the CD attributes,
-	that would never happen in the view itself, even if i did use @ObservedObject).
-	
-	that's something to think about.  especially if you show a list ot items on the shopping list,
-	navigate to its detail view, and press "Delete this Item," because if the row view in the shopping list
-	that you navigated from held on to an item as an @ObservedObject, it's got a dead reference to the item
-	and SwiftUI could/will try to use that.
+	when you front all your Core Data attributes as i do below, the problem above seems to disappear, for
+	the most part, but i think it's really still there.  it's possible that iOS 14.2 or so and later have done
+	something about this ...
+		
+	that's something to think about.  in this app, if you show a list of items on the shopping list,
+	navigate to an item's detail view, and press "Delete this Item," the row view for the item in the shopping list
+	is still alive and has a dead reference to the item.  SwiftUI may try to use that; and if you reference that
+	item, you should expect that every attribute will be 0 (e.g., 0 for a Date, 0 for an Integer 32, and nil for
+	every optional attribute).
 	
 	*/
 	
@@ -182,7 +179,7 @@ extension Item {
 	// so that i don't have to litter a whole bunch of try? moc.save() statements
 	// out in the Views.
 	
-	static func count() -> Int {
+	class func count() -> Int {
 		let context = PersistentStore.shared.context
 		let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
 		do {
@@ -195,7 +192,7 @@ extension Item {
 		return 0
 	}
 
-	static func allItems() -> [Item] {
+	class func allItems() -> [Item] {
 		let context = PersistentStore.shared.context
 		let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
 		do {
@@ -211,7 +208,7 @@ extension Item {
 	// addNewItem is the user-facing add of a new entity.  since these are
 	// Identifiable objects, this makes sure we give the entity a unique id, then
 	// hand it back so the user can fill in what's important to them.
-	static func addNewItem() -> Item {
+	class func addNewItem() -> Item {
 		let context = PersistentStore.shared.context
 		let newItem = Item(context: context)
 		newItem.id = UUID()
@@ -220,7 +217,7 @@ extension Item {
 	
 	// updates data for an Item that the user has directed from an Add or Modify View.
 	// if the incoming data is not assoicated with an item, we need to create it first
-	static func update(using editableData: EditableItemData) {
+	class func update(using editableData: EditableItemData) {
 		
 		// if we can find an Item with the right id, use it, else create one
 		if let item = allItems().first(where: { $0.id == editableData.id }) {
@@ -235,51 +232,26 @@ extension Item {
 
 
 	// saveChanges calls back through the PersistentStore
-	static func saveChanges() {
+	class func saveChanges() {
 		PersistentStore.shared.saveContext()
 	}
 
-	
-	// this sequence of deletion is a little tricky to understand !
-	// deleting an item in Core Data doesn't really delete it ... it sort of hangs around
-	// a little bit, eventually getting removed (likely in the next available event loop, if
-	// that's what they still call it).  what you can find, in some cases, is a zombine reference
-	// to a deleted object for which .isDeleted is false and .isFault is true -- but it will
-	// shortly go away from the CD memory graph when CD gets caught up with all changes.
-	//
-	// this is a real problem for SwiftUI.  if any view is holding a reference to a
-	// deleted CD object, and its body property is called by SwiftUI using that reference,
-	// you have problems, so its particularly helpful if you always nil-coalesce CD optionals
-	// (asking for item.name_! when item has been deleted will cause a force-unwrap, because
-	// the item's in-memory representation has been zeroed out and name_ is nil).
-	// ... see the Discussion above!
-	//
-	// the typical problem is this: View A is driven by a @FetchRequest for Items; it
-	// draws a list of those items, with each item appearing in its own subview, View B, for which
-	// the item is marked as an @ObservedObject.  an item is deleted here; View A detects the change,
-	// but apparently doesn't yet know about the deletion until CD tidies itself up. View A redraws,
-	// causing View B to be re-evaluated with a now, non-existent object.
-	//
-	// so i now make a call to processPendingChanges() to sync up the object graph in memory
-	// right away.  this, apparently, is enough to avoid most problems, however, it
-	// is not a magic bullet, so no SwiftUI view should make a reference to an @ObservedObject's
-	// property directly unless it's been fronted by nil-coalescing code as you see above.
-	//
 	// one note here: we'll assume you want to save this change by default.
-	static func delete(_ item: Item, saveChanges: Bool = true) {
+	class func delete(_ item: Item, saveChanges: Bool = true) {
 		// remove the reference to this item from its associated location
 		// by resetting its (real, Core Data) location to nil
 		item.location_ = nil
 		// now delete and save
 		let context = item.managedObjectContext
 		context?.delete(item)
+		// processPedningChanges cleans up the in-memory object graph a little more quickly
 		context?.processPendingChanges()
 		if saveChanges {
 			Self.saveChanges()
 		}
 	}
 	
-	static func moveAllItemsOffShoppingList() {
+	class func moveAllItemsOffShoppingList() {
 		for item in allItems() where item.onList {
 			item.onList_ = false
 		}

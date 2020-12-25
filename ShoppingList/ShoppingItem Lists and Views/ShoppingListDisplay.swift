@@ -83,7 +83,7 @@ struct ShoppingListView: View {
 					ForEach(section.items) { item in
 						// display a single row here for 'item'
 						NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
-							SelectableItemRowView(rowData: SelectableItemRowData(item: item),
+							SelectableItemRowView(item: item,
 																		selected: itemsChecked.contains(item),
 																		sfSymbolName: "purchased",
 																		respondToTapOnSelector:  { handleItemTapped(item) })

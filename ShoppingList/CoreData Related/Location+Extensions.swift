@@ -89,7 +89,7 @@ extension Location: Comparable {
 
 	// MARK: - Class Functions
 	
-	static func count() -> Int {
+	class func count() -> Int {
 		let fetchRequest: NSFetchRequest<Location> = Location.fetchRequest()
 		do {
 			let itemCount = try PersistentStore.shared.context.count(for: fetchRequest)
@@ -103,7 +103,7 @@ extension Location: Comparable {
 
 	// return a list of all locations, optionally returning only user-defined location
 	// (i.e., excluding the unknown location)
-	static func allLocations(userLocationsOnly: Bool) -> [Location] {
+	class func allLocations(userLocationsOnly: Bool) -> [Location] {
 		let fetchRequest: NSFetchRequest<Location> = Location.fetchRequest()
 		if userLocationsOnly {
 			fetchRequest.predicate = NSPredicate(format: "visitationOrder_ != %d", kUnknownLocationVisitationOrder)
@@ -120,7 +120,7 @@ extension Location: Comparable {
 
 	// creates a new Location having an id, but then it's the user's responsibility
 	// to fill in the field values (and eventually save)
-	static func addNewLocation() -> Location {
+	class func addNewLocation() -> Location {
 		let newLocation = Location(context: PersistentStore.shared.context)
 		newLocation.id = UUID()
 		return newLocation
@@ -128,7 +128,7 @@ extension Location: Comparable {
 	
 	// parameters for the Unknown Location.  call this only upon startup if
 	// the Core Data database has not yet been initialized
-	static func createUnknownLocation() {
+	class func createUnknownLocation() {
 		let unknownLocation = Location(context: PersistentStore.shared.context)
 		unknownLocation.id = UUID()
 		unknownLocation.name_ = kUnknownLocationName
@@ -139,7 +139,7 @@ extension Location: Comparable {
 		unknownLocation.visitationOrder_ = kUnknownLocationVisitationOrder
 	}
 
-	static func unknownLocation() -> Location? {
+	class func unknownLocation() -> Location? {
 		// we only keep one "UnknownLocation" in the data store.  you can
 		// find it because its visitationOrder is the largest 32-bit integer.
 		// return nil if no such thing exists, which means that the data store
@@ -162,7 +162,7 @@ extension Location: Comparable {
 	// of locations all at the same time.
 	//
 	// one note here: we'll assume you want to save this change by default.
-	static func delete(_ location: Location, saveChanges: Bool = true) {
+	class func delete(_ location: Location, saveChanges: Bool = true) {
 		// you cannot delete the unknownLocation
 		guard location.visitationOrder_ != kUnknownLocationVisitationOrder else { return }
 
@@ -176,7 +176,7 @@ extension Location: Comparable {
 		// this could affect each item's computed properties
 		let theUnknownLocation = Location.unknownLocation()!
 		itemsAtThisLocation.forEach({ $0.location = theUnknownLocation })
-		// now finish the deletion and make sure the context has gets cleaned up
+		// now finish the deletion and make sure the context gets cleaned up
 		// right now in memory.  then save if requested
 		context?.delete(location)
 		context?.processPendingChanges()
@@ -186,7 +186,7 @@ extension Location: Comparable {
 		}
 	}
 	
-	static func updateData(for location: Location?, using editableData: EditableLocationData) {
+	class func updateData(for location: Location?, using editableData: EditableLocationData) {
 		// if the incoming item is not nil, then this is just a straight update.
 		// otherwise, we must create the new Location here and add it
 		if let location = location {
@@ -198,7 +198,7 @@ extension Location: Comparable {
 		saveChanges()
 	}
 	
-	static func saveChanges() {
+	class func saveChanges() {
 		PersistentStore.shared.saveContext()
 	}
 
@@ -215,31 +215,37 @@ extension Location: Comparable {
 		blue_ = editableData.blue
 		opacity_ = editableData.opacity
 		
-		// items associated with this location may want to know about
+		// one more thing: items associated with this location may want to know about
 		// (some of) these changes.  reason: items rely on knowing some computed
 		// properties such as uiColor, locationName, and visitationOrder.
 		// usually, what i would do is this, to be sure that anyone who is
 		// observing an Item as an @ObservedObject knows about the Location update:
 		
 		items.forEach({ $0.objectWillChange.send() })
+	}
+	
+	
+/*-- IGNORE -------------------------------------------------------------------------
+in the previous design of this app, there were no @ObservedObject references to Items.
+however, the ShoppingListTabView and the PurchasedItemsTabView need to be updated, and
+these views are driven by @FetchRequests.
+
+problem: sending on objectWillChange message is not picked up by a @FetchRequest. but
+an @FR is based on NSFetchedResultsController and reacts to changes to Core Data attributes
+only (it does not observe its objects like an @ObservableObject would)
+
+so i will trick these views into updating by "making a change" to each Item entity
+associated with this Location (!)  WARNING: it's a little bit of a hack.
+
+but what do you change? we'll reset each Item's location to be this location.
+and this works!  the assignment is picked up by Core Data and @FetchRequests
+that involve these items.
 		
-		// in the design of this app, however, there are no @ObservedObject references
-		// to Items.  however, the ShoppingListTabView and the PurchasedItemsTabView need to
-		// be updated, and these views are driven by @FetchRequests.
-		//
-		// problem: sending on objectWillChange message is not picked up by a @FetchRequest.
-		// an @FR is based on NSFetchedResultsController and reacts to changes to Core Data attributes
-		// only (it does not observe its objects like an @ObservableObject would)
-		//
-		// so i will trick these views into updating by "making a change" to each Item
-		// entity associated with this Location (!)  WARNING: it's a little bit of a hack.
-		//
-		// but what do you change? we'll reset each Item's location to be this location.
-		// and this works!  the assignment is picked up by Core Data and @FetchRequests
-		// that involve these items.
-		
-		items.forEach({ $0.location_ = self })
+	items.forEach({ $0.location_ = self })
 	}
 
 }
 
+-- IGNORE -------------------------------------------------------------------------*/
+
+} // end of extension Location

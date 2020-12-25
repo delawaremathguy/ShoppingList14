@@ -9,28 +9,95 @@
 import Foundation
 import SwiftUI
 
-// MARK: - SelectableItemRowData Definition
+// MARK: - SelectableItemRowView
 
-struct SelectableItemRowData {
-	let name: String
-	let quantity: Int
-	let isAvailable: Bool
-	let uiColor: UIColor
-	let locationName: String
+struct SelectableItemRowView: View {
 	
-	init(item: Item) {
-		name = item.name
-		quantity = item.quantity
-		isAvailable = item.isAvailable
-		uiColor = item.uiColor
-		locationName = item.locationName
+	// incoming are an item, whether that item is selected or not, what symbol
+	// to use for animation, and what to do when the selector is tapped.  we treat
+	// the item as an @ObservedObject: we want to get redrawn if any property changes.
+	
+	@ObservedObject var item: Item
+	var selected: Bool
+	var sfSymbolName: String
+	var respondToTapOnSelector: () -> ()
+	
+	var body: some View {
+		HStack {
+			
+			// --- build the little circle to tap on the left
+			ZStack {
+				if selected {
+					Image(systemName: "circle.fill")
+						.foregroundColor(.blue)
+						.font(.title)
+				}
+				Image(systemName: "circle")
+					.foregroundColor(Color(item.uiColor))
+					.font(.title)
+				if selected {
+					Image(systemName: sfSymbolName)
+						.foregroundColor(.white)
+						.font(.subheadline)
+				}
+			}
+			.animation(Animation.easeInOut(duration: 0.5))
+			.frame(width: 24, height: 24)
+			.onTapGesture { respondToTapOnSelector() }
+			
+			// color bar is next
+			Color(item.uiColor)
+				.frame(width: 10, height: 36)
+			
+			// name and location
+			VStack(alignment: .leading) {
+				
+				if item.isAvailable {
+					Text(item.name)
+				} else {
+					Text(item.name)
+						.italic()
+						.strikethrough()
+				}
+				
+				Text(item.locationName)
+					.font(.caption)
+					.foregroundColor(.secondary)
+			}
+			
+			Spacer()
+			
+			// quantity at the right
+			Text("\(item.quantity)")
+				.font(.headline)
+				.foregroundColor(Color.blue)
+			
+		} // end of HStack
 	}
 }
 
-// MARK: - SelectableItemRowView
 
-// Commentary: there are three approaches to moving data from an item from the
-// shopping list or the purchased list into this subview for display.
+// MARK: - SelectableItemRowData Definition
+
+/*-- IGNORE -------------------------------------------------------------------------
+//struct SelectableItemRowData {
+//	let name: String
+//	let quantity: Int
+//	let isAvailable: Bool
+//	let uiColor: UIColor
+//	let locationName: String
+//
+//	init(item: Item) {
+//		name = item.name
+//		quantity = item.quantity
+//		isAvailable = item.isAvailable
+//		uiColor = item.uiColor
+//		locationName = item.locationName
+//	}
+//}
+
+// Commentary: there are three approaches to moving data from an item in the
+// shopping list or the purchased list into theSelectableItemRowView for display.
 //
 // 1. pass the Item as an @ObservedObject
 // 2. pass the item and copy the necessary data from the item into local variables
@@ -69,26 +136,18 @@ struct SelectableItemRowData {
 // when the parent's @FetchRequest gets triggered by an item's change.
 // it works.
 
-struct SelectableItemRowView: View {
-	
-	// incoming are a collection of data to display for an item, whether that
-	// item is selected or not, what symbol to use for animation, and what to do
-	// when the selector is tapped.
-	var rowData: SelectableItemRowData
-	var selected: Bool
-	var sfSymbolName: String
-	var respondToTapOnSelector: () -> ()
-	
-	// this init need not appear -- it was used for testing purposes, but if you are
-	// interested in partially understanding my explanation above (assuming it's on the mark),
-	// un-comment this init and you'll see how often these row views are created and later
-	// re-created after having been destroyed.
-	//
-	// my suggested test: with an item appearing on the shopping list, go over to the
-	// Locations tab, select the location where the item is listed, tap on the item in the
-	// list of items at that location, change the item's quantity and flip the isAvailable switch,
-	// tap save, and watch the output!  go back to the shopping list: the item is properly
-	// updated because the whole view was recreated from scratch.
+//var rowData: SelectableItemRowData
+
+// this init need not appear -- it was used for testing purposes, but if you are
+// interested in partially understanding my explanation above (assuming it's on the mark),
+// un-comment this init and you'll see how often these row views are created and later
+// re-created after having been destroyed.
+//
+// my suggested test: with an item appearing on the shopping list, go over to the
+// Locations tab, select the location where the item is listed, tap on the item in the
+// list of items at that location, change the item's quantity and flip the isAvailable switch,
+// tap save, and watch the output!  go back to the shopping list: the item is properly
+// updated because the whole view was recreated from scratch.
 //	init(rowData: SelectableItemRowData, selected: Bool,
 //			 sfSymbolName: String, respondToTapOnSelector: @escaping () -> Void) {
 //		// copy item data to local variables
@@ -99,57 +158,7 @@ struct SelectableItemRowView: View {
 //
 //		print("SelectableItemRowView instantiated for \(rowData.name)")
 //	}
-	
-	var body: some View {
-		HStack {
-			
-			// --- build the little circle to tap on the left
-			ZStack {
-				if selected {
-					Image(systemName: "circle.fill")
-						.foregroundColor(.blue)
-						.font(.title)
-				}
-				Image(systemName: "circle")
-					.foregroundColor(Color(rowData.uiColor))
-					.font(.title)
-				if selected {
-					Image(systemName: sfSymbolName)
-						.foregroundColor(.white)
-						.font(.subheadline)
-				}
-			}
-			.animation(Animation.easeInOut(duration: 0.5))
-			.frame(width: 24, height: 24)
-			.onTapGesture { respondToTapOnSelector() }
-			
-			// color bar is next
-			Color(rowData.uiColor)
-				.frame(width: 10, height: 36)
-			
-			// name and location
-			VStack(alignment: .leading) {
-				
-				if rowData.isAvailable {
-					Text(rowData.name)
-				} else {
-					Text(rowData.name)
-						.italic()
-						.strikethrough()
-				}
-				
-				Text(rowData.locationName)
-					.font(.caption)
-					.foregroundColor(.secondary)
-			}
-			
-			Spacer()
-			
-			// quantity at the right
-			Text("\(rowData.quantity)")
-				.font(.headline)
-				.foregroundColor(Color.blue)
-			
-		} // end of HStack
-	}
-}
+
+
+-- IGNORE -------------------------------------------------------------------------*/
+

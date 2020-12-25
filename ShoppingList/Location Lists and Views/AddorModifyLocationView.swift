@@ -131,8 +131,6 @@ struct AddorModifyLocationView: View {
 
 struct SimpleItemsList: View {
 	
-	// the location we're associated with
-	//var location: Location
 	@FetchRequest	private var items: FetchedResults<Item>
 	
 	init(location: Location) {
