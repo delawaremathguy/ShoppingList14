@@ -147,9 +147,6 @@ extension Item {
 	// the name of its associated location
 	var locationName: String { location_?.name_ ?? "Not Available" }
 	
-	// the visitation order (of its associated location)
-	var visitationOrder: Int { Int(location_?.visitationOrder_ ?? 0) }
-	
 	// the color = the color of its associated location
 	var uiColor: UIColor {
 		location_?.uiColor ?? UIColor(displayP3Red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)

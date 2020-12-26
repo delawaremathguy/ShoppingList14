@@ -14,14 +14,14 @@ XCode 12 has finally stabilized (?), and I have also upgraded my iPhone to a mor
 
 This repository has been built using XCode 12.2 and will run under iOS 14.2. Please be sure to read the What's New in ShoppingList14 section below, primarily for implementation and code-level changes.  Here are recent updates either of importance (e.g., *bug fixes*) or of possible coding interest (e.g., *code consolidation or reorganization*) since the release of December 4:
 
-### Update of 25 December.
+### Update of 26 December.
 
-* Rewrote much of the Discussion in `Item+Extensions.swift` to be, shall we say, *more accurate*.
-* Perhaps it is due to iOS 14.2, but Core Data deletions no longer seem overly harmful to SwiftUI and @ObservedObject references.  So `SelectableItemRowView` is now simplified, accepting an @ObservedObject reference to an `Item` (rather than a copy of its data).  Together with nil-coalesced propeties on `Item`, this view appears to no longer require special care and feeding for item deletions.  Appropriate changes have been made to comments throughout the code and in the README.  (*Please open an Issue if you find that this has broken the code*.)
-
+* Changed `ShoppingListDisplay` to rely on a @FetchRequest of Locations that have Items on the shopping list.  This seems more natural, and the multi-section display code is easier to understand. It also fixes an updating problem created by having switched out `SelectableItemRowView` to rely on @ObservedObject.  (*Please open an Issue if you find that this or the use of @ObservedObject has broken the code*.)
 
 ### Previous Updates.
 
+* (25 Dec) Rewrote much of the Discussion in `Item+Extensions.swift` to be, shall we say, *more accurate*.
+* (25 Dec) Perhaps it is due to iOS 14.2, but Core Data deletions no longer seem overly harmful to SwiftUI and @ObservedObject references.  So `SelectableItemRowView` is now simplified, accepting an @ObservedObject reference to an `Item` (rather than a copy of its data).  Together with nil-coalesced propeties on `Item`, this view appears to no longer require special care and feeding for item deletions.  Appropriate changes have been made to comments throughout the code and in the README.  
 * (16 Dec) Consolidated the code in ShoppingListTabView, PurchasedItemsTabView, LocationsTabView, AddOrModifyItemView, and AddOrModifyLocationView to centralize a common rubric for opening an Alert that confirms a destructive action.  The logic and code for implementing this is very simple. *See ConfirmationTrigger.swift*.
 * (7 Dec) Fixed an updating issue for `Item` when displayed in the shopping list or the purchased item list.  In some cases, edits to its associated Location were not being properly reflected for the Item's `locationName`, `visitationOrder`, and `uiColor`.  See comments in `Location.updateValues`.
 
@@ -66,7 +66,7 @@ So:
 
 * **If you would like to test out this app and decide if it might be of interest to you**, run it on the simulator, go straight to the Dev Tools tab on startup and tap the "Load Sample Data" button.  Now you can play with the app.
 
-* **If you plan to install and use this app on your own device**, the app will start with an empty shopping list and an location list having only the special "Unknown Location"; from there you can create your own shopping items and locations associated with those items.  (*Hint: add locations first!*)
+* **If you plan to install and use this app on your own device**, the app will start with an empty shopping list and an location list having only the special "Unknown Location"; from there you can create your own shopping items and locations associated with those items.  (*Hint: add locations first!*)  I would suggest that you remove the Dev Tools tab before installing the app (see comments in Development.swift).
 
 
 

@@ -81,9 +81,12 @@ extension Location: Comparable {
 
 	// MARK: - Useful Fetch Request
 	
-	class func fetchAllLocations() -> NSFetchRequest<Location> {
+	class func fetchAllLocations(onList: Bool = false) -> NSFetchRequest<Location> {
 		let request: NSFetchRequest<Location> = Location.fetchRequest()
 		request.sortDescriptors = [NSSortDescriptor(key: "visitationOrder_", ascending: true)]
+		if onList {
+			request.predicate = NSPredicate(format: "ANY items_.onList_ == true")
+		}
 		return request
 	}
 

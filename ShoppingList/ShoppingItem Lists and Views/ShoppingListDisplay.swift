@@ -52,13 +52,12 @@ struct SectionData: Identifiable, Hashable {
 struct ShoppingListView: View {
 	
 	// this is the @FetchRequest that ties this view to CoreData Items.
-	// comment: this is a subview of the parent ShoppingListTabView, which
-	// already has its own @FetchRequest to drive that view.  we could "pass"
-	// that into this subview, but there are some syntax subtleties; plus, it's
-	// easier to just think of this as a view that takes care of itself, except for
-	// having the two @Binding hooks back to the main view.
-	@FetchRequest(fetchRequest: Item.fetchAllItems(onList: true))
-	private var itemsToBePurchased: FetchedResults<Item>
+	// comment: this is driven by Locations that have items on the list, so any
+	// changes to a Location (especially visitation order) will trigger an update;
+	// and since each of the rows tracks its Item as an @ObservedObject, the row
+	// display will update for changes to Items.
+	@FetchRequest(fetchRequest: Location.fetchAllLocations(onList: true))
+	private var locationsWithItemsOnList: FetchedResults<Location>
 
 	// display format: one big section of Items, or sectioned by Location?
 	// (not sure we need a Binding here ... we only read the value)
@@ -104,20 +103,22 @@ struct ShoppingListView: View {
 	// sections (one for each Location that contains shopping items on the list)
 	func sectionData() -> [SectionData] {
 		
-		// the easy case first: one section with a title and all the items.
+		// the first case: one section with a title and all the items.  collect all items on list
+		// across these locations (they will be alphabetized within each location, and the
+		// @FetchRequest returns the locations in visitation order
 		if !multiSectionDisplay {
-			return [SectionData(title: "Items Remaining: \(itemsToBePurchased.count)",
-													items: itemsToBePurchased.sorted(by: { $0.visitationOrder < $1.visitationOrder }))
-			]
+			var itemsToBePurchased = [Item]()
+			for location in locationsWithItemsOnList {
+				itemsToBePurchased += location.items.filter({ $0.onList }).sorted(by: { $0.name < $1.name })
+			}
+			return [SectionData(title: "Items Remaining: \(itemsToBePurchased.count)", items: itemsToBePurchased)]
 		}
 		
-		// for a multi-section list, break out all the items into a dictionary
-		// with Locations as the keys.
-		let dict = Dictionary(grouping: itemsToBePurchased, by: { $0.location })
-		// now assemble the data by location visitationOrder
+		// otherwise, one section for each location
 		var completedSectionData = [SectionData]()
-		for key in dict.keys.sorted() { // sorted by Location is, of course, by visitationOrder
-			completedSectionData.append(SectionData(title: key.name, items: dict[key]!))
+		for location in locationsWithItemsOnList {
+			let itemsOnList = location.items.filter({ $0.onList }).sorted(by: { $0.name < $1.name })
+			completedSectionData.append(SectionData(title: location.name, items: itemsOnList))
 		}
 		return completedSectionData
 	}
