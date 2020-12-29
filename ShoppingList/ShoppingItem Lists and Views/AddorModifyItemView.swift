@@ -35,7 +35,7 @@ struct AddorModifyItemView: View {
 	
 	// parameters to control triggering an Alert and defining what action
 	// to take upon confirmation
-	@State private var confirmationTrigger = ConfirmationTrigger(type: .none)
+	@State private var confirmationAlert = ConfirmationAlert(type: .none)
 
 	// we need all locations so we can populate the Picker
 	let locations = Location.allLocations(userLocationsOnly: false).sorted(by: <)
@@ -89,7 +89,7 @@ struct AddorModifyItemView: View {
 			if editableItem != nil {
 				Section(header: Text("Shopping Item Management").sectionHeader()) {
 					SLCenteredButton(title: "Delete This Shopping Item",
-													 action: { confirmationTrigger.trigger(
+													 action: { confirmationAlert.trigger(
 														          type: .deleteItem(editableItem!),
 																			completion: { presentationMode.wrappedValue.dismiss() })
 													 }
@@ -107,7 +107,7 @@ struct AddorModifyItemView: View {
 			ToolbarItem(placement: .confirmationAction, content: saveButton)
 		}
 		.onAppear(perform: loadData)
-		.alert(isPresented: $confirmationTrigger.isAlertShowing) { confirmationTrigger.alert() }
+		.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 	}
 		
 	func barTitle() -> Text {

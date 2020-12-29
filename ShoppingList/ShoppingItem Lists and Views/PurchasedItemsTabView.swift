@@ -27,11 +27,12 @@ struct PurchasedItemsTabView: View {
 
 	// parameters to control triggering an Alert and defining what action
 	// to take upon confirmation
-	@State private var confirmationTrigger = ConfirmationTrigger(type: .none)
+	@State private var confirmationAlert = ConfirmationAlert(type: .none)
 	@State private var isAddNewItemSheetShowing = false
 
-	// what "today" means for this view
-	@State private var startOfToday = Calendar.current.startOfDay(for: Date())
+	// link in to what is the start of today
+	@EnvironmentObject var today: Today
+	//@State private var startOfToday = Calendar.current.startOfDay(for: Date())
 	
 	@State private var itemsChecked = [Item]()
 	
@@ -41,7 +42,7 @@ struct PurchasedItemsTabView: View {
 			VStack(spacing: 0) {
 				
 /* ---------
-1. add new item "button" is at top.  note that this will put up the
+1. search bar & add new item "button" is at top.  note that the button action will put up the
 AddorModifyItemView inside its own NavigationView (so the Picker will work!)
 ---------- */
 
@@ -70,9 +71,9 @@ for more discussion about sectioning
 				} else {
 					// notice use of sectioning strategy that is described in ShoppingListDisplay.swift
 					Form {
-						ForEach(sectionData()) { sectionData in
-							Section(header: Text(sectionData.title).sectionHeader()) {
-								ForEach(sectionData.items) { item in
+						ForEach(sectionData()) { section in
+							Section(header: Text(section.title).sectionHeader()) {
+								ForEach(section.items) { item in
 									// display of a single item
 									NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
 										SelectableItemRowView(item: item,
@@ -82,7 +83,7 @@ for more discussion about sectioning
 											.contextMenu {
 												itemContextMenu(item: item,
 																				deletionTrigger: {
-																					confirmationTrigger.trigger(type: .deleteItem(item))
+																					confirmationAlert.trigger(type: .deleteItem(item))
 																				})
 											} // end of contextMenu
 									} // end of NavigationLink
@@ -94,7 +95,7 @@ for more discussion about sectioning
 			} // end of VStack
 			.navigationBarTitle("Purchased List")
 			.toolbar { ToolbarItem(placement: .navigationBarLeading, content: addNewButton) }
-			.alert(isPresented: $confirmationTrigger.isAlertShowing) { confirmationTrigger.alert() }
+			.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())
@@ -106,19 +107,8 @@ for more discussion about sectioning
 		print("PurchasedTabView appear")
 		// clear searchText, get a clean screen
 		searchText = ""
-		// recompute what "today" means; we could be coming on-screen a few days after
-		// last using the app and, if no changes are made to trigger the @FetchRequest
-		// that drives this view, we could be displaying the two sections based on what
-		// "today" meant the last time the app was used.  so resetting the @State
-		// variable would redraw the list for what is really "today."  however, i am not
-		// sure this is bullet-proof; the app could come into the foreground with this
-		// view showing and would not execute an .onAppear() -- but navigating away from
-		// and returning to this view would clean up the graphics.
-		let today = Calendar.current.startOfDay(for: Date())
-		//print(today.dateText(style: .long))
-		if today != startOfToday {
-			startOfToday = today
-		}
+		// and also recompute what "today" means, so the sectioning is correct
+		today.update()
 	}
 		
 	// makes a simple "+" to add a new item
@@ -149,8 +139,8 @@ for more discussion about sectioning
 		let searchQualifiedItems = purchasedItems.filter({ searchText.appearsIn($0.name) })
 		
 		// break these out according to Today and all the others
-		let itemsToday = searchQualifiedItems.filter({ $0.dateLastPurchased >= startOfToday })
-		let allOlderItems = searchQualifiedItems.filter({ $0.dateLastPurchased < startOfToday })
+		let itemsToday = searchQualifiedItems.filter({ $0.dateLastPurchased >= today.start })
+		let allOlderItems = searchQualifiedItems.filter({ $0.dateLastPurchased < today.start })
 		
 		// determine titles
 		var section1Title = "Items Purchased Today: \(itemsToday.count)"
@@ -169,4 +159,3 @@ for more discussion about sectioning
 	}
 
 }
-

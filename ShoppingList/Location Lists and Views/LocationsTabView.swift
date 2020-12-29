@@ -19,7 +19,7 @@ struct LocationsTabView: View {
 	
 	// parameters to control triggering an Alert and defining what action
 	// to take upon confirmation
-	@State private var confirmationTrigger = ConfirmationTrigger(type: .none)
+	@State private var confirmationAlert = ConfirmationAlert(type: .none)
 	
 	var body: some View {
 		NavigationView {
@@ -55,7 +55,7 @@ struct LocationsTabView: View {
 			} // end of VStack
 			.navigationBarTitle("Locations")
 			.toolbar { ToolbarItem(placement: .navigationBarTrailing, content: addNewButton) }
-			.alert(isPresented: $confirmationTrigger.isAlertShowing) { confirmationTrigger.alert() }
+			.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 			.onAppear() { print("LocationsTabView appear") }
 			.onDisappear() { print("LocationsTabView disappear") }
 
@@ -76,7 +76,7 @@ struct LocationsTabView: View {
 	func contextMenuButton(for location: Location) -> some View {
 		Button(action: {
 			if !location.isUnknownLocation {
-				confirmationTrigger.trigger(type: .deleteLocation(location))
+				confirmationAlert.trigger(type: .deleteLocation(location))
 			}
 		}) {
 			Text(location.isUnknownLocation ? "(Cannot be deleted)" : "Delete This Location")

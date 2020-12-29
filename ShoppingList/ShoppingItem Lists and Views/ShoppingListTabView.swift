@@ -20,7 +20,7 @@ struct ShoppingListTabView: View {
 	
 	// parameters to control triggering an Alert and defining what action
 	// to take upon confirmation
-	@State private var confirmationTrigger = ConfirmationTrigger(type: .none)
+	@State private var confirmationAlert = ConfirmationAlert(type: .none)
 	
 	// local state for are we a multisection display or not.  the default here is false,
 	// but an eager developer could easily store this default value in UserDefaults (?)
@@ -57,7 +57,7 @@ of the sectioning, so we push it off to a specialized View.
 					EmptyListView(listName: "Shopping")
 				} else {
 					ShoppingListView(multiSectionDisplay: $multiSectionDisplay,
-													 confirmationTrigger: $confirmationTrigger)
+													 confirmationAlert: $confirmationAlert)
 				}
 				
 /* ---------
@@ -69,7 +69,7 @@ of the sectioning, so we push it off to a specialized View.
 						.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
 					
 					SLCenteredButton(title: "Move All Items Off-list", action: {
-						confirmationTrigger.trigger(type: .moveAllOffShoppingList)
+						confirmationAlert.trigger(type: .moveAllOffShoppingList)
 						})
 						.padding([.bottom, .top], 6)
 					
@@ -87,7 +87,7 @@ of the sectioning, so we push it off to a specialized View.
 				ToolbarItem(placement: .navigationBarLeading, content: sectionDisplayButton)
 				ToolbarItem(placement: .navigationBarTrailing, content: addNewButton)
 			}
-			.alert(isPresented: $confirmationTrigger.isAlertShowing) { confirmationTrigger.alert() }
+			.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())

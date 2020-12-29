@@ -1,5 +1,5 @@
 //
-//  ConfirmationTrigger.swift
+//  ConfirmationAlert.swift
 //  ShoppingList
 //
 //  Created by Jerry on 12/16/20.
@@ -12,10 +12,10 @@ import SwiftUI
 // this is a struct to centralize the data needed to run the confirmation alerts
 // that i use whenever the user want to perform a destructive action, in these cases:
 //
-// (1) move all items off the list in the ShoppingListTabView (they might hit
-// this button accidentally and lose the whole shopping list) or
+// (1) move all items off the list in the ShoppingListTabView (a user might touch
+// this button accidentally and lose the whole shopping list)
 //
-// (2) delete an item (in either the ShoppingListTabView or the PurchasedItemsTabView) or
+// (2) delete an item (in either the ShoppingListTabView or the PurchasedItemsTabView)
 //
 // (3) delete a location (in the LocationsTabView)
 //
@@ -23,28 +23,35 @@ import SwiftUI
 // proper messages and execute the apporpriate destructive action when the user
 // confirms the action.
 
-struct ConfirmationTrigger {
+struct ConfirmationAlert {
 	
 	enum ConfirmationAlertType {
 		// an appropriate default, but it should never trigger
 		case none
+		
 		// the ShoppingListTabView needs this type
 		case moveAllOffShoppingList
+		
 		// the ShoppingListTabView, PurchasedItemsTabView, and AddOrModifyItemView
 		// need this type, along with the item to delete
 		case deleteItem(Item)
+		
 		// the LocationsTabView and AddOrModifyLocationView
 		// need this type, along with the location to delete
 		case deleteLocation(Location)
+		
 	}
 	
 	// the type of this confirmation alert
 	var type: ConfirmationAlertType
-	// its boolean-valued trigger, because .alert always wants such a boolean
-	var isAlertShowing: Bool = false
+	
+	// whether the Alert we provide is showing, i.e., its boolean-valued trigger.
+	// .alert always uses such a boolean
+	var isShowing: Bool = false
+	
 	// and a completion handler for after we do what we do. the AddOrModify views
 	// need this so they can run the alert, delete an Item or Location, and then
-	// dismiss themselves executing the deletion
+	// follow that by dismissing themselves after executing the deletion
 	var completion: (() -> ())?
 	
 	// once the user wants to perform a destructive action, just call the trigger function,
@@ -53,7 +60,7 @@ struct ConfirmationTrigger {
 	mutating func trigger(type: ConfirmationAlertType, completion: (() -> ())? = nil) {
 		self.type = type
 		self.completion = completion
-		isAlertShowing = true // this starts the SwiftUI chain of events to show the alert
+		isShowing = true // this starts the SwiftUI chain of events to show the alert
 	}
 	
 	// strings to pass along to an alert when it comes up, depending on type
@@ -106,5 +113,6 @@ struct ConfirmationTrigger {
 					secondaryButton: .destructive(Text("Yes"), action: destructiveAction)
 		)
 	}
+	
 }
 

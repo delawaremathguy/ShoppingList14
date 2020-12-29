@@ -32,7 +32,7 @@ struct AddorModifyLocationView: View {
 	
 	// parameters to control triggering an Alert and definig what action
 	// to take upon confirmation
-	@State private var confirmationTrigger = ConfirmationTrigger(type: .none)
+	@State private var confirmationAlert = ConfirmationAlert(type: .none)
 
 	var body: some View {
 		Form {
@@ -59,7 +59,7 @@ struct AddorModifyLocationView: View {
 			if editableLocation != nil && editableData.visitationOrder != kUnknownLocationVisitationOrder  {
 				Section(header: Text("Location Management").sectionHeader()) {
 					SLCenteredButton(title: "Delete This Location",
-													 action: { confirmationTrigger.trigger(
+													 action: { confirmationAlert.trigger(
 														type: .deleteLocation(editableLocation!),
 														completion: { presentationMode.wrappedValue.dismiss() })
 													 }
@@ -80,7 +80,7 @@ struct AddorModifyLocationView: View {
 			ToolbarItem(placement: .cancellationAction, content: cancelButton)
 			ToolbarItem(placement: .confirmationAction, content: saveButton)
 		}
-		.alert(isPresented: $confirmationTrigger.isAlertShowing) { confirmationTrigger.alert() }
+		.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 	}
 	
 	func barTitle() -> Text {

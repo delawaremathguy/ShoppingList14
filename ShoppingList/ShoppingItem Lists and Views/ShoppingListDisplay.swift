@@ -65,7 +65,7 @@ struct ShoppingListView: View {
 		
 	// state variable to control triggering confirmation of a delete, which is
 	// one of three context menu actions that can be applied to an item
-	@Binding var confirmationTrigger: ConfirmationTrigger
+	@Binding var confirmationAlert: ConfirmationAlert
 	
 	// this is a temporary holding array for items being moved to the other list.  it's a
 	// @State variable, so if any SelectableItemRowView or a context menu adds an Item
@@ -88,7 +88,7 @@ struct ShoppingListView: View {
 																		respondToTapOnSelector:  { handleItemTapped(item) })
 								.contextMenu {
 									itemContextMenu(item: item, deletionTrigger: {
-										confirmationTrigger.trigger(type: .deleteItem(item))
+										confirmationAlert.trigger(type: .deleteItem(item))
 									})
 								} // end of contextMenu
 						} // end of NavigationLink
