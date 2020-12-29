@@ -29,6 +29,10 @@ struct PurchasedItemsTabView: View {
 	// to take upon confirmation
 	@State private var confirmationAlert = ConfirmationAlert(type: .none)
 	@State private var isAddNewItemSheetShowing = false
+	
+	// local state for are we a multisection display or not.  the default here is false,
+	// but an eager developer could easily store this default value in UserDefaults (?)
+	@State var multiSectionDisplay: Bool = false
 
 	// link in to what is the start of today
 	@EnvironmentObject var today: Today
@@ -94,7 +98,10 @@ for more discussion about sectioning
 				} // end of if-else
 			} // end of VStack
 			.navigationBarTitle("Purchased List")
-			.toolbar { ToolbarItem(placement: .navigationBarLeading, content: addNewButton) }
+			.toolbar {
+				ToolbarItem(placement: .navigationBarLeading, content: sectionDisplayButton)
+				ToolbarItem(placement: .navigationBarTrailing, content: addNewButton)
+			}
 			.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 
 		} // end of NavigationView
@@ -118,6 +125,15 @@ for more discussion about sectioning
 		}
 	}
 	
+	// a toggle button to change section display mechanisms
+	func sectionDisplayButton() -> some View {
+		Button(action: { multiSectionDisplay.toggle() }) {
+			Image(systemName: multiSectionDisplay ? "tray.2" : "tray")
+				.font(.title2)
+		}
+	}
+
+	
 	func handleItemTapped(_ item: Item) {
 		if !itemsChecked.contains(item) {
 			// put into our list of what's about to be removed, and because
@@ -137,6 +153,17 @@ for more discussion about sectioning
 	func sectionData() -> [SectionData] {
 		// reduce items by search criteria
 		let searchQualifiedItems = purchasedItems.filter({ searchText.appearsIn($0.name) })
+		
+		// do we show one big section, or Today and then everything else?  one big section
+		// is pretty darn easy:
+		if !multiSectionDisplay {
+			if searchText.isEmpty {
+				return [SectionData(title: "Items Purchased: \(purchasedItems.count)",
+														items: purchasedItems.map({ $0 }))]
+			}
+			return [SectionData(title: "Items Purchased containing: \"\(searchText)\": \(searchQualifiedItems.count)",
+													items: searchQualifiedItems)]
+		}
 		
 		// break these out according to Today and all the others
 		let itemsToday = searchQualifiedItems.filter({ $0.dateLastPurchased >= today.start })
