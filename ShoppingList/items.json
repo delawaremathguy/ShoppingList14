@@ -134,38 +134,10 @@
 	},
 	{
 		"onList" : false,
-		"quantity" : 2,
-		"isAvailable" : true,
-		"locationName" : "BJ — Freezer",
-		"name" : "Hazelnut Coffee Creamer, fat free"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
-		"locationName" : "BJ — Kitchen & Laundry",
-		"name" : "Ziploc Bags, 1 gal."
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
-		"locationName" : "BJ — Toothpaste & Soap",
-		"name" : "Secret Deodorant, unscented\/plain (or Dove)"
-	},
-	{
-		"onList" : false,
 		"quantity" : 1,
 		"isAvailable" : true,
 		"locationName" : "Baking Supplies (8)",
 		"name" : "Apple sauce, jar"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
-		"locationName" : "BJ — Freezer",
-		"name" : "Wellesley Farms Butter, 4 lb"
 	},
 	{
 		"onList" : true,
@@ -248,13 +220,6 @@
 		"onList" : false,
 		"quantity" : 1,
 		"isAvailable" : true,
-		"locationName" : "BJ — Coffee & Tea",
-		"name" : "Regular Coffee"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
 		"locationName" : "Fruits & Vegetables",
 		"name" : "Blueberries"
 	},
@@ -293,13 +258,6 @@
 		"isAvailable" : true,
 		"locationName" : "Fruits & Vegetables",
 		"name" : "Baby Carrots"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
-		"locationName" : "BJ — Paper",
-		"name" : "Tissue Cubes"
 	},
 	{
 		"onList" : false,
@@ -349,20 +307,6 @@
 		"isAvailable" : true,
 		"locationName" : "Fruits & Vegetables",
 		"name" : "Red potatoes, 5 pound bag"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
-		"locationName" : "BJ — Baking",
-		"name" : "White sugar (10x)"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
-		"locationName" : "BJ — Candy",
-		"name" : "Buckets peppermints "
 	},
 	{
 		"onList" : false,
@@ -431,20 +375,6 @@
 		"onList" : false,
 		"quantity" : 1,
 		"isAvailable" : true,
-		"locationName" : "BJ — Freezer",
-		"name" : "Bubba Burgers"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
-		"locationName" : "BJ — Kitchen & Laundry",
-		"name" : "Cascade"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
 		"locationName" : "Bread & Salad Dressings (10)",
 		"name" : "Stubb’s Original BBQ Sauce"
 	},
@@ -478,13 +408,6 @@
 	},
 	{
 		"onList" : false,
-		"quantity" : 2,
-		"isAvailable" : true,
-		"locationName" : "BJ — Freezer",
-		"name" : "Eggs XL"
-	},
-	{
-		"onList" : false,
 		"quantity" : 1,
 		"isAvailable" : true,
 		"locationName" : "Baking Supplies (8)",
@@ -510,13 +433,6 @@
 		"isAvailable" : true,
 		"locationName" : "Fruits & Vegetables",
 		"name" : "Yellow Onions"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
-		"locationName" : "BJ — Baking",
-		"name" : "Confectioners sugar (10x)"
 	},
 	{
 		"onList" : false,
@@ -618,13 +534,6 @@
 	},
 	{
 		"onList" : false,
-		"quantity" : 2,
-		"isAvailable" : true,
-		"locationName" : "BJ — Kitchen & Laundry",
-		"name" : "Clorox Wipes"
-	},
-	{
-		"onList" : false,
 		"quantity" : 1,
 		"isAvailable" : true,
 		"locationName" : "Canned Vegetables (9)",
@@ -657,20 +566,6 @@
 		"isAvailable" : true,
 		"locationName" : "Bags & Paper Goods (12)",
 		"name" : "Sandwich bags"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
-		"locationName" : "BJ — Baking",
-		"name" : "Brown Sugar"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
-		"locationName" : "BJ — Coffee & Tea",
-		"name" : "Decaf Coffee"
 	},
 	{
 		"onList" : false,
@@ -733,22 +628,8 @@
 		"onList" : false,
 		"quantity" : 1,
 		"isAvailable" : true,
-		"locationName" : "BJ — Bakery",
-		"name" : "Thomas’s English Muffins"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
 		"locationName" : "Cereal (7)",
 		"name" : "Special K Chocolatey Delight, family size"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
-		"locationName" : "BJ — Toothpaste & Soap",
-		"name" : "Arm and Hammer Toothpaste"
 	},
 	{
 		"onList" : false,
@@ -777,13 +658,6 @@
 		"isAvailable" : true,
 		"locationName" : "Beverages (5)",
 		"name" : "Diet Root Beer 12 oz A&W"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
-		"locationName" : "BJ — Baking",
-		"name" : "Pompeian Olive Oil"
 	},
 	{
 		"onList" : true,
@@ -887,13 +761,6 @@
 		"onList" : false,
 		"quantity" : 1,
 		"isAvailable" : true,
-		"locationName" : "BJ — Baking",
-		"name" : "Flour"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
 		"locationName" : "Unknown Location",
 		"name" : "Latex Gloves"
 	},
@@ -903,13 +770,6 @@
 		"isAvailable" : true,
 		"locationName" : "Dairy (18)",
 		"name" : "Redi-whip"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
-		"locationName" : "BJ — Toothpaste & Soap",
-		"name" : "Foaming Hand Soap — refill"
 	},
 	{
 		"onList" : false,
@@ -967,13 +827,6 @@
 		"isAvailable" : true,
 		"locationName" : "Fruits & Vegetables",
 		"name" : "Green grapes"
-	},
-	{
-		"onList" : false,
-		"quantity" : 1,
-		"isAvailable" : true,
-		"locationName" : "BJ — Toothpaste & Soap",
-		"name" : "Green Soap"
 	},
 	{
 		"onList" : false,

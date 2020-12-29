@@ -14,12 +14,16 @@ XCode 12 has finally stabilized (?), and I have also upgraded my iPhone to a mor
 
 This repository has been built using XCode 12.2 and will run under iOS 14.2. Please be sure to read the What's New in ShoppingList14 section below, primarily for implementation and code-level changes.  Here are recent updates either of importance (e.g., *bug fixes*) or of possible coding interest (e.g., *code consolidation or reorganization*) since the release of December 4:
 
-### Update of 26 December.
+### Update of 30 December.
 
-* Changed `ShoppingListDisplay` to rely on a @FetchRequest of Locations that have Items on the shopping list.  This seems more natural, and the multi-section display code is easier to understand. It also fixes an updating problem created by having switched out `SelectableItemRowView` to rely on @ObservedObject.  (*Please open an Issue if you find that this or the use of @ObservedObject has broken the code*.)
+* Added the ability to email the current shopping list (which might then be printed, if you wish), using [MailView by Mohammad Rahchamani](https://github.com/mohammad-rahchamani/MailView).  With apology to the author, I have made a slight adjustment to the original parameter passing protocol used in MailView.
+* The PurchasedItemsTabView now has a button, top-leading in the navigation bar, to switch between a flat list and a sectioned list (of items purchased today, and then items purchased before then).
+* Fixed a minor updating issue for the PurchasedItemsTabView for the case where the app was suspended while this view was on-screen, but you later make the app active again (*the concept of "today" may have changed while the app was inactive*).
+* Removed the "Delete All Data" button in the Dev Tools tab (*it seemed to want to crash every now and then*).  There's no reason why you need this: in the simulator, just delete the app and start over; on a device, you probably don't want to add sample data to get started anyway.
 
 ### Previous Updates.
 
+* (26 Dec) Changed `ShoppingListDisplay` to rely on a @FetchRequest of Locations that have Items on the shopping list.  This seems more natural, and the multi-section display code is easier to understand. It also fixes an updating problem created by having switched out `SelectableItemRowView` to rely on @ObservedObject.  (*Please open an Issue if you find that this or the use of @ObservedObject has broken the code*.)
 * (25 Dec) Rewrote much of the Discussion in `Item+Extensions.swift` to be, shall we say, *more accurate*.
 * (25 Dec) Perhaps it is due to iOS 14.2, but Core Data deletions no longer seem overly harmful to SwiftUI and @ObservedObject references.  So `SelectableItemRowView` is now simplified, accepting an @ObservedObject reference to an `Item` (rather than a copy of its data).  Together with nil-coalesced propeties on `Item`, this view appears to no longer require special care and feeding for item deletions.  Appropriate changes have been made to comments throughout the code and in the README.  
 * (16 Dec) Consolidated the code in ShoppingListTabView, PurchasedItemsTabView, LocationsTabView, AddOrModifyItemView, and AddOrModifyLocationView to centralize a common rubric for opening an Alert that confirms a destructive action.  The logic and code for implementing this is very simple. *See ConfirmationTrigger.swift*.
@@ -66,7 +70,7 @@ So:
 
 * **If you would like to test out this app and decide if it might be of interest to you**, run it on the simulator, go straight to the Dev Tools tab on startup and tap the "Load Sample Data" button.  Now you can play with the app.
 
-* **If you plan to install and use this app on your own device**, the app will start with an empty shopping list and an location list having only the special "Unknown Location"; from there you can create your own shopping items and locations associated with those items.  (*Hint: add locations first!*)  I would suggest that you remove the Dev Tools tab before installing the app (see comments in Development.swift).
+* **If you plan to install and use this app on your own device**, the app will start with an empty shopping list and a location list having only the special "Unknown Location"; from there you can create your own shopping items and locations associated with those items.  (*Hint: add Locations before adding Items!*)  I would suggest that you remove the Dev Tools tab before installing the app (see comments in Development.swift).
 
 
 
@@ -155,9 +159,7 @@ Finally, the architecture of ShoppingList14 is now, at the main level, more the 
 
 ## Future Work
 
-Some things I may continue to work on in the future include adding CloudKit, real support for iPad, and data export (e.g., to email or print a copy of a shopping list).  However, I do not expect to be posting such improvements here, and some of these suggestions are best left to the reader as a challenge.
-
-* Note: It is easy to handle the email piece, since there are several "mail views for SwiftUI" already on Github. [This is one from Mohammad Rahchamani](https://github.com/mohammad-rahchamani/MailView) that I have used in another project and it works quite easily for any SwiftUI app.)
+Some things I may continue to work on in the future include adding CloudKit (easy, just a few steps) and then *real* support for iPad.
 
 A more energetic improvement would be to expand the database and the app's UI to support multiple "Stores," each of which has many "Locations," and "Items" would have a many-to-many relationship with "Locations," so one item can be available in many Stores. I do now shop at several different stores, so as a user, the idea is of *some* interest ...
 

@@ -44,16 +44,16 @@ struct DevToolsTabView: View {
 									dismissButton: .default(Text("OK")))
 					}
 					
-					Button("Remove all data") {
-						self.confirmDeleteAllDataShowing = true
-					}
-					.alert(isPresented: $confirmDeleteAllDataShowing) {
-						Alert(title: Text("Remove All Data?"),
-									message: Text("All application data will be cleared and this cannot be undone. Are you sure you want to delete all data?"),
-									primaryButton: .cancel(Text("No")),
-									secondaryButton: .destructive(Text("Yes"), action: deleteAllData)
-						)
-					}
+//					Button("Remove all data") {
+//						self.confirmDeleteAllDataShowing = true
+//					}
+//					.alert(isPresented: $confirmDeleteAllDataShowing) {
+//						Alert(title: Text("Remove All Data?"),
+//									message: Text("All application data will be cleared and this cannot be undone. Are you sure you want to delete all data?"),
+//									primaryButton: .cancel(Text("No")),
+//									secondaryButton: .destructive(Text("Yes"), action: deleteAllData)
+//						)
+//					}
 					
 					Text("This button lets you offload existing data to JSON. On the simulator, it will dump to files on the Desktop (see Development.swift to get the path right); on a device, it will simply print to the console.")
 						.padding([.leading, .trailing], 10)

@@ -119,23 +119,23 @@ func insertNewLocations(from codableLocations: [LocationCodableProxy]) {
 // useful only as an introductory tool.  if you want to try out the app, you can
 // insert a full, working database of Items and Locations; play with it;
 // then delete everything and start over.
-func deleteAllData() {
-	var context: NSManagedObjectContext? = nil // i'll want the context of at least one Item or Location below
-	let items = Item.allItems()
-	for item in items {
-		context = item.managedObjectContext
-		Item.delete(item, saveChanges: false)
-	}
-	
-	let locations = Location.allLocations(userLocationsOnly: true)
-	for location in locations {
-		context = location.managedObjectContext
-		Location.delete(location, saveChanges: false)
-	}
-	
-	context?.processPendingChanges()
-	Location.saveChanges()
-}
+//func deleteAllData() {
+//	var context: NSManagedObjectContext? = nil // i'll want the context of at least one Item or Location below
+//	let items = Item.allItems()
+//	for item in items {
+//		context = item.managedObjectContext
+//		Item.delete(item, saveChanges: false)
+//	}
+//	
+//	let locations = Location.allLocations(userLocationsOnly: true)
+//	for location in locations {
+//		context = location.managedObjectContext
+//		Location.delete(location, saveChanges: false)
+//	}
+//	
+//	context?.processPendingChanges()
+//	Location.saveChanges()
+//}
 
 
 // this is a cute way to find out where the CoreData database lives,
