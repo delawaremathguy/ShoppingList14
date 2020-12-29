@@ -14,8 +14,9 @@ import SwiftUI
 public typealias AttachmentData = (Data, String, String)
 public typealias MailViewResult = MFMailComposeResult
 
-// this class was added by me to collect all 8 individual parameters for a mail message into
-// a single place and simplify setting up a MailView in a .sheet
+// this class was added by me to collect all 8 individual parameters for the MailView into
+// a single place and simplify setting up a MailView in a .sheet.  neither this class nor its
+// usage below was part of the original code of MailView.
 public class MailViewData {
 	var subject: String = ""
 	var toRecipients: [String]? = nil
@@ -26,7 +27,7 @@ public class MailViewData {
 	var attachments: [AttachmentData]? = nil
 	var preferredSendingAddress: String = ""
 	
-	// use this function to clear out a previously used mail setup
+	// use this function to clear out a previously used mail setup (added by me)
 	func clear() {
 		subject = ""
 		toRecipients = nil
@@ -46,7 +47,7 @@ public struct MailView: UIViewControllerRepresentable {
 	
 	let resultHandler: ((Result<MailViewResult, Error>) -> Void)?
 	
-	let mailViewData: MailViewData
+	let mailViewData: MailViewData // simplified input data to collect the following parameters:
 	//	let subject: String
 	//
 	//	let toRecipients: [String]?
@@ -62,7 +63,7 @@ public struct MailView: UIViewControllerRepresentable {
 	
 	// MARK: init
 	public init(isShowing: Binding<Bool>,
-							mailViewData: MailViewData,
+							mailViewData: MailViewData, // simplified input data to collect the parameters below
 							resultHandler: ((Result<MailViewResult, Error>) -> Void)? = nil) {
 		//	,
 		//							subject: String = "",
@@ -78,6 +79,7 @@ public struct MailView: UIViewControllerRepresentable {
 		self.mailViewData = mailViewData
 		self.resultHandler = resultHandler
 		
+		// same: simplified input data copying of the parameters below
 		//		self.subject = subject
 		//
 		//		self.toRecipients = toRecipients

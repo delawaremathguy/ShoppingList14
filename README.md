@@ -182,6 +182,7 @@ Feel free to contact me about questions and comments, or post an Issue here on G
 * The SearchBarView in the Purchased items view was created by Simon Ng.  It appeared in [an article in AppCoda](https://www.appcoda.com/swiftui-search-bar/) and is copyright ©2020 by AppCoda. You can find it on GitHub as [AppCoda/SwiftUISearchBar](https://github.com/AppCoda/SwiftUISearchBar). 
 * The app icon was created by Wes Breazell from [the Noun Project](https://thenounproject.com). 
 * The extension I use on Bundle to load JSON files is due to Paul Hudson (@twostraws, [hackingwithswift.com](https://hackingwithswift.com)) 
+* The MailView used in the ShoppingListTabView was created by [Mohammad Rahchamani](https://github.com/mohammad-rahchamani/MailView), copyright © 1399 AP BetterSleep.
 
-Otherwise, almost all of the code is original, and it's yours if you want it -- please see LICENSE for the usual details and disclaimers.
+Otherwise, just about all of the code is original, and it's yours if you want it -- please see LICENSE for the usual details and disclaimers.
 
