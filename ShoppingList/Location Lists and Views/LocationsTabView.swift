@@ -67,6 +67,7 @@ struct LocationsTabView: View {
 	func addNewButton() -> some View {
 		Button(action: { isAddNewLocationSheetShowing = true }) {
 			Image(systemName: "plus")
+				.font(.title2)
 		}
 	}
 	

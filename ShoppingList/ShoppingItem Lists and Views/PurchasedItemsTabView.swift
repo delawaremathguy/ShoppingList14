@@ -122,6 +122,7 @@ for more discussion about sectioning
 	func addNewButton() -> some View {
 		Button(action: { isAddNewItemSheetShowing = true }) {
 			Image(systemName: "plus")
+				.font(.title2)
 		}
 	}
 	

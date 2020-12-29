@@ -27,6 +27,11 @@ struct SelectableItemRowView: View {
 			
 			// --- build the little circle to tap on the left
 			ZStack {
+				// not sure if i want to have at least a visible circle here at the bottom or not.  for
+				// some color choices (e.g., Dairy = white) nothing appears to be shown as tappable
+//				Circle()
+//					.stroke(Color(.systemGray4))
+//					.frame(width: 23, height: 23)
 				if selected {
 					Image(systemName: "circle.fill")
 						.foregroundColor(.blue)

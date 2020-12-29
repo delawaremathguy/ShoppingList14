@@ -26,6 +26,11 @@ struct ShoppingListTabView: View {
 	// but an eager developer could easily store this default value in UserDefaults (?)
 	@State var multiSectionDisplay: Bool = false
 	
+	// support for Mail
+	@State private var showMailSheet: Bool = false
+	var mailViewData = MailViewData()
+
+	
 	var body: some View {
 		NavigationView {
 			VStack(spacing: 0) {
@@ -85,12 +90,17 @@ of the sectioning, so we push it off to a specialized View.
 			.navigationBarTitle("Shopping List")
 			.toolbar {
 				ToolbarItem(placement: .navigationBarLeading, content: sectionDisplayButton)
-				ToolbarItem(placement: .navigationBarTrailing, content: addNewButton)
+				ToolbarItem(placement: .navigationBarTrailing, content: trailingButtons)
 			}
 			.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())
+		.sheet(isPresented: self.$showMailSheet) {
+			MailView(isShowing: $showMailSheet, mailViewData: mailViewData, resultHandler: mailResultHandler)
+				.safe()
+		}
+
 		.onAppear() { print("ShoppingListTabView appear") }
 		.onDisappear() { print("ShoppingListTabView disappear") }
 		
@@ -101,18 +111,81 @@ of the sectioning, so we push it off to a specialized View.
 	// a "+" symbol to support adding a new item
 	func addNewButton() -> some View {
 		Button(action: { isAddNewItemSheetShowing = true })
-			{ Image(systemName: "plus") }
+			{ Image(systemName: "plus")
+			.font(.title2)
+		}
+	}
+	
+	func trailingButtons() -> some View {
+		HStack(spacing: 12) {
+			Button() {
+				prepareDataForMail()
+				self.showMailSheet = true
+			} label: {
+				Image(systemName: "envelope")
+					.font(.title2)
+			}
+			.disabled(!MailView.canSendMail)
+			Button(action: { isAddNewItemSheetShowing = true })
+				{ Image(systemName: "plus")
+				.font(.title2)
+			}
+		}
 	}
 	
 	// a toggle button to change section display mechanisms
 	func sectionDisplayButton() -> some View {
-		Button(action: {
+		Button() {
 			multiSectionDisplay.toggle()
-		}) {
+		} label: {
 			Image(systemName: multiSectionDisplay ? "tray.2" : "tray")
 				.font(.title2)
 		}
 	}
+	
+	//MARK: - Mail support
+	
+	func prepareDataForMail() {
+		// start with a clean, default set of parameters to pass to the MailView
+		mailViewData.clear()
+		
+		// put together a simple mail message
+		var messageString = "Items on your Shopping List: \n"
+		
+		// pull out Locations appearing in the shopping list as a dictionary, keyed by location
+		// and write the mail message = one big string
+		let dictionary = Dictionary(grouping: itemsToBePurchased, by: { $0.location })
+		for key in dictionary.keys.sorted() {
+			let items = dictionary[key]!
+			messageString += "\n\(key.name), \(items.count) item(s)\n\n"
+			for item in items {
+				messageString += "  \(item.name)\n"
+			}
+		}
+		
+		mailViewData.subject = "Shopping List"
+		mailViewData.messageBody = messageString
+		self.showMailSheet = true
+	}
+	
+	func mailResultHandler(value: Result<MailViewResult, Error>) {
+		switch value {
+			case .success(let result):
+				switch result {
+					case .cancelled:
+						print("cancelled")
+					case .failed:
+						print("failed")
+					case .saved:
+						print("saved")
+					default:
+						print("sent")
+				}
+			case .failure(let error):
+				NSLog("error: \(error.localizedDescription)")
+		}
+	}
+
 	
 } // end of ShoppingListTabView
 
