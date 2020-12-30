@@ -16,7 +16,7 @@ This repository has been built using XCode 12.2 and will run under iOS 14.2. Ple
 
 ### Update of 30 December.
 
-* Added the ability to email the current shopping list (which could then be printed, if you wish), using [MailView by Mohammad Rahchamani](https://github.com/mohammad-rahchamani/MailView).  With apology to the author, I have made a slight adjustment to the original parameter passing protocol used in MailView.  Touch the *envelope* icon in the navigation bar in ShoppingListTabView to bring up the mailer (*active only if you have the capability to send mail, which may not necessarily be the case when running in the simulator*).
+* Added the ability to send the current shopping list by email (which could then be printed, if you wish), using [MailView by Mohammad Rahchamani](https://github.com/mohammad-rahchamani/MailView).  With apology to the author, I have made a slight adjustment to the original parameter passing protocol used in MailView.  Touch the *envelope* icon in the navigation bar in ShoppingListTabView to bring up the mailer (*active only if you have the capability to send mail, which will not be the case when running in the simulator*).
 * The PurchasedItemsTabView now has a button, top-leading in the navigation bar, to switch between a flat list and a sectioned list (of items purchased today, and then items purchased before then).
 * Fixed a minor updating issue for the PurchasedItemsTabView for the case where the app was suspended while this view was on-screen, but you later made the app active again (*the concept of "today" may have changed while the app was inactive and the screen would not be updated*).
 * Removed the "Delete All Data" button in the Dev Tools tab (*it seemed to want to crash every now and then!*).  There's no reason why you need this: in the simulator, just delete the app and start over; on a device, you probably don't want to add sample data to get started anyway.
@@ -67,7 +67,7 @@ Tapping on a Location in the list lets you edit location information, including 
 
 The fourth tab is an in-store timer, with three simple button controls: "Start," "Stop," and "Reset."  This timer does *not* pause when the app goes into the background -- e.g., if you pull up a calculator or take a phone call while shopping. (*See Development.swift if you wish to change this behaviour*.)
 
-Finally, there is a  tab for "development-only" purposes, that allows wholesale loading of sample data and offloading data for later use. This tab is not one intended to appear in a production version of the app (*see Development.swift to hide this*).
+Finally, there is a tab for "development-only" purposes, that allows wholesale loading of sample data and offloading data for later use. This tab is not one intended to appear in a production version of the app (*see Development.swift to hide this*).
 
 Here's what you do next:
 
@@ -98,7 +98,7 @@ Here are some of the major, code-level changes:
 
 * The `ShoppingItem` entity in Core Data from Version 1.0 has been renamed, simply, as `Item`.  
 
-* Each `Item` now has a `dateLastPurchased` property that is reset to "today" whenever you move an item off the shopping list. *The value of this property is optional; the value of `nil` signifies that the item was never previously purchased. 
+* Each `Item` now has a `dateLastPurchased` property that is reset to "today" whenever you move an item off the shopping list. *The value of its underlying Core Data attribute is optional; the value of `nil` signifies that the item was never previously purchased*. 
 
 * There have been other name changes to the Core Data model (you will read about these and why they were made in the code) and I have versioned the model. Although I *believe* that previous CD models will migrate data from earlier models, I *cannot guarantee this, based on my own experience*.  Unfortunately, I lost data during migration on my own device (from V1 to V2) due to some combination of using the new App structure, or mixing versions of XCode with the version of iOS on my phone.
 
@@ -106,7 +106,7 @@ Here are some of the major, code-level changes:
 
 * Comments throughout the code have been updated -- some with expanded detail on why something is being done the way it is being done.
 
-* The basic architecture of the app has been simplified.  What started out in Version 1.0 as a few views with simple @FetchRequests quickly morphed into using an MVVM-style architecture and Notifications that completely avoided using @FetchRequest.  Version 2.0 of the app has now become ... *wait for it* ... an app having a few views with simple @FetchRequests.  This is absolutely shocking!  *See the App Architecture comments below*.
+* The basic architecture of the app has been simplified.  What started out in Version 1.0 as a few views with simple @FetchRequests morphed into an MVVM-style architecture using Notifications that completely avoided using @FetchRequest.  Version 2.0 of the app has now become ... *wait for it* ... an app having a few views with simple @FetchRequests.  This is absolutely shocking!  *See the App Architecture comments below*.
 
 * Views now effect changes to Items and Locations by calling class functions defined on `Item` and `Location` directly, which then are handled appropriately by the Core Data classes (the `Item` and `Location` classes operate, essentially, as view models for objects of their type).
 
@@ -126,15 +126,17 @@ The CoreData model has only two entities named `Item` and `Location`, with every
 
 ### App Architecture
 
-As I said above, this app started out as a few SwiftUI views driven by @FetchRequests, but that eventually ran into trouble when deleting Core Data objects.  For example, if a View has an @ObservedObject reference to a Core Data object and that object is deleted (while the view is still alive in SwiftUI), you could be in some serious trouble.  And there are also timing issues in Core Data deletions: the in-memory object graph doesn't always get updated right away for delete operations, which means a SwiftUI view could be trying to reference something that doesn't really exist.
+As I said above, this app started out as a few SwiftUI views driven by @FetchRequests, but that eventually ran into trouble when deleting Core Data objects.  For example, if a View has an @ObservedObject reference to a Core Data object and that object is deleted (while the view is still alive in SwiftUI), you could be in for some trouble.  And there are also timing issues in Core Data deletions: the in-memory object graph doesn't always get updated right away for delete operations, which means a SwiftUI view could be trying to reference something that doesn't really exist before the SwiftUI system actually leans about the deletion.
 
 Next, I tried to insert a little Combine into the app (e.g., a view driven by a list of Locations would make the list a subscriber to each of the Locations in the list), but there were problems with that as well.  
 
 I finally settled on more of an MVVM-style architecture, managing a list of Items or Locations myself, instead of letting @FetchRequest handle that list.  And I used internal notifications posted through the NotificationCenter that an `Item` or a `Location` had either been created, or edited, or was about to be deleted, so that view models could react appropriately.
 
-That design worked in version 1.0 of ShoppingList ... and I liked it a lot, frankly ... but I decided that I should go back and revisit my avoidance of @FetchRequest.  Yet what has always bothered me about the current state of SwiftUI view code that I see that uses @FetchRequest is that such a view often needs to understand that the data it processes come from Core Data.  The view must also know some of the gritty details of Core Data (e.g. @FetchRequests needed to know about sortDescriptors and keyPaths) and possibly know when to either nil-coalesce or at least test for nil values.
+That design worked in version 1.0 of ShoppingList ... and I liked it a lot, frankly ... but I decided that I should go back and revisit my avoidance of @FetchRequest.  
 
-The design in this app now lives somewhere between MVVM and a basic, @FetchRequest-driven SwiftUI app structure.  My goal in getting to the current code structure was that all SwiftUI views should follow these three rules: 
+Yet what has always bothered me about the current state of SwiftUI view code that I see that uses @FetchRequest is that such a view often needs to understand that the data it processes come from Core Data.  The view must also know some of the gritty details of Core Data (e.g. @FetchRequests needed to know about sortDescriptors and keyPaths) and possibly know when to either nil-coalesce or at least test for nil values.
+
+The design in this app now lives somewhere between MVVM and a basic, @FetchRequest-driven SwiftUI app structure.  My goal in reaching the current code structure was that all SwiftUI views should follow **these three rules**: 
 
 * a View should never "really" know that its data comes from Core Data (*no use of Core Data keypaths or managedObjectContexts*);
 
@@ -155,22 +157,20 @@ SwiftUI does a lot of the updating for you automatically, but the situation is m
 
 SwiftUI does provide `@FetchRequest` and `@ObservedObject` and `@EnvironmentObject` and `@StateObject` (and the Combine framework if you go deeper), but the updating problem is not completely solved just by sprinkling @ObservedObject property wrappers around in your code.  
 
-* It also matters in SwiftUI whether you pass around structs or classes among SwiftUI Views, and exactly how you pass them.  This can be especially frustrating for developers who have grown up with UIKit, where almost everything is an object (class).  What I can tell you is that *SwiftUI really wants you to use structs, yet Core Data is all about objects*.  
+* It matters in SwiftUI whether you pass around structs or classes among SwiftUI Views, and exactly how you pass them.  This can be especially frustrating for developers who have grown up with UIKit, where almost everything is an object (class).  What I can tell you is that *SwiftUI really wants you to use structs, yet Core Data is all about objects*.  
 
-The SwiftUI view management system is designed to destroy views when no longer needed and recreate them as requested -- view creation is very cheap and efficient.  However, if a view has an object reference ... well ... that view can't be destroyed so easily, and thus SwiftUI hangs on to it and *you* take on the responsibility to keep the view updated.  Often, you do that using @ObservedObject (but there may be implications should that object be deleted while the view is still alive).  If you don't use @ObservedObject, that view may not necessarily be updated for you by SwiftUI when its parent view gets redrawn.
+The SwiftUI view management system is designed to destroy views when no longer needed and recreate them as requested -- view creation is very cheap and efficient.  However, if a view maintains an object reference ... well ... that view can't be destroyed so easily, and thus SwiftUI hangs on to it and *you* take on the responsibility to keep the view updated.  Often, you do that using @ObservedObject (but there may be implications should that object be deleted while the view is still alive).  If you don't use @ObservedObject, that view may not necessarily be updated for you by SwiftUI when its parent view gets redrawn.
 
 Finally, the architecture of ShoppingList14 is now, at the main level, more the expected architecture of a @FetchRequest-driven SwiftUI interface, while addressing the subtleties above involving views and references that come from Core Data.  Please be sure to work your way through the code, where you will find several, extended comments that discuss these accommodations.
 
 
 ## Future Work
 
-Some things I may continue to work on in the future include adding CloudKit (it's easy, i have done it, and it's just a few steps, but you will need a paid Apple Developer account to use the cloud) and then *real* support for iPad (since I now have a new iPad Air 4).
+Some things I may continue to work on in the future include adding CloudKit (it's easy, i have done it, and it's just a few steps, but you will need a paid Apple Developer account to use the cloud) and then examine support for iPad (since I now have a new iPad Air 4).
 
-A more energetic improvement would be to expand the database and the app's UI to support multiple "Stores," each of which has many "Locations," and "Items" would have a many-to-many relationship with "Locations," so one item could be available in many Stores. I do now shop at several different stores, so as a user, the idea is of *some* interest ...
+A more energetic improvement would be to expand the database and the app's UI to support multiple "Stores," each of which has many "Locations," and "Items" would then have a many-to-many relationship with "Locations," since one item could be available in many Stores. I do now shop at several different stores, so as a user, the idea is of *some* interest ...
 
-However, no matter what I might post from this point onward, please know that:
-
-* I am not at all interested in creating the next, killer shopping list app or in moving any of this to the App Store.  *The world really does not need a new list-making app*.  
+However, no matter what I might post from this point onward, please know that I am not at all interested in creating the next, killer shopping list app. It is possible at some point that I will move this to the App Store, perhaps more for the experience of going through the process.  But let's face it: *the world really does not need yet another list-making app*.  
 
 
 ## Closing
@@ -178,9 +178,9 @@ However, no matter what I might post from this point onward, please know that:
 The project is what it is -- a project that began trying to learn how to best use SwiftUI with a Core Data store. 
 
 * On a basic level, understanding the SwiftUI lifecycle of how Views come and go turned out to be a major undertaking.  
-* On the Core Data side, using @FetchRequest was the obvious, right thing -- until it wasn't.  Then adding a few sprinkles of Combine looked like the right thing -- until it wasn't.  I learned a lot ... and that was the point of this project.
+* On the Core Data side, using @FetchRequest was the obvious, right thing -- until it wasn't.  Then adding a few sprinkles of Combine looked like the right thing -- until it wasn't.  Then, to my surprise, @FetchRequest made its way back into the app in Version 2.0.  I learned a lot ... and that was the point of this project.
 
-Nevertheless, this upgrade to the original ShoppingList has returned to where it started: using SwiftUI views driven by a @FetchRequest.  The code should be easier to follow for beginning developers (there are no sophisticated "view models"), while at the same time I have tried to point out important points about how SwiftUI and @FetchRequest really do interact (*at least I think I have*).
+The code in this project, based on using @FetchRequest, should be easier to follow for beginning developers (there are no sophisticated "view models").  Using lengthy comments in the code in various places around the app, I have also tried to make important points about how SwiftUI and @FetchRequest really do interact (*at least I think I have*).
 
 Feel free to contact me about questions and comments, or post an Issue here on GitHub.
 

@@ -77,8 +77,8 @@ final class PersistentStore: ObservableObject {
 		})
 		
 		// (2) also suggested for cloud-based Core Data are the two lines below for syncing with
-		// the cloud.  i don;t think there's any harm in addig these even for a single, on-disk
-		// store.
+		// the cloud.  i don't think there's any harm in adding these even for a single, on-disk
+		// local store.
 		container.viewContext.automaticallyMergesChangesFromParent = true
 		container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
 		
