@@ -23,28 +23,41 @@ final class PersistentStore: ObservableObject {
 		application to it. This property is optional since there are legitimate
 		error conditions that could cause the creation of the store to fail.
 		*/
-		let container = NSPersistentContainer(name: "ShoppingList")
 		
-		// several of the lines below are commented out because they apply to using
-		// a cloud-based NSPersistentCluodkitContainer
-		// some are per suggestion by "Apple Staff" on the Apple Developer Forums
+		// choose here whether you want the cloud or not
+		// -- when i install this on a device, i may want the cloud (you will need an Apple Developer
+		//    account to use the cloud an add the right entitlements to your project);
+		// -- for some initial testing on the simulator, i may use the cloud;
+		// -- but for basic app building in the simulator, i prefer a non-cloud store.
+		// by the way: using NSPersistentCloudKitContainer in the simulator works fine,
+		// but you will see lots of console traffic about sync transactions.  those are not
+		// errors, but it will clog up your console window.
+		
+		let container = NSPersistentContainer(name: "ShoppingList")
+		// let container = NSPersistentCloudKitContainer(name: "ShoppingList")
+
+		// some of what follows are suggestions by "Apple Staff" on the Apple Developer Forums
 		// for the case when you have an NSPersistentCloudKitContainer and iCloud synching
 		// https://developer.apple.com/forums/thread/650173
 		// you'll also see there how to use this code with the new XCode 12 App/Scene structure
 		// that replaced the AppDelegate/SceneDelegate of XCode 11 and iOS 13.  additionally,
 		// follow along with this discussion https://developer.apple.com/forums/thread/650876
-
-		// Enable history tracking
-		// (to facilitate previous NSPersistentCloudKitContainer's to load as NSPersistentContainer's)
-		// (not required when only using NSPersistentCloudKitContainer)
-//		guard let persistentStoreDescriptions = container.persistentStoreDescriptions.first else {
-//			fatalError("\(#function): Failed to retrieve a persistent store description.")
-//		}
-//		persistentStoreDescriptions.setOption(true as NSNumber,
-//																					forKey: NSPersistentHistoryTrackingKey)
-//		persistentStoreDescriptions.setOption(true as NSNumber,
-//																					forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
-
+		
+		// (1) Enable history tracking.  this seems to be important when you have more than one persistent
+		// store in your app (e.g., when using the cloud) and you want to do any sort of cross-store
+		// syncing.  See WWDC 2019 Session 209, "Making Apps with Core Data."
+		// also, once you use NSPersistentCloudKitContainer and turn these on, then you should leave
+		// these on, even if you just now want to use what's on-disk with NSPersistentContainer and
+		// without cloud access.
+		guard let persistentStoreDescriptions = container.persistentStoreDescriptions.first else {
+			fatalError("\(#function): Failed to retrieve a persistent store description.")
+		}
+		persistentStoreDescriptions.setOption(true as NSNumber,
+																					forKey: NSPersistentHistoryTrackingKey)
+		persistentStoreDescriptions.setOption(true as NSNumber,
+																					forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+		
+	
 		container.loadPersistentStores(completionHandler: { (storeDescription, error) in
 			if let error = error as NSError? {
 				// Replace this implementation with code to handle the error appropriately.
@@ -63,9 +76,11 @@ final class PersistentStore: ObservableObject {
 			
 		})
 		
-		// also suggested for cloud-based Core Data are these two lines
-//		container.viewContext.automaticallyMergesChangesFromParent = true
-//		container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+		// (2) also suggested for cloud-based Core Data are the two lines below for syncing with
+		// the cloud.  i don;t think there's any harm in addig these even for a single, on-disk
+		// store.
+		container.viewContext.automaticallyMergesChangesFromParent = true
+		container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
 		
 		return container
 	}()
