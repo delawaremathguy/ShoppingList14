@@ -126,7 +126,7 @@ The CoreData model has only two entities named `Item` and `Location`, with every
 
 ### App Architecture
 
-As I said above, this app started out as a few SwiftUI views driven by @FetchRequests, but that eventually ran into trouble when deleting Core Data objects.  For example, if a View has an @ObservedObject reference to a Core Data object and that object is deleted (while the view is still alive in SwiftUI), you could be in for some trouble.  And there are also timing issues in Core Data deletions: the in-memory object graph doesn't always get updated right away for delete operations, which means a SwiftUI view could be trying to reference something that doesn't really exist before the SwiftUI system actually leans about the deletion.
+As I said above, this app started out as a few SwiftUI views driven by @FetchRequests, but that eventually ran into trouble when deleting Core Data objects.  For example, if a View has an @ObservedObject reference to a Core Data object and that object is deleted (while the view is still alive in SwiftUI), you could be in for some trouble.  And there are also timing issues in Core Data deletions: the in-memory object graph doesn't always get updated right away for delete operations, which means a SwiftUI view could be trying to reference something that doesn't really exist before the SwiftUI system actually learns about the deletion.
 
 Next, I tried to insert a little Combine into the app (e.g., a view driven by a list of Locations would make the list a subscriber to each of the Locations in the list), but there were problems with that as well.  
 
@@ -155,20 +155,24 @@ I built this project in public initially as an experiment, to simply get a lot o
 
 SwiftUI does a lot of the updating for you automatically, but the situation is more tricky when using Core Data because the model data consists of objects (classes), not structs.  
 
-SwiftUI does provide `@FetchRequest` and `@ObservedObject` and `@EnvironmentObject` and `@StateObject` (and the Combine framework if you go deeper), but the updating problem is not completely solved just by sprinkling @ObservedObject property wrappers around in your code.  
-
 * It matters in SwiftUI whether you pass around structs or classes among SwiftUI Views, and exactly how you pass them.  This can be especially frustrating for developers who have grown up with UIKit, where almost everything is an object (class).  What I can tell you is that *SwiftUI really wants you to use structs, yet Core Data is all about objects*.  
 
-The SwiftUI view management system is designed to destroy views when no longer needed and recreate them as requested -- view creation is very cheap and efficient.  However, if a view maintains an object reference ... well ... that view can't be destroyed so easily, and thus SwiftUI hangs on to it and *you* take on the responsibility to keep the view updated.  Often, you do that using @ObservedObject (but there may be implications should that object be deleted while the view is still alive).  If you don't use @ObservedObject, that view may not necessarily be updated for you by SwiftUI when its parent view gets redrawn.
+SwiftUI does provide `@FetchRequest` and `@ObservedObject` and `@EnvironmentObject` and `@StateObject` (and the Combine framework if you go deeper), but the updating problem when objects are involved is not completely solved just by sprinkling @ObservedObject property wrappers around in your code.  
+
+Indeed, the SwiftUI view management system is designed to destroy views when no longer needed and recreate them as requested -- view creation is very cheap and efficient.  However, if a view maintains an object reference ... well ... that view can't be destroyed so easily, and thus SwiftUI hangs on to it and *you* take on the responsibility to keep the view updated.  Often, you do that using @ObservedObject (but there may be implications should that object be deleted while the view is still alive).  If you don't use @ObservedObject, that view may not necessarily be updated for you by SwiftUI when its parent view gets redrawn.
 
 Finally, the architecture of ShoppingList14 is now, at the main level, more the expected architecture of a @FetchRequest-driven SwiftUI interface, while addressing the subtleties above involving views and references that come from Core Data.  Please be sure to work your way through the code, where you will find several, extended comments that discuss these accommodations.
 
 
 ## Future Work
 
-Some things I may continue to work on in the future include adding CloudKit (it's easy, i have done it, and it's just a few steps, but you will need a paid Apple Developer account to use the cloud) and then examine support for iPad (since I now have a new iPad Air 4).
+Some things I may continue to work on in the future include 
 
-A more energetic improvement would be to expand the database and the app's UI to support multiple "Stores," each of which has many "Locations," and "Items" would then have a many-to-many relationship with "Locations," since one item could be available in many Stores. I do now shop at several different stores, so as a user, the idea is of *some* interest ...
+* adding CloudKit. Iit's easy to do - *i have done it in another app* - and it's just a few steps that I have outlined in PersistentStore.swift, but you will need a paid Apple Developer account to use the cloud.
+
+* examine support for iPad (since I now have a new iPad Air 4). I won't be taking my iPad to the store any time soon, but it would be convenient to work on the shopping list on the iPad and then, via the cloud, take my phone to the store with the updated list.
+
+* expanding the database and the app's UI to support multiple "Stores," each of which has many "Locations," and "Items" would then have a many-to-many relationship with "Locations," since one item could be available in many Stores. I do now shop at several different stores, so as a user, the idea is of *some* interest ... but this is an ambitious project, not so much for the Core Data side, but on the UI side!
 
 However, no matter what I might post from this point onward, please know that I am not at all interested in creating the next, killer shopping list app. It is possible at some point that I will move this to the App Store, perhaps more for the experience of going through the process.  But let's face it: *the world really does not need yet another list-making app*.  
 
