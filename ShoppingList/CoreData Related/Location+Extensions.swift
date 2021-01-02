@@ -93,32 +93,19 @@ extension Location: Comparable {
 	// MARK: - Class Functions
 	
 	class func count() -> Int {
-		let fetchRequest: NSFetchRequest<Location> = Location.fetchRequest()
-		do {
-			let itemCount = try PersistentStore.shared.context.count(for: fetchRequest)
-			return itemCount
-		}
-		catch let error as NSError {
-			print("Error counting User Locations: \(error.localizedDescription), \(error.userInfo)")
-		}
-		return 0
+		return count(context: PersistentStore.shared.context)
 	}
 
 	// return a list of all locations, optionally returning only user-defined location
 	// (i.e., excluding the unknown location)
 	class func allLocations(userLocationsOnly: Bool) -> [Location] {
-		let fetchRequest: NSFetchRequest<Location> = Location.fetchRequest()
+		var allLocations = allObjects(context: PersistentStore.shared.context) as! [Location]
 		if userLocationsOnly {
-			fetchRequest.predicate = NSPredicate(format: "visitationOrder_ != %d", kUnknownLocationVisitationOrder)
+			if let index = allLocations.firstIndex(where: { $0.isUnknownLocation }) {
+				allLocations.remove(at: index)
+			}
 		}
-		do {
-			let items = try PersistentStore.shared.context.fetch(fetchRequest)
-			return items
-		}
-		catch let error as NSError {
-			print("Error getting User Locations: \(error.localizedDescription), \(error.userInfo)")
-		}
-		return [Location]()
+		return allLocations
 	}
 
 	// creates a new Location having an id, but then it's the user's responsibility
@@ -133,7 +120,6 @@ extension Location: Comparable {
 	// the Core Data database has not yet been initialized
 	class func createUnknownLocation() {
 		let unknownLocation = Location(context: PersistentStore.shared.context)
-		unknownLocation.id = UUID()
 		unknownLocation.name_ = kUnknownLocationName
 		unknownLocation.red_ = 0.5
 		unknownLocation.green_ = 0.5

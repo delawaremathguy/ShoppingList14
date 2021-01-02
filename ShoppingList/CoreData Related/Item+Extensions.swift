@@ -76,7 +76,7 @@ extension Item {
 	(3) @ObservedObject References to Items
 	
 	only the SelectableItemRowView ever has an @ObservedObject reference to an Item, and in development,
-	this view (or whatever this view was during development) this was a serious problem:
+	this view (or whatever this view was during development) was a serious problem:
 	
 		if a SwiftUI view holds an Item as an @ObservedObject and that object is deleted while the
 		view is still alive, the view is then holding on to a zombie object.  (Core Data does not immediately
@@ -84,14 +84,14 @@ extension Item {
 		view code accesses that object, your program may crash.
 
 	when you front all your Core Data attributes as i do below, the problem above seems to disappear, for
-	the most part, but i think it's really still there.  it's possible that iOS 14.2 or so and later have done
+	the most part, but i think it's really still there.  it's possible that iOS 14.2 and later have done
 	something about this ...
 		
-	that's something to think about.  in this app, if you show a list of items on the shopping list,
-	navigate to an item's detail view, and press "Delete this Item," the row view for the item in the shopping list
-	is still alive and has a dead reference to the item.  SwiftUI may try to use that; and if you reference that
-	item, you should expect that every attribute will be 0 (e.g., 0 for a Date, 0 for an Integer 32, and nil for
-	every optional attribute).
+	anyway, it's something to think about.  in this app, if you show a list of items on the shopping list,
+	navigate to an item's detail view, and press "Delete this Item," the row view for the item in the shopping
+	list is still alive and has a dead reference to the item.  SwiftUI may try to use that; and if you were
+	to reference that item, you should expect that every attribute will be 0 (e.g., 0 for a Date, 0 for an
+	Integer 32, and nil for every optional attribute).
 	
 	*/
 	
@@ -177,29 +177,11 @@ extension Item {
 	// out in the Views.
 	
 	class func count() -> Int {
-		let context = PersistentStore.shared.context
-		let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
-		do {
-			let itemCount = try context.count(for: fetchRequest)
-			return itemCount
-		}
-		catch let error as NSError {
-			print("Error counting items: \(error.localizedDescription), \(error.userInfo)")
-		}
-		return 0
+		return count(context: PersistentStore.shared.context)
 	}
 
 	class func allItems() -> [Item] {
-		let context = PersistentStore.shared.context
-		let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
-		do {
-			let items = try context.fetch(fetchRequest)
-			return items
-		}
-		catch let error as NSError {
-			print("Error getting items: \(error.localizedDescription), \(error.userInfo)")
-		}
-		return [Item]()
+		return allObjects(context: PersistentStore.shared.context) as! [Item]
 	}
 	
 	// addNewItem is the user-facing add of a new entity.  since these are
@@ -217,7 +199,9 @@ extension Item {
 	class func update(using editableData: EditableItemData) {
 		
 		// if we can find an Item with the right id, use it, else create one
-		if let item = allItems().first(where: { $0.id == editableData.id }) {
+		if let id = editableData.id,
+			let item = Item.object(id: id, context: PersistentStore.shared.context) {
+		//if let item = allItems().first(where: { $0.id == editableData.id }) {
 			item.updateValues(from: editableData)
 		} else {
 			let newItem = Item.addNewItem()
