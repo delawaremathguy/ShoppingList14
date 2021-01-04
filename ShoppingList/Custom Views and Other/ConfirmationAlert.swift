@@ -71,7 +71,7 @@ struct ConfirmationAlert {
 			case .moveAllOffShoppingList:
 				return "Move All Items Off-List"
 			case .deleteItem(let item):
-				return "Delete \'\(item.name)\'?"
+					return "Delete \'\(item.name)\'?"
 			case .deleteLocation(let location):
 				return "Delete \'\(location.name)\'?"
 		}
@@ -96,7 +96,7 @@ struct ConfirmationAlert {
 			case .moveAllOffShoppingList:
 				Item.moveAllItemsOffShoppingList()
 			case .deleteItem(let item):
-				Item.delete(item)
+					Item.delete(item)
 			case .deleteLocation(let location):
 				Location.delete(location)
 		}

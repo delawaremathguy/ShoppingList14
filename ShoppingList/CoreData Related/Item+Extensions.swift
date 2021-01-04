@@ -184,6 +184,10 @@ extension Item {
 		return allObjects(context: PersistentStore.shared.context) as! [Item]
 	}
 	
+	class func object(withID id: UUID) -> Item? {
+		return object(id: id, context: PersistentStore.shared.context) as Item?
+	}
+	
 	// addNewItem is the user-facing add of a new entity.  since these are
 	// Identifiable objects, this makes sure we give the entity a unique id, then
 	// hand it back so the user can fill in what's important to them.
@@ -195,7 +199,7 @@ extension Item {
 	}
 	
 	// updates data for an Item that the user has directed from an Add or Modify View.
-	// if the incoming data is not assoicated with an item, we need to create it first
+	// if the incoming data is not associated with an item, we need to create it first
 	class func update(using editableData: EditableItemData) {
 		
 		// if we can find an Item with the right id, use it, else create one

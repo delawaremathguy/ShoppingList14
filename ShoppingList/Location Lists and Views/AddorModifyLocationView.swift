@@ -124,6 +124,7 @@ struct AddorModifyLocationView: View {
 			} // else we already have default values, editable data is set up right
 			dataHasBeenLoaded = true
 		}
+		
 	}
 	
 }

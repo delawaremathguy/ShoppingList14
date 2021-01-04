@@ -23,7 +23,7 @@ struct AddorModifyItemView: View {
 	// you might want the new item to go to the Purchased item list (?)
 	var addItemToShoppingList: Bool = true
 	
-	// this editableData stuct contains all of the fields of an Item that
+	// this editableData struct contains all of the fields of an Item that
 	// can be edited here, so that we're not doing a "live edit" on the Item
 	// it is defaulted properly for a new Item
 	@State var editableData = EditableItemData()
@@ -119,17 +119,41 @@ struct AddorModifyItemView: View {
 		// already taken care of setting up the local state editable data.  otherwise,
 		// we offload all the data from the editableItem (if there is one) to the
 		// local state editable data that control this view
+		print("AddOrModifyItemView appears")
 		if !editableDataInitialized {
 			if let item = editableItem {
 				editableData = EditableItemData(item: item)
 			} else {
-				// just be sure the default data is tweaked to place a new item on
-				// the right list by default, depending on how this view was created
+				// by default, a new item will go to the shopping list
 				editableData = EditableItemData()
 			}
 			// and be sure we don't do this again (!)
 			editableDataInitialized = true
 		}
+		
+		// and here is a kludge for a very special case:
+		// -- we were in the ShoppingListTabView
+		// -- we navigate to this Add/ModifyItem view for an Item X at Location Y
+		// -- we use the tab bar to move to the Locations tab
+		// -- we select Location Y and navigate to its Add/ModifyLocation view
+		// -- we tap Item X listed for Location Y, and navigate to a second Add/ModifyItem view for Item X
+		// -- we delete Item X in this second Add/ModifyItem view
+		// -- we use the tab bar to come back to the shopping list tab, and this
+		//    view is now what's on-screen, showing us an item that was deleted underneath us (!)
+		//
+		// the only thing that makes sense is to dismiss ourself in the case that we were created with
+		// a real item (editableData.id != nil) but that item does not exist now
+		
+		if editableData.id != nil {
+			if Item.object(withID: editableData.id!) == nil {
+				presentationMode.wrappedValue.dismiss()
+			}
+		}
+		
+		// by the way, this applies symmetrically to opening an Add/ModifyItem view from the
+		// Add/ModifyLocation view, then tabbing over to the shopping list, looking at a second
+		// Add/ModifyItem view there and deleting.  the first Add/ModifyItem view will get the
+		// same treatment in this code, effectively being closed.
 	}
 	
 	// the cancel button
@@ -154,11 +178,5 @@ struct AddorModifyItemView: View {
 		Item.update(using: editableData)
 	}
 	
-	// called after confirmation to delete an item.
-	
-	func deleteAndDismiss(_ item: Item) {
-		Item.delete(item)
-		presentationMode.wrappedValue.dismiss()
-	}
 }
 
