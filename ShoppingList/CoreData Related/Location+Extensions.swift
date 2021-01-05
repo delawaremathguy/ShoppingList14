@@ -81,6 +81,9 @@ extension Location: Comparable {
 
 	// MARK: - Useful Fetch Request
 	
+	// a fetch request we can use in views to get all locations, sorted in visitation order.
+	// by default, you get all locations; setting onList = true returns only locations that
+	// have at least one of its shopping items currently on the shopping list
 	class func fetchAllLocations(onList: Bool = false) -> NSFetchRequest<Location> {
 		let request: NSFetchRequest<Location> = Location.fetchRequest()
 		request.sortDescriptors = [NSSortDescriptor(key: "visitationOrder_", ascending: true)]
