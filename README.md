@@ -1,6 +1,6 @@
 #  About "ShoppingList14"
 
-This is a simple iOS app to process a shopping list that you can take to the grocery store with you, and move items off the list as you pick them up.  It persists data in CoreData.  The project should be compiled with XCode 12.2 or later and run on iOS14.2 or later.
+This is a simple iOS app to process a shopping list that you can take to the grocery store with you, and move items off the list as you pick them up.  It persists data in CoreData.  The project should be compiled with XCode 12.2 or later and run on iOS 14.2 or later.
 
 * An [earlier version of this project](https://github.com/delawaremathguy/ShoppingList) is available that works with XCode 11.7/iOS 13.7.  If you have not yet made the move to XCode 12.2 and iOS 14.2, you should use this earlier project instead.
 
@@ -10,7 +10,7 @@ Feel free to use this as is, to develop further,  to completely ignore, or even 
 ## First Public Update for iOS 14: 4 December, 2020
 
 
-XCode 12 has finally stabilized (?), and I have also upgraded my iPhone to a more stable iOS14.2.  So I felt it safe to make some refinements and possibly use features of iOS 14 in updating this project.  
+XCode 12 has finally stabilized (?), and I have also upgraded my iPhone to a more stable iOS 14.2.  So I felt it safe to make some refinements and possibly use features of iOS 14 in updating this project.  
 
 This repository has been built using XCode 12.2 and will run under iOS 14.2. Please be sure to read the *What's New in ShoppingList14* section below, primarily for implementation and code-level changes that were made in producing the initial iOS 14 release.  
 
@@ -19,7 +19,7 @@ Here are recent updates either of importance (e.g., *bug fixes* or *UI changes*)
 ### Update of 5 January, 2021.
 
 * Fixed an issue where a shopping Item might be deleted in one AddOrModifyItemView in the app, while a second AddOrModifyItemView was still open on the Item in a different tab.  (*See comments in AddOrModifyItemView.swift*.) 
-* Fixed an issue where a new Location was added, but it would not be immediately available to the Picker that allows you to associate it with an Item.
+* Fixed an issue where a new Location was added, but it would not be immediately available to the Picker that allows you to associate an Item with it.
 
 ### Previous Updates since the iOS 14 Release
 
