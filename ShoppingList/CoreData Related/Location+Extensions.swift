@@ -122,7 +122,7 @@ extension Location: Comparable {
 	// parameters for the Unknown Location.  call this only upon startup if
 	// the Core Data database has not yet been initialized
 	class func createUnknownLocation() {
-		let unknownLocation = Location(context: PersistentStore.shared.context)
+		let unknownLocation = addNewLocation()
 		unknownLocation.name_ = kUnknownLocationName
 		unknownLocation.red_ = 0.5
 		unknownLocation.green_ = 0.5
