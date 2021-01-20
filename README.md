@@ -46,7 +46,7 @@ The main screen is a TabView, to show
 ![](IMG_0175.jpeg)  ![](IMG_0176.jpeg) 
 
 
-* a (searchable) list of previously purchased items, with one section showing items "purchased today" and a second section showing all other items (not shown in the photo above)
+* a (searchable) list of previously purchased items, with one section showing items "purchased today" and a second section showing all other items 
 
 ![](IMG_0177.jpeg)  ![](IMG_0173.jpeg) 
 
@@ -54,7 +54,7 @@ The main screen is a TabView, to show
 
 ![](IMG_0174.jpeg) 
 
-* an in-store timer, to track how long it takes you to complete shopping, and
+* an in-store timer, to track how long it takes you to complete shopping (not shown), and
 
 * optionally, for purposes of demonstration only, a "Dev Tools" tab to make wholesale adjustments to the data
 
