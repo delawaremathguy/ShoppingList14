@@ -147,10 +147,8 @@ struct AddorModifyItemView: View {
 		// the only thing that makes sense is to dismiss ourself in the case that we were instantiated
 		// with a real item (editableData.id != nil) but that item does not exist anymore.
 		
-		if editableData.id != nil {
-			if Item.object(withID: editableData.id!) == nil {
-				presentationMode.wrappedValue.dismiss()
-			}
+		if editableData.id != nil &&  Item.object(withID: editableData.id!) == nil {
+			presentationMode.wrappedValue.dismiss()
 		}
 		
 		// by the way, this applies symmetrically to opening an Add/ModifyItem view from the
@@ -161,15 +159,22 @@ struct AddorModifyItemView: View {
 		// ADDITIONAL DISCUSSION:
 		//
 		// apart from the delete operation, when two instances of the Add/ModifyItem view are
-		// active, any edits made to item data in one will not be replected in the other, because
+		// active, any edits made to item data in one will not be replicated in the other, because
 		// these views copy data to their local @State variable editableData, and that is what
-		// gets edited.  so do a partial edit in one of the views; when you visit the second
+		// gets edited.  so if you do a partial edit in one of the views, when you visit the second
 		// view, you will not see those changes.  this is a natural side-effect of doing an edit
-		// on a draft copy of the data and nnot doing a live edit.  we are aware of the problem
+		// on a draft copy of the data and not doing a live edit.  we are aware of the problem
 		// and may look to fix this in the future.  (two strategies come to mind: a live edit of an
 		// ObservableObject, which then means we have to rethink combining the add and modify
-		// functions; of always doing the Add/Modify view as a .sheet so that you cannot navigate
+		// functions; or always doing the Add/Modify view as a .sheet so that you cannot navigate
 		// elsewhere in the app and makes edits underneath this view.)
+		
+		// a third possibility offered by user jjatie on 7 Jan, 2021, on the Apple Developer's Forum
+		//   https://developer.apple.com/forums/thread/670564
+		// suggests tapping into the NotificationCenter to watch for changes in the NSManaged
+		// context, and checking to see if the Item is among those in the notification's
+		// userInfo[NSManagedObjectContext.NotificationKey.deletedObjectIDs].
+
 	}
 	
 	// the cancel button

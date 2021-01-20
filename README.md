@@ -16,6 +16,10 @@ This repository has been built using XCode 12.2 and will run under iOS 14.2. Ple
 
 Here are recent updates either of importance (e.g., *bug fixes* or *UI changes*) or of possible coding interest (e.g., *code consolidation or reorganization*) since the first public release of December 4:
 
+### Update of Next Date.
+
+* Updated screenshots added.
+
 ### Update of 5 January, 2021.
 
 * Fixed an issue where a shopping Item might be deleted in one AddOrModifyItemView in the app, while a second AddOrModifyItemView was still open on the Item in a different tab.  (*See comments in AddOrModifyItemView.swift*.) 
@@ -36,18 +40,22 @@ Here are recent updates either of importance (e.g., *bug fixes* or *UI changes*)
 
 ## General App Structure
 
- ![](Screenshot1.jpg)  ![](Screenshot2.jpg) 
 
-
- ![](Screenshot3.jpg)  ![](Screenshot4.jpg) 
 
 The main screen is a TabView, to show 
 
 * a current shopping list (which can appear as a single section, or in multiple sections by Location) 
 
+![](IMG_0175.jpeg)  ![](IMG_0176.jpeg) 
+
+
 * a (searchable) list of previously purchased items, with one section showing items "purchased today" and a second section showing all other items (not shown in the photo above)
 
+![](IMG_0177.jpeg)  ![](IMG_0173.jpeg) 
+
 * a list of "locations" in a store, such as "Dairy," "Fruits & Vegetables," "Deli," and so forth
+
+![](IMG_0174.jpeg) 
 
 * an in-store timer, to track how long it takes you to complete shopping, and
 
