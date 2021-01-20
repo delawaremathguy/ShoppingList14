@@ -16,17 +16,14 @@ This repository has been built using XCode 12.2 and will run under iOS 14.2. Ple
 
 Here are recent updates either of importance (e.g., *bug fixes* or *UI changes*) or of possible coding interest (e.g., *code consolidation or reorganization*) since the first public release of December 4:
 
-### Update of Next Date.
+### Update of 20 January, 2021.
 
-* Updated screenshots added.
-
-### Update of 5 January, 2021.
-
-* Fixed an issue where a shopping Item might be deleted in one AddOrModifyItemView in the app, while a second AddOrModifyItemView was still open on the Item in a different tab.  (*See comments in AddOrModifyItemView.swift*.) 
-* Fixed an issue where a new Location was added, but it would not be immediately available to the Picker that allows you to associate an Item with it.
+* Updated screenshots and README.
 
 ### Previous Updates since the iOS 14 Release
 
+* (5 Jan) Fixed an issue where a shopping Item might be deleted in one AddOrModifyItemView in the app, while a second AddOrModifyItemView was still open on the Item in a different tab.  (*See comments in AddOrModifyItemView.swift*.) 
+* (5 Jan) Fixed an issue where a new Location was added, but it would not be immediately available to the Picker that allows you to associate an Item with it.
 * (30 Dec) Added the ability to send the current shopping list by email (which could then be printed, if you wish), using [MailView by Mohammad Rahchamani](https://github.com/mohammad-rahchamani/MailView), albeit with apology to the author, since I have made a slight adjustment to the original parameter passing protocol used in MailView.  Touch the *envelope* icon in the navigation bar in ShoppingListTabView to bring up the mailer (*active only if you have the capability to send mail, which will not be the case when running in the simulator*).
 * (30 Dec) The PurchasedItemsTabView now has a button, top-leading in the navigation bar, to switch between a flat list and a list of two sections (items purchased today, and items purchased before then).
 * (30 Dec) Fixed a minor updating issue for the PurchasedItemsTabView for the case where the app was suspended while this view was on-screen, but the app became active at a later time (*the concept of "today" might have changed while the app was inactive*).
