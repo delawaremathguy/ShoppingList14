@@ -121,7 +121,7 @@ extension Location: Comparable {
 	
 	// parameters for the Unknown Location.  call this only upon startup if
 	// the Core Data database has not yet been initialized
-	class func createUnknownLocation() {
+	class func createUnknownLocation() -> Location {
 		let unknownLocation = addNewLocation()
 		unknownLocation.name_ = kUnknownLocationName
 		unknownLocation.red_ = 0.5
@@ -129,32 +129,31 @@ extension Location: Comparable {
 		unknownLocation.blue_ = 0.5
 		unknownLocation.opacity_ = 0.5
 		unknownLocation.visitationOrder_ = kUnknownLocationVisitationOrder
+		return unknownLocation
 	}
 
-	class func unknownLocation() -> Location? {
-		// we only keep one "UnknownLocation" in the data store.  you can
-		// find it because its visitationOrder is the largest 32-bit integer.
-		// return nil if no such thing exists, which means that the data store
-		// is empty (since all Items have an assigned Location).
+	class func unknownLocation() -> Location {
+		// we only keep one "UnknownLocation" in the data store.  you can find it because its
+		// visitationOrder is the largest 32-bit integer. to make the app work, however, we need this
+		// default location to exist!
+		//
+		// so if we ever need to get the unknown location from the database, we will fetch it;
+		// and if it's not there, we will create it now.
 		let fetchRequest: NSFetchRequest<Location> = Location.fetchRequest()
 		fetchRequest.predicate = NSPredicate(format: "visitationOrder_ == %d", kUnknownLocationVisitationOrder)
 		do {
 			let locations = try PersistentStore.shared.context.fetch(fetchRequest)
-			if locations.count == 1 {
+			if locations.count >= 1 { // there should be no more than one
 				return locations[0]
+			} else {
+				return createUnknownLocation()
 			}
 		} catch let error as NSError {
-			print("Error fetching unknown location: \(error.localizedDescription), \(error.userInfo)")
+			fatalError("Error fetching unknown location: \(error.localizedDescription), \(error.userInfo)")
 		}
-		return nil
 	}
 	
-	// the default status on a delete is to always save changes out to disk.
-	// the only time not to do this (saveChanges = false) is if you delete a bunch
-	// of locations all at the same time.
-	//
-	// one note here: we'll assume you want to save this change by default.
-	class func delete(_ location: Location, saveChanges: Bool = true) {
+	class func delete(_ location: Location) {
 		// you cannot delete the unknownLocation
 		guard location.visitationOrder_ != kUnknownLocationVisitationOrder else { return }
 
@@ -166,16 +165,12 @@ extension Location: Comparable {
 		// reset location associated with each of these to the unknownLocation
 		// (which in turn, removes the current association with location). additionally,
 		// this could affect each item's computed properties
-		let theUnknownLocation = Location.unknownLocation()!
+		let theUnknownLocation = Location.unknownLocation()
 		itemsAtThisLocation.forEach({ $0.location = theUnknownLocation })
 		// now finish the deletion and make sure the context gets cleaned up
 		// right now in memory.  then save if requested
 		context?.delete(location)
 		context?.processPendingChanges()
-		// save to disk unless not requested (default is to do the save)
-		if saveChanges {
-			PersistentStore.shared.saveContext()
-		}
 	}
 	
 	class func updateData(for location: Location?, using editableData: EditableLocationData) {
@@ -187,13 +182,7 @@ extension Location: Comparable {
 			let newLocation = Location.addNewLocation()
 			newLocation.updateValues(from: editableData)
 		}		
-		saveChanges()
 	}
-	
-	class func saveChanges() {
-		PersistentStore.shared.saveContext()
-	}
-
 	
 	// MARK: - Object Methods
 	

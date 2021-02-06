@@ -172,9 +172,7 @@ extension Item {
 	// MARK: - Class functions for CRUD operations
 	
 	// this whole bunch of static functions lets me do a simple fetch and
-	// CRUD operations through the AppDelegate, including one called saveChanges(),
-	// so that i don't have to litter a whole bunch of try? moc.save() statements
-	// out in the Views.
+	// CRUD operations.
 	
 	class func count() -> Int {
 		return count(context: PersistentStore.shared.context)
@@ -211,18 +209,9 @@ extension Item {
 			let newItem = Item.addNewItem()
 			newItem.updateValues(from: editableData)
 		}
-		
-		Item.saveChanges()
 	}
 
-
-	// saveChanges calls back through the PersistentStore
-	class func saveChanges() {
-		PersistentStore.shared.saveContext()
-	}
-
-	// one note here: we'll assume you want to save this change by default.
-	class func delete(_ item: Item, saveChanges: Bool = true) {
+	class func delete(_ item: Item) {
 		// remove the reference to this item from its associated location
 		// by resetting its (real, Core Data) location to nil
 		item.location_ = nil
@@ -231,16 +220,12 @@ extension Item {
 		context?.delete(item)
 		// processPedningChanges cleans up the in-memory object graph a little more quickly
 		context?.processPendingChanges()
-		if saveChanges {
-			Self.saveChanges()
-		}
 	}
 	
 	class func moveAllItemsOffShoppingList() {
 		for item in allItems() where item.onList {
 			item.onList_ = false
 		}
-		Item.saveChanges()
 	}
 	
 	// MARK: - Object Methods
@@ -248,18 +233,15 @@ extension Item {
 	// toggles the availability flag for an item
 	func toggleAvailableStatus() {
 		isAvailable_ = !isAvailable_
-		Item.saveChanges()
 	}
 
 	// changes onList flag for an item
 	func toggleOnListStatus() {
 		onList = !onList
-		Item.saveChanges()
 	}
 
 	func markAvailable() {
 		isAvailable_ = true
-		Item.saveChanges()
 	}
 	
 	private func updateValues(from editableData: EditableItemData) {

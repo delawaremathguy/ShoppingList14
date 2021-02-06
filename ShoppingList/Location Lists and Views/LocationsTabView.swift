@@ -56,12 +56,22 @@ struct LocationsTabView: View {
 			.navigationBarTitle("Locations")
 			.toolbar { ToolbarItem(placement: .navigationBarTrailing, content: addNewButton) }
 			.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
-			.onAppear() { print("LocationsTabView appear") }
-			.onDisappear() { print("LocationsTabView disappear") }
+			.onAppear(perform: handleOnAppear)
+			.onDisappear() {
+				print("LocationsTabView disappear")
+				PersistentStore.shared.saveContext()
+			}
 
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())
 	} // end of var body: some View
+	
+	func handleOnAppear() {
+		print("LocationsTabView appear")
+		// because the unknown location is created lazily, this will make sure that
+		// we'll not be left with an empty screen
+		let _ = Location.unknownLocation()
+	}
 	
 	// defines the usual "+" button to add a Location
 	func addNewButton() -> some View {

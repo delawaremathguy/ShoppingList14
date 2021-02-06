@@ -22,7 +22,7 @@ struct EditableItemData {
 	// all of the values here provide suitable defaults for a new item
 	var name: String = ""
 	var quantity: Int = 1
-	var location = Location.unknownLocation()!
+	var location = Location.unknownLocation()
 	var onList: Bool = true
 	var isAvailable = true
 	var dateText = "" // for display only, not actually editable
@@ -47,7 +47,6 @@ struct EditableItemData {
 		}
 	}
 	
-	// provides init for a new Item -- but all values are properly defaulted above
 	init() { }
 	
 	var canBeSaved: Bool { name.count > 0 }

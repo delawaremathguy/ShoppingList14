@@ -69,12 +69,12 @@ func writeAsJSON<T>(items: [T], to filename: String) where T: CodableStructRepre
 }
 
 func populateDatabaseFromJSON() {
-	// it sure is easy to do with HWS's Bundle extension (!)
+	// it sure is easy to do this with HWS's Bundle extension (!)
 	let codableLocations: [LocationCodableProxy] = Bundle.main.decode(from: kLocationsFilename)
 	insertNewLocations(from: codableLocations)
 	let codableItems: [ItemCodableProxy] = Bundle.main.decode(from: kItemsFilename)
 	insertNewItems(from: codableItems)
-	Item.saveChanges()
+	PersistentStore.shared.saveContext()
 }
 
 func insertNewItems(from codableItems: [ItemCodableProxy]) {
@@ -97,7 +97,7 @@ func insertNewItems(from codableItems: [ItemCodableProxy]) {
 		if let location = name2Location[codableItem.locationName]?.first {
 			newItem.location = location
 		} else {
-			newItem.location = Location.unknownLocation()!
+			newItem.location = Location.unknownLocation() // if necessary, this creates the Unknown Location
 		}
 		
 	}
@@ -115,42 +115,6 @@ func insertNewLocations(from codableLocations: [LocationCodableProxy]) {
 		newLocation.opacity_ = codableLocation.opacity
 	}
 }
-
-// useful only as an introductory tool.  if you want to try out the app, you can
-// insert a full, working database of Items and Locations; play with it;
-// then delete everything and start over.
-//func deleteAllData() {
-//	var context: NSManagedObjectContext? = nil // i'll want the context of at least one Item or Location below
-//	let items = Item.allItems()
-//	for item in items {
-//		context = item.managedObjectContext
-//		Item.delete(item, saveChanges: false)
-//	}
-//	
-//	let locations = Location.allLocations(userLocationsOnly: true)
-//	for location in locations {
-//		context = location.managedObjectContext
-//		Location.delete(location, saveChanges: false)
-//	}
-//	
-//	context?.processPendingChanges()
-//	Location.saveChanges()
-//}
-
-
-// this is a cute way to find out where the CoreData database lives,
-// primarily for use in the simulator
-//func printCoreDataDBPath() {
-//	let path = FileManager
-//		.default
-//		.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-//		.last?
-//		.absoluteString
-//		.replacingOccurrences(of: "file://", with: "")
-//		.removingPercentEncoding
-//
-//	print("Core Data DB Path :: \(path ?? "Not found")")
-//}
 
 // MARK: - USeful Extensions re: CodableStructRepresentable
 

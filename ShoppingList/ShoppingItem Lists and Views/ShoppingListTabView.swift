@@ -102,7 +102,10 @@ of the sectioning, so we push it off to a specialized View.
 		}
 
 		.onAppear() { print("ShoppingListTabView appear") }
-		.onDisappear() { print("ShoppingListTabView disappear") }
+		.onDisappear() {
+			print("ShoppingListTabView disappear")
+			PersistentStore.shared.saveContext()
+		}
 		
 	} // end of body: some View
 	

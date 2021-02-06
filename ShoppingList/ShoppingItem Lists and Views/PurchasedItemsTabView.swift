@@ -107,7 +107,10 @@ for more discussion about sectioning
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())
 		.onAppear(perform: handleOnAppear)
-		.onDisappear() { print("PurchasedTabView disappear") }
+		.onDisappear() {
+			print("PurchasedTabView disappear")
+			PersistentStore.shared.saveContext()
+		}
 	}
 	
 	func handleOnAppear() {

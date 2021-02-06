@@ -74,6 +74,7 @@ struct AddorModifyLocationView: View {
 			
 		} // end of Form
 		.onAppear(perform: loadData)
+		.onDisappear { PersistentStore.shared.saveContext() }
 		.navigationBarTitle(barTitle(), displayMode: .inline)
 		.navigationBarBackButtonHidden(true)
 		.toolbar {

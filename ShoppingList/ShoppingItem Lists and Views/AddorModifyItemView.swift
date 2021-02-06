@@ -110,6 +110,7 @@ struct AddorModifyItemView: View {
 			ToolbarItem(placement: .confirmationAction, content: saveButton)
 		}
 		.onAppear(perform: loadData)
+		.onDisappear { PersistentStore.shared.saveContext() }
 		.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 	}
 		
