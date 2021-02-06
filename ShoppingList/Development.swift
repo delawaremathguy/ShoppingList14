@@ -15,7 +15,7 @@ import UIKit
 // i have can be "controlled," so to speak, on a separate tabview; and that tab
 // view can be displayed or not by setting this global variable:
 
-let kShowDevToolsTab = true
+let kShowDevTools = true
 
 // i used these constants and functions below during development to import and
 // export Items and Locations via JSON.

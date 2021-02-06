@@ -8,9 +8,8 @@
 
 import SwiftUI
 
-
 struct ShoppingListTabView: View {
-	
+		
 	// this is the @FetchRequest that ties this view to CoreData Items
 	@FetchRequest(fetchRequest: Item.fetchAllItems(onList: true))
 	private var itemsToBePurchased: FetchedResults<Item>
@@ -46,7 +45,10 @@ AddorModifyItemView inside its own NavigationView (so the Picker will work!)
 						.padding(10)
 				}
 				.sheet(isPresented: $isAddNewItemSheetShowing) {
-					NavigationView { AddorModifyItemView() }
+					NavigationView {
+						AddorModifyItemView()
+							.environment(\.managedObjectContext, PersistentStore.shared.context)
+					}
 				}
 				
 				Rectangle()
@@ -129,6 +131,7 @@ of the sectioning, so we push it off to a specialized View.
 					.font(.title2)
 			}
 			.disabled(!MailView.canSendMail)
+			
 			Button(action: { isAddNewItemSheetShowing = true })
 				{ Image(systemName: "plus")
 				.font(.title2)

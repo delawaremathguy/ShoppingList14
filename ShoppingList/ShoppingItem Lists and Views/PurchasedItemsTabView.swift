@@ -24,7 +24,7 @@ struct PurchasedItemsTabView: View {
 	// the action of the confirmation alert that you really do want to
 	// delete an item
 	@State private var searchText: String = ""
-
+	
 	// parameters to control triggering an Alert and defining what action
 	// to take upon confirmation
 	@State private var confirmationAlert = ConfirmationAlert(type: .none)
@@ -33,43 +33,50 @@ struct PurchasedItemsTabView: View {
 	// local state for are we a multisection display or not.  the default here is false,
 	// but an eager developer could easily store this default value in UserDefaults (?)
 	@State var multiSectionDisplay: Bool = false
-
+	
 	// link in to what is the start of today
 	@EnvironmentObject var today: Today
-	//@State private var startOfToday = Calendar.current.startOfDay(for: Date())
 	
+	// items currently checked, on their way to the shopping list
 	@State private var itemsChecked = [Item]()
+	
+	// number of days in the past for the first section when using sections
+	@AppStorage(wrappedValue: 3, "PurchasedHistoryMarker") private var historyMarker
+	
 	
 	
 	var body: some View {
 		NavigationView {
 			VStack(spacing: 0) {
 				
-/* ---------
-1. search bar & add new item "button" is at top.  note that the button action will put up the
-AddorModifyItemView inside its own NavigationView (so the Picker will work!)
----------- */
-
+				/* ---------
+				1. search bar & add new item "button" is at top.  note that the button action will put up the
+				AddorModifyItemView inside its own NavigationView (so the Picker will work!)
+				---------- */
+				
 				SearchBarView(text: $searchText)
-
+				
 				Button(action: { isAddNewItemSheetShowing = true }) {
 					Text("Add New Item")
 						.foregroundColor(Color.blue)
 						.padding(10)
 				}
 				.sheet(isPresented: $isAddNewItemSheetShowing) {
-					NavigationView { AddorModifyItemView() }
+					NavigationView {
+						AddorModifyItemView(initialItemName: searchText)
+							.environment(\.managedObjectContext, PersistentStore.shared.context)
+					}
 				}
-
+				
 				Rectangle()
 					.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
-
-/* ---------
-2. we display either a "List is Empty" view, or the sectioned list of purchased
-items.  there is some complexity here, so review the ShoppingListDisplay.swift code
-for more discussion about sectioning
----------- */
-
+				
+				/* ---------
+				2. we display either a "List is Empty" view, or the sectioned list of purchased
+				items.  there is some complexity here, so review the ShoppingListDisplay.swift code
+				for more discussion about sectioning
+				---------- */
+				
 				if purchasedItems.count == 0 {
 					EmptyListView(listName: "Purchased")
 				} else {
@@ -103,7 +110,7 @@ for more discussion about sectioning
 				ToolbarItem(placement: .navigationBarTrailing, content: addNewButton)
 			}
 			.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
-
+			
 		} // end of NavigationView
 		.navigationViewStyle(StackNavigationViewStyle())
 		.onAppear(perform: handleOnAppear)
@@ -120,7 +127,7 @@ for more discussion about sectioning
 		// and also recompute what "today" means, so the sectioning is correct
 		today.update()
 	}
-		
+	
 	// makes a simple "+" to add a new item
 	func addNewButton() -> some View {
 		Button(action: { isAddNewItemSheetShowing = true }) {
@@ -136,7 +143,7 @@ for more discussion about sectioning
 				.font(.title2)
 		}
 	}
-
+	
 	
 	func handleItemTapped(_ item: Item) {
 		if !itemsChecked.contains(item) {
@@ -169,24 +176,36 @@ for more discussion about sectioning
 													items: searchQualifiedItems)]
 		}
 		
-		// break these out according to Today and all the others
-		let itemsToday = searchQualifiedItems.filter({ $0.dateLastPurchased >= today.start })
-		let allOlderItems = searchQualifiedItems.filter({ $0.dateLastPurchased < today.start })
+		// break these out into (Today + back historyMarker days) and (all the others)
+		let startingMarker = today.start.addingTimeInterval(-Double(historyMarker) * (24*60*60))
+		let recentItems = searchQualifiedItems.filter({ $0.dateLastPurchased >= startingMarker })
+		let allOlderItems = searchQualifiedItems.filter({ $0.dateLastPurchased < startingMarker })
 		
 		// determine titles
-		var section1Title = "Items Purchased Today: \(itemsToday.count)"
+		
+		var section2Title = "Items Purchased Earlier: \(allOlderItems.count)"
 		if !searchText.isEmpty {
-			section1Title = "Items Purchased Today containing \"\(searchText)\": \(itemsToday.count)"
-		}
-		var section12Title = "Items Purchased Earlier: \(allOlderItems.count)"
-		if !searchText.isEmpty {
-			section12Title = "Items Purchased Earlier containing \"\(searchText)\": \(allOlderItems.count)"
+			section2Title = "Items Purchased Earlier containing \"\(searchText)\": \(allOlderItems.count)"
 		}
 		
 		// return two sections only
-		return [SectionData(title: section1Title, items: itemsToday),
-						SectionData(title: section12Title,items: allOlderItems)
+		return [SectionData(title: section1Title(searchText: searchText, historyMarker: historyMarker, count: recentItems.count), items: recentItems),
+						SectionData(title: section2Title,items: allOlderItems)
 		]
 	}
-
+	
+	func section1Title(searchText: String, historyMarker: Int, count: Int) -> String {
+		var title = "Items Purchased "
+		if historyMarker == 0 {
+			title += "Today "
+		} else {
+			title += "in the last \(historyMarker) days "
+		}
+		if !searchText.isEmpty {
+			title = "containing \"\(searchText)\" "
+		}
+		title += "(\(count) items)"
+		return title
+	}
+	
 }

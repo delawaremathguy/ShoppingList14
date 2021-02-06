@@ -10,6 +10,9 @@ import Foundation
 import SwiftUI
 
 struct EditableLocationData {
+	// the id of the Location, if any, associated with this data collection
+	// (nil if data for a new item that does not yet exist)
+	var id: UUID? = nil
 	// all of the values here provide suitable defaults for a new Location
 	var locationName: String = ""
 	var visitationOrder: Int = 50
@@ -40,5 +43,14 @@ struct EditableLocationData {
 	// provides simple, default init with values specified above
 	init() { }
 	
+	// to do a save/commit of an Item, it must have a non-empty name
+	var canBeSaved: Bool { locationName.count > 0 }
+
+	// useful to know if this is associated with an existing Location
+	var representsExistingLocation: Bool { id != nil }
+	// useful to know the associated location (which we'll force unwrap, so
+	// be sure you chack representsExistingLocation first (!)
+	var associatedLocation: Location { Location.object(withID: id!)! }
+		
 }
 

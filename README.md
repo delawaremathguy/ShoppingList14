@@ -12,12 +12,21 @@ Feel free to use this as is, to develop further,  to completely ignore, or even 
 
 XCode 12 has finally stabilized (?), and I have also upgraded my iPhone to a more stable iOS 14.2.  So I felt it safe to make some refinements and possibly use features of iOS 14 in updating this project.  
 
-This repository has been built using XCode 12.2 and will run under iOS 14.2. Please be sure to read the *What's New in ShoppingList14* section below, primarily for implementation and code-level changes that were made in producing the initial iOS 14 release.  
+This repository has been built using XCode 12.2 (or later) and will run under iOS 14.2 (or later). Please be sure to read the *What's New in ShoppingList14* section below, primarily for implementation and code-level changes that were made in producing the initial iOS 14 release.  
 
 Here are recent updates either of importance (e.g., *bug fixes* or *UI changes*) or of possible coding interest (e.g., *code consolidation or reorganization*) since the first public release of December 4:
 
-### Update of 20 January, 2021.
+### Update of 6 February, 2021.
 
+* Added a user preference for sectioning out the PurchasedItemsTab by "in the last N days" and "before that," where N is user-settable in (a somewhat minimal) Preferences tab.  (This is where you will find what were previously called DevTools that were in place only so you could try out the app.)
+* Fixed a bug where the user would be allowed to save a new Item or Location with an empty name string.
+* Fixed a bug where AddOrModifyItemView would not inherit the Core Data managedObjectContext when presented as a sheet.
+* Updated Core Data saving strategy to be less aggressive and performed through .onDisappear() modifiers and when the app enters the background.
+* Slight change to the SwiftUI App struct code with updated comments.
+* Default unknown location object now created lazily, rather than on startup.
+* Adding a new Item from the PurchasedItemsTab will use whatever search text is present in the SearchBar as the suggested name of the new Item.  
+* A custom init() method was added to the AddOrModifyItemView to support defaulting the Item name, and the code of AddOrModifyItemView has been simplified.
+* Similar code modifications have been made to AddOrModifyLocationView.
 * Updated screenshots and README.
 
 ### Previous Updates since the iOS 14 Release
@@ -76,7 +85,10 @@ Tapping on a Location in the list lets you edit location information, including 
 
 The fourth tab is an in-store timer, with three simple button controls: "Start," "Stop," and "Reset."  This timer does *not* pause when the app goes into the background -- e.g., if you pull up a calculator or take a phone call while shopping. (*See Development.swift if you wish to change this behaviour*.)
 
-Finally, there is a tab for "development-only" purposes, that allows wholesale loading of sample data and offloading data for later use. This tab is not one intended to appear in a production version of the app (*see Development.swift to hide this*).
+Finally, there is a Preferences tab that contains two areas:
+
+* one that's intended for production, where you can change the user default value for the number of days used to section out the PurchasedTabView;
+* the other for "development-only" purposes, to allow wholesale loading of sample data and offloading data for later use. This area should be hidden for any production version of the app (*see Development.swift to hide this*).
 
 Here's what you do next:
 

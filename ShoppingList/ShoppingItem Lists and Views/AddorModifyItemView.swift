@@ -13,10 +13,6 @@ struct AddorModifyItemView: View {
 	// in a NavigationLink)
 	@Environment(\.presentationMode) var presentationMode
 
-	// editableItem is either an Item to edit, or nil to signify
-	// that we're creating a new Item in this View.
-	var editableItem: Item? = nil
-		
 	// addItemToShoppingList just means that by default, a new item will be added to
 	// the shopping list, and so this is initialized to true.
 	// however, if inserting a new item from the Purchased item list, perhaps
@@ -25,14 +21,8 @@ struct AddorModifyItemView: View {
 	
 	// this editableData struct contains all of the fields of an Item that
 	// can be edited here, so that we're not doing a "live edit" on the Item.
-	// it is defaulted properly for a new Item
-	@State private var editableData = EditableItemData()
+	@State private var editableData: EditableItemData
 
-	// this indicates whether the editableData has been initialized from an incoming
-	// editableItem and it will be flipped to true once .onAppear() has been called
-	// and the editableData is appropriately set
-	@State private var editableDataInitialized = false
-	
 	// parameters to control triggering an Alert and defining what action
 	// to take upon confirmation
 	@State private var confirmationAlert = ConfirmationAlert(type: .none)
@@ -43,6 +33,19 @@ struct AddorModifyItemView: View {
 	// we have to be sure the Picker's list of locations is updated.
 	@FetchRequest(fetchRequest: Location.fetchAllLocations())
 	private var locations: FetchedResults<Location>
+	
+	// custom init here to set up editableData state
+	init(editableItem: Item? = nil, initialItemName: String? = nil) {
+		// initialize the editableData struct for the incoming item, if any; and
+		// also carry in whatever might be a suggested Item name for a new Item
+		if let item = editableItem {
+			_editableData = State(initialValue: EditableItemData(item: item))
+		} else {
+			// here's we'll see if a suggested name for adding a new item was supplied
+			let initialValue = EditableItemData(initialItemName: initialItemName)
+			_editableData = State(initialValue: initialValue)
+		}
+	}
 	
 	var body: some View {
 		Form {
@@ -89,12 +92,12 @@ struct AddorModifyItemView: View {
 			} // end of Section 1
 			
 			// Section 2. Item Management (Delete), if present
-			if editableItem != nil {
+			if editableData.representsExisitingItem {
 				Section(header: Text("Shopping Item Management").sectionHeader()) {
 					SLCenteredButton(title: "Delete This Shopping Item",
 													 action: { confirmationAlert.trigger(
-														          type: .deleteItem(editableItem!),
-																			completion: { presentationMode.wrappedValue.dismiss() })
+														type: .deleteItem(editableData.associatedItem),
+														completion: { presentationMode.wrappedValue.dismiss() })
 													 }
 					)
 						.foregroundColor(Color.red)
@@ -106,36 +109,21 @@ struct AddorModifyItemView: View {
 		.navigationBarTitle(barTitle(), displayMode: .inline)
 		.navigationBarBackButtonHidden(true)
 		.toolbar {
-			ToolbarItem(placement: .cancellationAction, content: cancelButton)
-			ToolbarItem(placement: .confirmationAction, content: saveButton)
+			ToolbarItem(placement: .cancellationAction) { cancelButton() }
+			ToolbarItem(placement: .confirmationAction) { saveButton().disabled(!editableData.canBeSaved) }
 		}
-		.onAppear(perform: loadData)
+		.onAppear(perform: handleOnAppear)
 		.onDisappear { PersistentStore.shared.saveContext() }
 		.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 	}
 		
 	func barTitle() -> Text {
-		return editableItem == nil ? Text("Add New Item") : Text("Modify Item")
+		return editableData.representsExisitingItem ? Text("Modify Item") : Text("Add New Item")
 	}
 	
-	func loadData() {
-		// called on every .onAppear().  if dataLoaded is true, then we have
-		// already taken care of setting up the local state editable data.  otherwise,
-		// we offload all the data from the editableItem (if there is one) to the
-		// local state editable data that control this view
+	func handleOnAppear() {
 		print("AddOrModifyItemView appears")
-		if !editableDataInitialized {
-			if let item = editableItem {
-				editableData = EditableItemData(item: item)
-			} else {
-				// by default, a new item will go to the shopping list
-				editableData = EditableItemData()
-			}
-			// and be sure we don't do this again (!)
-			editableDataInitialized = true
-		}
-		
-		// and here is a kludge for a very special case:
+		// what follows here is a kludge for a very special case:
 		// -- we were in the ShoppingListTabView
 		// -- we navigate to this Add/ModifyItem view for an Item X at Location Y
 		// -- we use the tab bar to move to the Locations tab
@@ -148,7 +136,7 @@ struct AddorModifyItemView: View {
 		// the only thing that makes sense is to dismiss ourself in the case that we were instantiated
 		// with a real item (editableData.id != nil) but that item does not exist anymore.
 		
-		if editableData.id != nil &&  Item.object(withID: editableData.id!) == nil {
+		if editableData.representsExisitingItem && Item.object(withID: editableData.id!) == nil {
 			presentationMode.wrappedValue.dismiss()
 		}
 		
@@ -167,8 +155,8 @@ struct AddorModifyItemView: View {
 		// on a draft copy of the data and not doing a live edit.  we are aware of the problem
 		// and may look to fix this in the future.  (two strategies come to mind: a live edit of an
 		// ObservableObject, which then means we have to rethink combining the add and modify
-		// functions; or always doing the Add/Modify view as a .sheet so that you cannot navigate
-		// elsewhere in the app and makes edits underneath this view.)
+		// functions; or always doing the Add/Modify view as a .sheet so that you cannot so easily
+		// navigate elsewhere in the app and make edits underneath this view.)
 		
 		// a third possibility offered by user jjatie on 7 Jan, 2021, on the Apple Developer's Forum
 		//   https://developer.apple.com/forums/thread/670564
@@ -187,17 +175,14 @@ struct AddorModifyItemView: View {
 	
 	// the save button
 	func saveButton() -> some View {
-		Button(action : { commitDataEntry() }){
-			Text("Save")
-				.disabled(!editableData.canBeSaved)
-		}
+		Button("Save", action: commitDataEntry)
 	}
 	
 	// called when you tap the Save button.
 	func commitDataEntry() {
 		guard editableData.canBeSaved else { return }
-		presentationMode.wrappedValue.dismiss()
 		Item.update(using: editableData)
+		presentationMode.wrappedValue.dismiss()
 	}
 	
 }

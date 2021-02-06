@@ -173,10 +173,11 @@ extension Location: Comparable {
 		context?.processPendingChanges()
 	}
 	
-	class func updateData(for location: Location?, using editableData: EditableLocationData) {
+	class func updateData(using editableData: EditableLocationData) {
 		// if the incoming item is not nil, then this is just a straight update.
 		// otherwise, we must create the new Location here and add it
-		if let location = location {
+		if let id = editableData.id,
+			 let location = Location.object(id: id, context: PersistentStore.shared.context) {
 			location.updateValues(from: editableData)
 		} else {
 			let newLocation = Location.addNewLocation()
@@ -184,7 +185,14 @@ extension Location: Comparable {
 		}		
 	}
 	
+	class func object(withID id: UUID) -> Location? {
+		return object(id: id, context: PersistentStore.shared.context) as Location?
+	}
+
+	
 	// MARK: - Object Methods
+	
+	var inUnknownLocation: Bool { visitationOrder == kUnknownLocationVisitationOrder }
 	
 	func updateValues(from editableData: EditableLocationData) {
 		

@@ -25,7 +25,7 @@
 		D65721B32464591700E4AAAF /* AddorModifyLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65721B22464591700E4AAAF /* AddorModifyLocationView.swift */; };
 		D65A509F2565789900D43229 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65A509E2565789900D43229 /* String+Extensions.swift */; };
 		D65C931824C5DC9B003E6EB7 /* GlobalTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65C931724C5DC9B003E6EB7 /* GlobalTimer.swift */; };
-		D66FF35424926B6400B3ABC8 /* DevToolsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66FF35324926B6400B3ABC8 /* DevToolsTabView.swift */; };
+		D66FF35424926B6400B3ABC8 /* PreferencesTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66FF35324926B6400B3ABC8 /* PreferencesTabView.swift */; };
 		D66FF3562492E67100B3ABC8 /* SLCenteredButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66FF3552492E67100B3ABC8 /* SLCenteredButton.swift */; };
 		D677946224D58F34006EB9CF /* EditableLocationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D677946124D58F34006EB9CF /* EditableLocationData.swift */; };
 		D6931D6C24C4C60900A61BB6 /* TimerTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6931D6B24C4C60900A61BB6 /* TimerTabView.swift */; };
@@ -73,7 +73,7 @@
 		D65A509E2565789900D43229 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		D65C931724C5DC9B003E6EB7 /* GlobalTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalTimer.swift; sourceTree = "<group>"; };
 		D6661E0A25645D2200BA47E9 /* ShoppingList 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "ShoppingList 2.xcdatamodel"; sourceTree = "<group>"; };
-		D66FF35324926B6400B3ABC8 /* DevToolsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevToolsTabView.swift; sourceTree = "<group>"; };
+		D66FF35324926B6400B3ABC8 /* PreferencesTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesTabView.swift; sourceTree = "<group>"; };
 		D66FF3552492E67100B3ABC8 /* SLCenteredButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLCenteredButton.swift; sourceTree = "<group>"; };
 		D677946124D58F34006EB9CF /* EditableLocationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableLocationData.swift; sourceTree = "<group>"; };
 		D6931D6B24C4C60900A61BB6 /* TimerTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerTabView.swift; sourceTree = "<group>"; };
@@ -140,7 +140,7 @@
 				D6618D9B24D9B00E003523B5 /* ShoppingItem Lists and Views */,
 				D6618D9C24D9B043003523B5 /* Location Lists and Views */,
 				D6DDC2FD24E6EECF00B25C9C /* Timer View */,
-				D66FF35324926B6400B3ABC8 /* DevToolsTabView.swift */,
+				D66FF35324926B6400B3ABC8 /* PreferencesTabView.swift */,
 				D640329E24BB2FE400CC0B94 /* General Purpose Views */,
 				D62B88332451162E0051A7CE /* Assets.xcassets */,
 				D62B88382451162E0051A7CE /* LaunchScreen.storyboard */,
@@ -336,7 +336,7 @@
 				D612E16124898EBB007E1412 /* Sequence+Extensions.swift in Sources */,
 				D6EF5587246D97C3007D636B /* Development.swift in Sources */,
 				D6C75D3324B4B123003E445B /* ContextMenuBuilder.swift in Sources */,
-				D66FF35424926B6400B3ABC8 /* DevToolsTabView.swift in Sources */,
+				D66FF35424926B6400B3ABC8 /* PreferencesTabView.swift in Sources */,
 				D6F29CAB2575982300A0E3E0 /* ShoppingListDisplay.swift in Sources */,
 				D6C91D8724A8EC09008C8DFF /* EditableItemData.swift in Sources */,
 				D606197F2481510E005CE575 /* SearchBarView.swift in Sources */,

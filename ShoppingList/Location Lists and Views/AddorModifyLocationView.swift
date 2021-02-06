@@ -13,26 +13,28 @@ import SwiftUI
 struct AddorModifyLocationView: View {
 	@Environment(\.presentationMode) var presentationMode
 	
-	// editableLocation is either a Location to edit, or nil to signify
-	// that we're creating a new Location in for the viewModel.
-	var editableLocation: Location? = nil
-		
-	// all editableData is packaged here. its initial values are set to be
-	// the defaults for a new Location that is added (editableLocation == nil)
-	// and this will be updated in .onAppear() in the case that we are
-	// editing an existing, non-nil Location.
-	@State private var editableData = EditableLocationData()
-	// this state variable translates RGB-A values to a Color -- used by the ColorPicker
-	@State private var editableColor: Color = .green
-
-	// this indicates dataHasBeenLoaded from an incoming editableLocation
-	// it will be flipped to true the first time .onAppear() is called so
-	// we wont be reloading the editableData and the editableColor
-	@State private var dataHasBeenLoaded = false
+	// all editableData is packaged here. its initial values are set using
+	// a custom init.  there's also an associated editableColor used here
+	// to mirror values in the editableData, because the ColorPicker wanta
+	// to use a Color variable.
+	@State private var editableData: EditableLocationData
+	@State private var editableColor: Color
 	
-	// parameters to control triggering an Alert and definig what action
+	// parameter to control triggering an Alert and defining what action
 	// to take upon confirmation
 	@State private var confirmationAlert = ConfirmationAlert(type: .none)
+	
+	// custom init to set up editable data
+	init(editableLocation: Location? = nil) {
+		// initialize the editableData struct for the incoming location, if any.
+		if let location = editableLocation {
+			_editableData = State(initialValue: EditableLocationData(location: location))
+			_editableColor = State(initialValue: Color(location.uiColor))
+		} else {
+			_editableData = State(initialValue: EditableLocationData())
+			_editableColor = State(initialValue: .green)
+		}
+	}
 
 	var body: some View {
 		Form {
@@ -56,11 +58,11 @@ struct AddorModifyLocationView: View {
 			} // end of Section 1
 			
 			// Section 2: Delete button, if present (must be editing a user location)
-			if editableLocation != nil && editableData.visitationOrder != kUnknownLocationVisitationOrder  {
+			if editableData.representsExistingLocation && !editableData.associatedLocation.isUnknownLocation {
 				Section(header: Text("Location Management").sectionHeader()) {
 					SLCenteredButton(title: "Delete This Location",
 													 action: { confirmationAlert.trigger(
-														type: .deleteLocation(editableLocation!),
+														type: .deleteLocation(editableData.associatedLocation),
 														completion: { presentationMode.wrappedValue.dismiss() })
 													 }
 					).foregroundColor(Color.red)
@@ -68,24 +70,23 @@ struct AddorModifyLocationView: View {
 			} // end of Section 2
 			
 			// Section 3: Items assigned to this Location, if we are editing a Location
-			if editableLocation != nil {
-				SimpleItemsList(location: editableLocation!)
+			if editableData.representsExistingLocation {
+				SimpleItemsList(location: editableData.associatedLocation)
 			}
 			
 		} // end of Form
-		.onAppear(perform: loadData)
 		.onDisappear { PersistentStore.shared.saveContext() }
 		.navigationBarTitle(barTitle(), displayMode: .inline)
 		.navigationBarBackButtonHidden(true)
 		.toolbar {
 			ToolbarItem(placement: .cancellationAction, content: cancelButton)
-			ToolbarItem(placement: .confirmationAction, content: saveButton)
+			ToolbarItem(placement: .confirmationAction) { saveButton().disabled(!editableData.canBeSaved) }
 		}
 		.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 	}
 	
 	func barTitle() -> Text {
-		return editableLocation == nil ? Text("Add New Location") : Text("Modify Location")
+		return editableData.representsExistingLocation ? Text("Modify Location") : Text("Add New Location")
 	}
 	
 	func deleteAndDismiss(_ location: Location) {
@@ -112,20 +113,7 @@ struct AddorModifyLocationView: View {
 		editableData.updateColor(from: editableColor)
 		// and update Location (includes case of creating a new Location if necessary)
 		presentationMode.wrappedValue.dismiss()
-		Location.updateData(for: editableLocation, using: editableData)
-	}
-
-	func loadData() {
-		// called on every .onAppear().  if dataHasBeenLoaded is true, then we have
-		// already taken care of setting up the local state variables.
-		if !dataHasBeenLoaded {
-			if let location = editableLocation {
-				editableData = EditableLocationData(location: location)
-				editableColor = Color(location.uiColor)
-			} // else we already have default values, editable data is set up right
-			dataHasBeenLoaded = true
-		}
-		
+		Location.updateData(using: editableData)
 	}
 	
 }
