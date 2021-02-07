@@ -63,7 +63,7 @@ of the sectioning, so we push it off to a specialized View.
 				if itemsToBePurchased.count == 0 {
 					EmptyListView(listName: "Shopping")
 				} else {
-					ShoppingListView(multiSectionDisplay: $multiSectionDisplay,
+					ShoppingListView2(multiSectionDisplay: $multiSectionDisplay,
 													 confirmationAlert: $confirmationAlert)
 				}
 				

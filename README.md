@@ -16,21 +16,22 @@ This repository has been built using XCode 12.2 (or later) and will run under iO
 
 Here are recent updates either of importance (e.g., *bug fixes* or *UI changes*) or of possible coding interest (e.g., *code consolidation or reorganization*) since the first public release of December 4:
 
-### Update of 6 February, 2021.
+### Update of 7 February, 2021.
 
-* Added a user preference for sectioning out the PurchasedItemsTab by "in the last N days" and "before that," where N is user-settable in (a somewhat minimal) Preferences tab.  (This is where you will find what were previously called DevTools that were in place only so you could try out the app.)
-* Fixed a bug where the user would be allowed to save a new Item or Location with an empty name string.
-* Fixed a bug where AddOrModifyItemView would not inherit the Core Data managedObjectContext when presented as a sheet.
-* Updated Core Data saving strategy to be less aggressive and performed through .onDisappear() modifiers and when the app enters the background.
-* Slight change to the SwiftUI App struct code with updated comments.
-* Default unknown location object now created lazily, rather than on startup.
-* Adding a new Item from the PurchasedItemsTab will use whatever search text is present in the SearchBar as the suggested name of the new Item.  
-* A custom init() method was added to the AddOrModifyItemView to support defaulting the Item name, and the code of AddOrModifyItemView has been simplified.
-* Similar code modifications have been made to AddOrModifyLocationView.
-* Updated screenshots and README.
+* Discovered a significant difference between simulator-based performance in iOS 14.4 and on-device performance in iOS14.4 involving ShoppingListDisplay, a subview of the ShoppingListTab.  In short, moving an item from the PurchasedItemsTab to the ShoppingListTab was not properly updating ShoppingListTab as it had before.  I have reverted to earlier code and substituted ShoppingListDisplay2 to address the problem.  I will contnue to monitor, but my initial reaction is that the problem lies in iOS 14.4.
 
 ### Previous Updates since the iOS 14 Release
 
+* (6 Feb) Added a user preference for sectioning out the PurchasedItemsTab by "in the last N days" and "before that," where N is user-settable in (a somewhat minimal) Preferences tab.  (This is where you will find what were previously called DevTools that were in place only so you could try out the app.)
+* (6 Feb) Fixed a bug where the user would be allowed to save a new Item or Location with an empty name string.
+* (6 Feb) Fixed a bug where AddOrModifyItemView would not inherit the Core Data managedObjectContext when presented as a sheet.
+* (6 Feb) Updated Core Data saving strategy to be less aggressive and performed through .onDisappear() modifiers and when the app enters the background.
+* (6 Feb) Slight change to the SwiftUI App struct code with updated comments.
+* (6 Feb) Default unknown location object now created lazily, rather than on startup.
+* (6 Feb) Adding a new Item from the PurchasedItemsTab will use whatever search text is present in the SearchBar as the suggested name of the new Item.  
+* (6 Feb) A custom init() method was added to the AddOrModifyItemView to support defaulting the Item name, and the code of AddOrModifyItemView has been simplified.
+* (6 Feb) Similar code modifications have been made to AddOrModifyLocationView.
+* (6 Feb) Updated screenshots and README.
 * (5 Jan) Fixed an issue where a shopping Item might be deleted in one AddOrModifyItemView in the app, while a second AddOrModifyItemView was still open on the Item in a different tab.  (*See comments in AddOrModifyItemView.swift*.) 
 * (5 Jan) Fixed an issue where a new Location was added, but it would not be immediately available to the Picker that allows you to associate an Item with it.
 * (30 Dec) Added the ability to send the current shopping list by email (which could then be printed, if you wish), using [MailView by Mohammad Rahchamani](https://github.com/mohammad-rahchamani/MailView), albeit with apology to the author, since I have made a slight adjustment to the original parameter passing protocol used in MailView.  Touch the *envelope* icon in the navigation bar in ShoppingListTabView to bring up the mailer (*active only if you have the capability to send mail, which will not be the case when running in the simulator*).
@@ -65,7 +66,7 @@ The main screen is a TabView, to show
 
 * an in-store timer, to track how long it takes you to complete shopping (not shown), and
 
-* optionally, for purposes of demonstration only, a "Dev Tools" tab to make wholesale adjustments to the data
+* a user Preferences tab, which also contains (for development purposes only) lets you load sample data that you can use to try out the app.
 
 For the first two tabs, tapping on the circular button on the leading edge of an item's display moves a shopping item from one list to the other list (from "on the shopping list" to "purchased" and vice-versa).  
 
@@ -83,7 +84,7 @@ Tapping on a Location in the list lets you edit location information, including 
 
 * What happens to Items in a Location when the Location is deleted?  The Items are not deleted, but are moved to the Unknown Location.
 
-The fourth tab is an in-store timer, with three simple button controls: "Start," "Stop," and "Reset."  This timer does *not* pause when the app goes into the background -- e.g., if you pull up a calculator or take a phone call while shopping. (*See Development.swift if you wish to change this behaviour*.)
+The fourth tab is an in-store timer, with three simple button controls: "Start," "Stop," and "Reset."  This timer does *not* pause when the app goes into the background -- e.g., if you pull up a calculator or take a phone call while shopping. (*See GlobalTimer.swift if you wish to change this behaviour*.)
 
 Finally, there is a Preferences tab that contains two areas:
 
