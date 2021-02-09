@@ -1,15 +1,19 @@
 //
-//  ShoppingListDisplayView2.swift
+//  ShoppingListDisplay.swift
 //  ShoppingList
 //
-//  Created by Jerry on 2/7/21.
-//  Copyright © 2021 Jerry. All rights reserved.
+//  Created by Jerry on 11/30/20.
+//  Copyright © 2020 Jerry. All rights reserved.
 //
 
 import Foundation
 import SwiftUI
 
-// MARK: - ShoppingListView2
+// MARK: - ShoppingListView
+
+// THIS FILE OBSOLETED.  THERE WERE SOME CHANGES IN THE XCODE 12.4 AND IOS 14.4
+// SDK THAT MADE THIS NOT WORK; AND, UPON REVIEW, I'M NOT SURE WHY IT EVEN DID
+// WORK.
 
 // this is a subview of the ShoppingListTabView and shows itemsToBePurchased
 // as either a single section or as multiple sections, one section for each Location.
@@ -23,16 +27,20 @@ import SwiftUI
 // from the parent view appropriately and let the parent deal with it (e.g., because
 // the parent uses the same structure to present an alert already to move all items
 // of the list).
-struct ShoppingListView2: View {
+struct ShoppingListViewObsoleted: View {
 	
-	// this is the @FetchRequest that ties this view to CoreData Items
-	@FetchRequest(fetchRequest: Item.fetchAllItems(onList: true))
-	private var itemsToBePurchased: FetchedResults<Item>
+	// this is the @FetchRequest that ties this view to CoreData Items.
+	// comment: this is driven by Locations that have items on the list, so any
+	// changes to a Location (especially visitation order) will trigger an update;
+	// and since each of the rows tracks its Item as an @ObservedObject, the row
+	// display will update for changes to Items.
+	@FetchRequest(fetchRequest: Location.fetchAllLocations(onList: true))
+	private var locationsWithItemsOnList: FetchedResults<Location>
 
 	// display format: one big section of Items, or sectioned by Location?
 	// (not sure we need a Binding here ... we only read the value)
 	@Binding var multiSectionDisplay: Bool
-	
+		
 	// state variable to control triggering confirmation of a delete, which is
 	// one of three context menu actions that can be applied to an item
 	@Binding var confirmationAlert: ConfirmationAlert
@@ -73,20 +81,22 @@ struct ShoppingListView2: View {
 	// sections (one for each Location that contains shopping items on the list)
 	func sectionData() -> [SectionData] {
 		
-		// the easy case: if this is not a multi-section list, there will be one section with a title
-		// and an array of all the items
+		// the first case: one section with a title and all the items.  collect all items on list
+		// across these locations (they will be alphabetized within each location, and the
+		// @FetchRequest returns the locations in visitation order
 		if !multiSectionDisplay {
-			return [SectionData(title: "Items Remaining: \(itemsToBePurchased.count)",
-													items: itemsToBePurchased.sorted(by: { $0.location.visitationOrder < $1.location.visitationOrder }))
-			]
+			var itemsToBePurchased = [Item]()
+			for location in locationsWithItemsOnList {
+				itemsToBePurchased += location.items.filter({ $0.onList }).sorted(by: { $0.name < $1.name })
+			}
+			return [SectionData(title: "Items Remaining: \(itemsToBePurchased.count)", items: itemsToBePurchased)]
 		}
 		
-		// otherwise, one section for each location, please.  break the data out by location first
-		let dictionaryByLocation = Dictionary(grouping: itemsToBePurchased, by: { $0.location })
-		// then reassemble the sections by sorted keys of this dictionary
+		// otherwise, one section for each location
 		var completedSectionData = [SectionData]()
-		for key in dictionaryByLocation.keys.sorted() {
-			completedSectionData.append(SectionData(title: key.name, items: dictionaryByLocation[key]!))
+		for location in locationsWithItemsOnList {
+			let itemsOnList = location.items.filter({ $0.onList }).sorted(by: { $0.name < $1.name })
+			completedSectionData.append(SectionData(title: location.name, items: itemsOnList))
 		}
 		return completedSectionData
 	}

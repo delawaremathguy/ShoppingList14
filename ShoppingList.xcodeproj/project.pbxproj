@@ -40,14 +40,13 @@
 		D6C7685C2572B3B500E0F4B0 /* SelectableItemRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C7685B2572B3B500E0F4B0 /* SelectableItemRowView.swift */; };
 		D6C783D925A0BCF900B7148D /* NSManagedObject+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C783D825A0BCF900B7148D /* NSManagedObject+Extensions.swift */; };
 		D6C91D8724A8EC09008C8DFF /* EditableItemData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C91D8624A8EC09008C8DFF /* EditableItemData.swift */; };
-		D6CD65E025D09AA5006F8FAF /* ShoppingListDisplay2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6CD65DF25D09AA5006F8FAF /* ShoppingListDisplay2.swift */; };
+		D6CD65E025D09AA5006F8FAF /* ShoppingListDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6CD65DF25D09AA5006F8FAF /* ShoppingListDisplay.swift */; };
 		D6DBE724258A7F93007679E8 /* ConfirmationAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6DBE723258A7F93007679E8 /* ConfirmationAlert.swift */; };
 		D6DD7861259BC0A50004478A /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6DD7860259BC0A50004478A /* MailView.swift */; };
 		D6DE39BD247314B40013F9B4 /* SLFormLabelText.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6DE39BC247314B40013F9B4 /* SLFormLabelText.swift */; };
 		D6EF557D246D7421007D636B /* PurchasedItemsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6EF557C246D7421007D636B /* PurchasedItemsTabView.swift */; };
 		D6EF5587246D97C3007D636B /* Development.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6EF5586246D97C3007D636B /* Development.swift */; };
 		D6F29CA8257544CA00A0E3E0 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6F29CA7257544C900A0E3E0 /* Date+Extensions.swift */; };
-		D6F29CAB2575982300A0E3E0 /* ShoppingListDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6F29CAA2575982300A0E3E0 /* ShoppingListDisplay.swift */; };
 		D6F375D62485593D005559E6 /* LocationRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6F375D52485593D005559E6 /* LocationRowView.swift */; };
 		D6FC7A0A24635D950096F018 /* ShoppingList.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D6FC7A0824635D950096F018 /* ShoppingList.xcdatamodeld */; };
 /* End PBXBuildFile section */
@@ -90,7 +89,7 @@
 		D6C7685B2572B3B500E0F4B0 /* SelectableItemRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableItemRowView.swift; sourceTree = "<group>"; };
 		D6C783D825A0BCF900B7148D /* NSManagedObject+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSManagedObject+Extensions.swift"; sourceTree = "<group>"; };
 		D6C91D8624A8EC09008C8DFF /* EditableItemData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableItemData.swift; sourceTree = "<group>"; };
-		D6CD65DF25D09AA5006F8FAF /* ShoppingListDisplay2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListDisplay2.swift; sourceTree = "<group>"; };
+		D6CD65DF25D09AA5006F8FAF /* ShoppingListDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListDisplay.swift; sourceTree = "<group>"; };
 		D6DBE723258A7F93007679E8 /* ConfirmationAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationAlert.swift; sourceTree = "<group>"; };
 		D6DD7860259BC0A50004478A /* MailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailView.swift; sourceTree = "<group>"; };
 		D6DE39BC247314B40013F9B4 /* SLFormLabelText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLFormLabelText.swift; sourceTree = "<group>"; };
@@ -98,7 +97,6 @@
 		D6EF557C246D7421007D636B /* PurchasedItemsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchasedItemsTabView.swift; sourceTree = "<group>"; };
 		D6EF5586246D97C3007D636B /* Development.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Development.swift; sourceTree = "<group>"; };
 		D6F29CA7257544C900A0E3E0 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
-		D6F29CAA2575982300A0E3E0 /* ShoppingListDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListDisplay.swift; sourceTree = "<group>"; };
 		D6F375D52485593D005559E6 /* LocationRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationRowView.swift; sourceTree = "<group>"; };
 		D6FC7A0924635D950096F018 /* ShoppingList.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShoppingList.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -192,8 +190,7 @@
 			isa = PBXGroup;
 			children = (
 				D62B88312451162D0051A7CE /* ShoppingListTabView.swift */,
-				D6F29CAA2575982300A0E3E0 /* ShoppingListDisplay.swift */,
-				D6CD65DF25D09AA5006F8FAF /* ShoppingListDisplay2.swift */,
+				D6CD65DF25D09AA5006F8FAF /* ShoppingListDisplay.swift */,
 				D6EF557C246D7421007D636B /* PurchasedItemsTabView.swift */,
 				D6450BD6245F49DB0074DA16 /* AddorModifyItemView.swift */,
 				D6C75D3224B4B123003E445B /* ContextMenuBuilder.swift */,
@@ -332,7 +329,7 @@
 				D65A509F2565789900D43229 /* String+Extensions.swift in Sources */,
 				D6F375D62485593D005559E6 /* LocationRowView.swift in Sources */,
 				D6931D6C24C4C60900A61BB6 /* TimerTabView.swift in Sources */,
-				D6CD65E025D09AA5006F8FAF /* ShoppingListDisplay2.swift in Sources */,
+				D6CD65E025D09AA5006F8FAF /* ShoppingListDisplay.swift in Sources */,
 				D610C3BE2451D8DC009F7F36 /* Item+Extensions.swift in Sources */,
 				D60F14A924686D710077AD3F /* LocationCodableProxy.swift in Sources */,
 				D62B88322451162D0051A7CE /* ShoppingListTabView.swift in Sources */,
@@ -345,7 +342,6 @@
 				D6EF5587246D97C3007D636B /* Development.swift in Sources */,
 				D6C75D3324B4B123003E445B /* ContextMenuBuilder.swift in Sources */,
 				D66FF35424926B6400B3ABC8 /* PreferencesTabView.swift in Sources */,
-				D6F29CAB2575982300A0E3E0 /* ShoppingListDisplay.swift in Sources */,
 				D6C91D8724A8EC09008C8DFF /* EditableItemData.swift in Sources */,
 				D606197F2481510E005CE575 /* SearchBarView.swift in Sources */,
 				D6F29CA8257544CA00A0E3E0 /* Date+Extensions.swift in Sources */,

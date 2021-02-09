@@ -18,7 +18,7 @@ Here are recent updates either of importance (e.g., *bug fixes* or *UI changes*)
 
 ### Update of 7 February, 2021.
 
-* Discovered a significant difference between simulator-based performance in iOS 14.4 and on-device performance in iOS14.4 involving ShoppingListDisplay, a subview of the ShoppingListTab.  In short, moving an item from the PurchasedItemsTab to the ShoppingListTab was not properly updating ShoppingListTab as it had before.  I have reverted to earlier code and substituted ShoppingListDisplay2 to address the problem.  I will contnue to monitor, but my initial reaction is that the problem lies in iOS 14.4.
+* Fixed an issue: moving an item from the PurchasedItemsTab to the ShoppingListTab was not properly updating ShoppingListTab (the XCode 12.4 & iOS 14.4 simulator worked fine, but an on-device install exhibited the problem).
 
 ### Previous Updates since the iOS 14 Release
 
