@@ -56,9 +56,9 @@ struct EditableItemData {
 	// to do a save/commit of an Item, it must have a non-empty name
 	var canBeSaved: Bool { name.count > 0 }
 	// we also want to know if this itemData is attached to a real Item that
-	// exisits, or is data that will be used to create a new Item
-	var representsExisitingItem: Bool { id != nil }
+	// exists, or is data that will be used to create a new Item
+	var representsExistingItem: Bool { id != nil }
 	// useful to know the associated Item (which we'll force unwrap, so
-	// be sure you chack representsExistingItem first (!)
+	// be sure you check representsExistingItem first (!)
 	var associatedItem: Item { Item.object(withID: id!)! }
 }

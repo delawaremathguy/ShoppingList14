@@ -92,7 +92,7 @@ struct AddorModifyItemView: View {
 			} // end of Section 1
 			
 			// Section 2. Item Management (Delete), if present
-			if editableData.representsExisitingItem {
+			if editableData.representsExistingItem {
 				Section(header: Text("Shopping Item Management").sectionHeader()) {
 					SLCenteredButton(title: "Delete This Shopping Item",
 													 action: { confirmationAlert.trigger(
@@ -105,7 +105,6 @@ struct AddorModifyItemView: View {
 			} // end of if ...
 			
 		} // end of Form
-			
 		.navigationBarTitle(barTitle(), displayMode: .inline)
 		.navigationBarBackButtonHidden(true)
 		.toolbar {
@@ -118,7 +117,7 @@ struct AddorModifyItemView: View {
 	}
 		
 	func barTitle() -> Text {
-		return editableData.representsExisitingItem ? Text("Modify Item") : Text("Add New Item")
+		return editableData.representsExistingItem ? Text("Modify Item") : Text("Add New Item")
 	}
 	
 	func handleOnAppear() {
@@ -136,7 +135,7 @@ struct AddorModifyItemView: View {
 		// the only thing that makes sense is to dismiss ourself in the case that we were instantiated
 		// with a real item (editableData.id != nil) but that item does not exist anymore.
 		
-		if editableData.representsExisitingItem && Item.object(withID: editableData.id!) == nil {
+		if editableData.representsExistingItem && Item.object(withID: editableData.id!) == nil {
 			presentationMode.wrappedValue.dismiss()
 		}
 		
@@ -168,14 +167,14 @@ struct AddorModifyItemView: View {
 	
 	// the cancel button
 	func cancelButton() -> some View {
-		Button(action : { presentationMode.wrappedValue.dismiss() }){
-			Text("Cancel")
-		}
+		Button("Cancel",
+					 action: { presentationMode.wrappedValue.dismiss() })
 	}
 	
 	// the save button
 	func saveButton() -> some View {
-		Button("Save", action: commitDataEntry)
+		Button("Save",
+					 action: commitDataEntry)
 	}
 	
 	// called when you tap the Save button.

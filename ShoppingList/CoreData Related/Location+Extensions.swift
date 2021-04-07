@@ -138,7 +138,7 @@ extension Location: Comparable {
 		// default location to exist!
 		//
 		// so if we ever need to get the unknown location from the database, we will fetch it;
-		// and if it's not there, we will create it now.
+		// and if it's not there, we will create it then.
 		let fetchRequest: NSFetchRequest<Location> = Location.fetchRequest()
 		fetchRequest.predicate = NSPredicate(format: "visitationOrder_ == %d", kUnknownLocationVisitationOrder)
 		do {
@@ -192,8 +192,6 @@ extension Location: Comparable {
 	
 	// MARK: - Object Methods
 	
-	var inUnknownLocation: Bool { visitationOrder == kUnknownLocationVisitationOrder }
-	
 	func updateValues(from editableData: EditableLocationData) {
 		
 		// we first make these changes directly in Core Data
@@ -213,28 +211,4 @@ extension Location: Comparable {
 		items.forEach({ $0.objectWillChange.send() })
 	}
 	
-	
-/*-- IGNORE -------------------------------------------------------------------------
-in the previous design of this app, there were no @ObservedObject references to Items.
-however, the ShoppingListTabView and the PurchasedItemsTabView need to be updated, and
-these views are driven by @FetchRequests.
-
-problem: sending on objectWillChange message is not picked up by a @FetchRequest. but
-an @FR is based on NSFetchedResultsController and reacts to changes to Core Data attributes
-only (it does not observe its objects like an @ObservableObject would)
-
-so i will trick these views into updating by "making a change" to each Item entity
-associated with this Location (!)  WARNING: it's a little bit of a hack.
-
-but what do you change? we'll reset each Item's location to be this location.
-and this works!  the assignment is picked up by Core Data and @FetchRequests
-that involve these items.
-		
-	items.forEach({ $0.location_ = self })
-	}
-
-}
-
--- IGNORE -------------------------------------------------------------------------*/
-
 } // end of extension Location
