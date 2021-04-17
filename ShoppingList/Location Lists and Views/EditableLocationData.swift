@@ -22,7 +22,9 @@ struct EditableLocationData {
 	var opacity: Double = 0.40
 	
 	// this copies all the editable data from an incoming Location
+	// updated 17-Apr to copy the id (obvious regression issue)
 	init(location: Location) {
+		id = location.id!
 		locationName = location.name
 		visitationOrder = Int(location.visitationOrder)
 		red = location.red_
@@ -49,7 +51,7 @@ struct EditableLocationData {
 	// useful to know if this is associated with an existing Location
 	var representsExistingLocation: Bool { id != nil }
 	// useful to know the associated location (which we'll force unwrap, so
-	// be sure you chack representsExistingLocation first (!)
+	// be sure you check representsExistingLocation first (!)
 	var associatedLocation: Location { Location.object(withID: id!)! }
 		
 }

@@ -12,9 +12,10 @@ Feel free to use this as is, to develop further,  to completely ignore, or even 
 Here are recent updates either of importance (e.g., *bug fixes* or *UI changes*) or of possible coding interest (e.g., *code consolidation or reorganization*).  
 
 
-### Most Recent Update of 7 April, 2021
+### Most Recent Update of 17 April, 2021
 
-* Spelling corrections and README reorganization.  That's it ... really ... there have been no new features added, no UI changes made, and no bugs fixed since 6 February.
+* Fixed an obvious omission in EditableLocationData.swift, apparently left out during a "code cleanup" from 6 February (!)  This caused the AddOrModifyLocationView to show the wrong navigation title and display only the Basic Information section, but to not show the important Location Management and At This Location feature sections of the view.
+* The default install onto a device will now hide the two debugging/development actions on the Preferences tab. (*See Development.swift to change this behaviour*.)
 
 For earlier, more detailed changes that could possibly be of interest, please consult the **Changelog** at the end of this document.
 
@@ -198,6 +199,7 @@ Otherwise, just about all of the code is original, and it's yours if you want it
 
 This section contains a more detailed list of changes made to ShoppingList14 prior to the most recent changes of note listed earlier.
 
+* (7 Apr) Spelling in README.
 * (7 Feb) Fixed an issue: moving an item from the PurchasedItemsTab to the ShoppingListTab was not properly updating ShoppingListTab (the XCode 12.4 & iOS 14.4 simulator worked fine, but an on-device install exhibited the problem).
 * (6 Feb) Added a user preference for sectioning out the PurchasedItemsTab by "in the last N days" and "before that," where N is user-settable in (a somewhat minimal) Preferences tab.  (This is where you will find what were previously called DevTools that were in place only so you could try out the app.)
 * (6 Feb) Fixed a bug where the user would be allowed to save a new Item or Location with an empty name string.

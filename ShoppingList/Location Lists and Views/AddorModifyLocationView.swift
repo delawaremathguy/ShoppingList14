@@ -15,7 +15,7 @@ struct AddorModifyLocationView: View {
 	
 	// all editableData is packaged here. its initial values are set using
 	// a custom init.  there's also an associated editableColor used here
-	// to mirror values in the editableData, because the ColorPicker wanta
+	// to mirror values in the editableData, because the ColorPicker want a
 	// to use a Color variable.
 	@State private var editableData: EditableLocationData
 	@State private var editableColor: Color

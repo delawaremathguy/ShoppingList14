@@ -10,12 +10,16 @@ import Foundation
 import CoreData
 import UIKit
 
-// i added what i call a "Dev Tools" tab so that if you want to use this
-// as a real app (device or simulator), access to all the debugging stuff that
-// i have can be "controlled," so to speak, on a separate tabview; and that tab
-// view can be displayed or not by setting this global variable:
+// i added what i previously called a "Dev Tools" tab -- now incorporated into the
+// Preferences tab -- so that if you want to use this as a real app (device or simulator),
+// access to all the debugging stuff can be displayed or not by setting this global
+// variable `kShowDevTools`. for now, we'll show this on the simulator and not on a device.
 
-let kShowDevTools = true
+#if targetEnvironment(simulator)
+	let kShowDevTools = true
+#else
+	let kShowDevTools = false
+#endif
 
 // i used these constants and functions below during development to import and
 // export Items and Locations via JSON.
