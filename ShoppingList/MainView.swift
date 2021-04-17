@@ -44,13 +44,11 @@ struct MainView: View {
 					Text("Stopwatch")
 			}.tag(4)
 			
-			if kShowDevTools { // this setting is in Development.swift
-				PreferencesTabView()
-					.tabItem {
-						Image(systemName: "gear")
-						Text("Preferences")
+			PreferencesTabView()
+				.tabItem {
+					Image(systemName: "gear")
+					Text("Preferences")
 				}.tag(5)
-			}
 			
 			
 		} // end of TabView
