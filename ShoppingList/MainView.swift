@@ -20,38 +20,29 @@ struct MainView: View {
 	var body: some View {
 		TabView(selection: $selectedTab) {
 			
-			ShoppingListTabView()
-			.tabItem {
-				Image(systemName: "cart")
-				Text("Shopping List")
-			}.tag(1)
+			NavigationView { ShoppingListTabView() }
+				.tabItem { Label("Shopping List", systemImage: "cart") }
+				.tag(1)
 			
-			PurchasedItemsTabView()
-				.tabItem {
-					Image(systemName: "purchased")
-					Text("Purchased")
-			}.tag(2)
+			NavigationView { PurchasedItemsTabView() }
+				.tabItem { Label("Purchased", systemImage: "purchased") }
+				.tag(2)
 			
-			LocationsTabView()
-				.tabItem {
-					Image(systemName: "map")
-					Text("Locations")
-			}.tag(3)
+			NavigationView { LocationsTabView() }
+				.tabItem { Label("Locations", systemImage: "map") }
+				.tag(3)
 			
-			TimerTabView()
-				.tabItem {
-					Image(systemName: "stopwatch")
-					Text("Stopwatch")
-			}.tag(4)
+			NavigationView { TimerTabView()  }
+				.tabItem { Label("Stopwatch", systemImage: "stopwatch") }
+				.tag(4)
 			
-			PreferencesTabView()
-				.tabItem {
-					Image(systemName: "gear")
-					Text("Preferences")
-				}.tag(5)
-			
+			NavigationView { PreferencesTabView() }
+				.tabItem { Label("Preferences", systemImage: "gear") }
+				.tag(5)
 			
 		} // end of TabView
+		.navigationViewStyle(StackNavigationViewStyle())
+
 	} // end of var body: some View
 	
 }

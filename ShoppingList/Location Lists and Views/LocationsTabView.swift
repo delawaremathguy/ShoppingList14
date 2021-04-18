@@ -21,12 +21,16 @@ struct LocationsTabView: View {
 	// to take upon confirmation
 	@State private var confirmationAlert = ConfirmationAlert(type: .none)
 	
+	// this implements a seemingly well-known strategy to get the list drawn
+	// cleanly without any highlighting
+	@State private var listDisplayID = UUID()
+	
 	var body: some View {
-		NavigationView {
+//		NavigationView {
 			VStack(spacing: 0) {
 				
 				// 1. add new location "button" is at top.  note that this will put up the
-				// AddorModifyLocationView inside its own NaviagtionView (so the Picker will work!)
+				// AddorModifyLocationView inside its own NavigationView (so the Picker will work!)
 				Button(action: { isAddNewLocationSheetShowing = true }) {
 					Text("Add New Location")
 						.foregroundColor(Color.blue)
@@ -51,23 +55,29 @@ struct LocationsTabView: View {
 						} // end of ForEach
 					} // end of Section
 				} // end of Form
+				.id(listDisplayID)
 				
 			} // end of VStack
 			.navigationBarTitle("Locations")
 			.toolbar { ToolbarItem(placement: .navigationBarTrailing, content: addNewButton) }
 			.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
-			.onAppear(perform: handleOnAppear)
+			.onAppear {
+				logAppear(title: "LocationsTabView")
+				handleOnAppear()
+			}
 			.onDisappear() {
-				print("LocationsTabView disappear")
+				logDisappear(title: "LocationsTabView")
 				PersistentStore.shared.saveContext()
 			}
 
-		} // end of NavigationView
-		.navigationViewStyle(StackNavigationViewStyle())
+//		} // end of NavigationView
+//		.navigationViewStyle(StackNavigationViewStyle())
 	} // end of var body: some View
 	
 	func handleOnAppear() {
-		print("LocationsTabView appear")
+		// updating listDisplayID makes SwiftUI think the list of locations is a whole new
+		// list, thereby removing any highlighting.
+		listDisplayID = UUID()
 		// because the unknown location is created lazily, this will make sure that
 		// we'll not be left with an empty screen
 		let _ = Location.unknownLocation()

@@ -16,7 +16,6 @@ struct TimerTabView: View {
 	@StateObject var instoreTimer = gInStoreTimer
 
 	var body: some View {
-		NavigationView {
 			VStack {
 
 				Spacer()
@@ -51,10 +50,8 @@ struct TimerTabView: View {
 				
 			}
 			.navigationBarTitle("In-Store Timer")
-		} // end of NavigationView
-		.navigationViewStyle(StackNavigationViewStyle())
-		.onAppear() { print("TimerTabView appear") }
-		.onDisappear() { print("TimerTabView disappear") }
+		.onAppear { logAppear(title: "TimerTabView") }
+		.onDisappear { logDisappear(title: "TimerTabView") }
 		
 	}
 	

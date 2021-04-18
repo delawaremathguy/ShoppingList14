@@ -122,6 +122,7 @@ struct AddorModifyLocationView: View {
 struct SimpleItemsList: View {
 	
 	@FetchRequest	private var items: FetchedResults<Item>
+	@State private var listDisplayID = UUID()
 	
 	init(location: Location) {
 		//self.location = location
@@ -137,5 +138,7 @@ struct SimpleItemsList: View {
 				}
 			}
 		}
+		.id(listDisplayID)
+		.onAppear { listDisplayID = UUID() }
 	}
 }

@@ -44,8 +44,12 @@ struct ShoppingListDisplay: View {
 	// completes -- and that deletion will again change this array and redraw.
 	@State private var itemsChecked = [Item]()
 	
+	// this implements a seemingly well-known strategy to get the list drawn
+	// cleanly without any highlighting
+//	@Binding var listDisplayID: UUID
+
 	var body: some View {
-		Form {
+		List {
 			ForEach(sectionData()) { section in
 				Section(header: Text(section.title).sectionHeader()) {
 					// display items in this location
@@ -65,7 +69,15 @@ struct ShoppingListDisplay: View {
 					} // end of ForEach
 				} // end of Section
 			} // end of ForEach
-		}  // end of Form
+		}  // end of List
+//		.id(listDisplayID)
+		.listStyle(InsetGroupedListStyle())
+//		.onAppear {
+//			logAppear(title: "ShoppingListDisplay")
+//		}
+//		.onDisappear {
+//			logDisappear(title: "ShoppingListDisplay")
+//		}
 	} // end of body: some View
 	
 	// the purpose of this function is to break out the itemsToBePurchased by section,

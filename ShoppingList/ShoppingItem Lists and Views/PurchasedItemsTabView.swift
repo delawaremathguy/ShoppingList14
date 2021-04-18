@@ -30,7 +30,7 @@ struct PurchasedItemsTabView: View {
 	@State private var confirmationAlert = ConfirmationAlert(type: .none)
 	@State private var isAddNewItemSheetShowing = false
 	
-	// local state for are we a multisection display or not.  the default here is false,
+	// local state for are we a multi-section display or not.  the default here is false,
 	// but an eager developer could easily store this default value in UserDefaults (?)
 	@State var multiSectionDisplay: Bool = false
 	
@@ -43,10 +43,12 @@ struct PurchasedItemsTabView: View {
 	// number of days in the past for the first section when using sections
 	@AppStorage(wrappedValue: 3, "PurchasedHistoryMarker") private var historyMarker
 	
-	
-	
+	// this implements a seemingly well-known strategy to get the list drawn
+	// cleanly without any highlighting
+	@State private var listDisplayID = UUID()
+		
 	var body: some View {
-		NavigationView {
+		//NavigationView {
 			VStack(spacing: 0) {
 				
 				/* ---------
@@ -81,7 +83,7 @@ struct PurchasedItemsTabView: View {
 					EmptyListView(listName: "Purchased")
 				} else {
 					// notice use of sectioning strategy that is described in ShoppingListDisplay.swift
-					Form {
+					List {
 						ForEach(sectionData()) { section in
 							Section(header: Text(section.title).sectionHeader()) {
 								ForEach(section.items) { item in
@@ -101,9 +103,20 @@ struct PurchasedItemsTabView: View {
 								} // end of ForEach
 							} // end of Section
 						} // end of ForEach						
-					}  // end of Form
+					}  // end of List
+					.listStyle(InsetGroupedListStyle())
+					.id(listDisplayID)
+
 				} // end of if-else
 			} // end of VStack
+			.onAppear {
+				logAppear(title: "PurchasedTabView")
+				handleOnAppear()
+			}
+			.onDisappear() {
+				logDisappear(title: "PurchasedTabView")
+				PersistentStore.shared.saveContext()
+			}
 			.navigationBarTitle("Purchased List")
 			.toolbar {
 				ToolbarItem(placement: .navigationBarLeading, content: sectionDisplayButton)
@@ -111,21 +124,17 @@ struct PurchasedItemsTabView: View {
 			}
 			.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 			
-		} // end of NavigationView
-		.navigationViewStyle(StackNavigationViewStyle())
-		.onAppear(perform: handleOnAppear)
-		.onDisappear() {
-			print("PurchasedTabView disappear")
-			PersistentStore.shared.saveContext()
-		}
+//		} // end of NavigationView
+//		.navigationViewStyle(StackNavigationViewStyle())
 	}
 	
 	func handleOnAppear() {
-		print("PurchasedTabView appear")
 		// clear searchText, get a clean screen
 		searchText = ""
 		// and also recompute what "today" means, so the sectioning is correct
 		today.update()
+		
+		listDisplayID = UUID()
 	}
 	
 	// makes a simple "+" to add a new item
@@ -182,7 +191,6 @@ struct PurchasedItemsTabView: View {
 		let allOlderItems = searchQualifiedItems.filter({ $0.dateLastPurchased < startingMarker })
 		
 		// determine titles
-		
 		var section2Title = "Items Purchased Earlier: \(allOlderItems.count)"
 		if !searchText.isEmpty {
 			section2Title = "Items Purchased Earlier containing \"\(searchText)\": \(allOlderItems.count)"

@@ -111,8 +111,14 @@ struct AddorModifyItemView: View {
 			ToolbarItem(placement: .cancellationAction) { cancelButton() }
 			ToolbarItem(placement: .confirmationAction) { saveButton().disabled(!editableData.canBeSaved) }
 		}
-		.onAppear(perform: handleOnAppear)
-		.onDisappear { PersistentStore.shared.saveContext() }
+		.onAppear {
+			logAppear(title: "AddOrModifyItemView")
+			handleOnAppear()
+		}
+		.onDisappear {
+			logDisappear(title: "AddOrModifyItemView")
+			PersistentStore.shared.saveContext()
+		}
 		.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 	}
 		
@@ -121,7 +127,6 @@ struct AddorModifyItemView: View {
 	}
 	
 	func handleOnAppear() {
-		print("AddOrModifyItemView appears")
 		// what follows here is a kludge for a very special case:
 		// -- we were in the ShoppingListTabView
 		// -- we navigate to this Add/ModifyItem view for an Item X at Location Y

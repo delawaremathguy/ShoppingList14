@@ -32,6 +32,10 @@ final class PersistentStore: ObservableObject {
 		// by the way: using NSPersistentCloudKitContainer in the simulator works fine,
 		// but you will see lots of console traffic about sync transactions.  those are not
 		// errors, but it will clog up your console window.
+		//
+		// by the way, just choosing to use NSPersistentCloudKitContainer is not enough by itself.
+		// you will have to make some changes in the project settings. see
+		//    https://developer.apple.com/documentation/coredata/mirroring_a_core_data_store_with_cloudkit/setting_up_core_data_with_cloudkit
 		
 		let container = NSPersistentContainer(name: "ShoppingList")
 		// let container = NSPersistentCloudKitContainer(name: "ShoppingList")

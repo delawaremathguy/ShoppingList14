@@ -21,17 +21,21 @@ struct ShoppingListTabView: View {
 	// to take upon confirmation
 	@State private var confirmationAlert = ConfirmationAlert(type: .none)
 	
-	// local state for are we a multisection display or not.  the default here is false,
+	// local state for are we a multi-section display or not.  the default here is false,
 	// but an eager developer could easily store this default value in UserDefaults (?)
 	@State var multiSectionDisplay: Bool = false
 	
 	// support for Mail
 	@State private var showMailSheet: Bool = false
 	var mailViewData = MailViewData()
+	
+	// this implements a seemingly well-known strategy to get the list drawn
+	// cleanly without any highlighting
+	@State private var listDisplayID = UUID()
 
 	
 	var body: some View {
-		NavigationView {
+//		NavigationView {
 			VStack(spacing: 0) {
 				
 /* ---------
@@ -60,11 +64,14 @@ or multi-section shopping list view.  the list display has some complexity to it
 of the sectioning, so we push it off to a specialized View.
 ---------- */
 
-				if itemsToBePurchased.count == 0 {
+				//if itemsToBePurchased.count == 0 {
+				ZStack {
 					EmptyListView(listName: "Shopping")
-				} else {
+				//} else {
 					ShoppingListDisplay(multiSectionDisplay: $multiSectionDisplay,
-													 confirmationAlert: $confirmationAlert)
+															confirmationAlert: $confirmationAlert)
+						.id(listDisplayID)
+
 				}
 				
 /* ---------
@@ -96,16 +103,19 @@ of the sectioning, so we push it off to a specialized View.
 			}
 			.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 
-		} // end of NavigationView
-		.navigationViewStyle(StackNavigationViewStyle())
+//		} // end of NavigationView
+//		.navigationViewStyle(StackNavigationViewStyle())
 		.sheet(isPresented: self.$showMailSheet) {
 			MailView(isShowing: $showMailSheet, mailViewData: mailViewData, resultHandler: mailResultHandler)
 				.safe()
 		}
 
-		.onAppear() { print("ShoppingListTabView appear") }
-		.onDisappear() {
-			print("ShoppingListTabView disappear")
+		.onAppear {
+			logAppear(title: "ShoppingListTabView")
+			listDisplayID = UUID()
+		}
+		.onDisappear {
+			logDisappear(title: "ShoppingListTabView")
 			PersistentStore.shared.saveContext()
 		}
 		

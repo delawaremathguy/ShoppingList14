@@ -20,7 +20,7 @@ import SwiftUI
 // (3) delete a location (in the LocationsTabView)
 //
 // on this case-by-case basis, we provide an appropriate Alert struct with the
-// proper messages and execute the apporpriate destructive action when the user
+// proper messages and execute the appropriate destructive action when the user
 // confirms the action.
 
 struct ConfirmationAlert {
