@@ -18,22 +18,14 @@ struct AddorModifyLocationView: View {
 	// to mirror values in the editableData, because the ColorPicker want a
 	// to use a Color variable.
 	@State private var editableData: EditableLocationData
-	@State private var editableColor: Color
 	
 	// parameter to control triggering an Alert and defining what action
 	// to take upon confirmation
 	@State private var confirmationAlert = ConfirmationAlert(type: .none)
 	
 	// custom init to set up editable data
-	init(editableLocation: Location? = nil) {
-		// initialize the editableData struct for the incoming location, if any.
-		if let location = editableLocation {
-			_editableData = State(initialValue: EditableLocationData(location: location))
-			_editableColor = State(initialValue: Color(location.uiColor))
-		} else {
-			_editableData = State(initialValue: EditableLocationData())
-			_editableColor = State(initialValue: .green)
-		}
+	init(location: Location? = nil) {
+		_editableData = State(initialValue: EditableLocationData(location: location))
 	}
 
 	var body: some View {
@@ -54,7 +46,7 @@ struct AddorModifyLocationView: View {
 					}
 				}
 				
-				ColorPicker("Location Color", selection: $editableColor)
+				ColorPicker("Location Color", selection: $editableData.color)
 			} // end of Section 1
 			
 			// Section 2: Delete button, if present (must be editing a user location)
@@ -96,22 +88,19 @@ struct AddorModifyLocationView: View {
 
 	// the cancel button
 	func cancelButton() -> some View {
-		Button(action: { presentationMode.wrappedValue.dismiss() }){
+		Button(action: { presentationMode.wrappedValue.dismiss() }) {
 			Text("Cancel")
 		}
 	}
 	
 	// the save button
 	func saveButton() -> some View {
-		Button(action: commitData){
+		Button(action: commitData) {
 			Text("Save")
 		}
 	}
 
 	func commitData() {
-		// copies the SwiftUI Color to the editableData (which has RGB-A components)
-		editableData.updateColor(from: editableColor)
-		// and update Location (includes case of creating a new Location if necessary)
 		presentationMode.wrappedValue.dismiss()
 		Location.updateData(using: editableData)
 	}
@@ -125,7 +114,6 @@ struct SimpleItemsList: View {
 	@State private var listDisplayID = UUID()
 	
 	init(location: Location) {
-		//self.location = location
 		let request = Item.fetchAllItems(at: location)
 		_items = FetchRequest(fetchRequest: request)
 	}

@@ -174,7 +174,7 @@ extension Location: Comparable {
 	}
 	
 	class func updateData(using editableData: EditableLocationData) {
-		// if the incoming item is not nil, then this is just a straight update.
+		// if the incoming location is not nil, then this is just a straight update.
 		// otherwise, we must create the new Location here and add it
 		if let id = editableData.id,
 			 let location = Location.object(id: id, context: PersistentStore.shared.context) {
@@ -197,10 +197,17 @@ extension Location: Comparable {
 		// we first make these changes directly in Core Data
 		name_ = editableData.locationName
 		visitationOrder_ = Int32(editableData.visitationOrder)
-		red_ = editableData.red
-		green_ = editableData.green
-		blue_ = editableData.blue
-		opacity_ = editableData.opacity
+		if let components = editableData.color.cgColor?.components {
+			red_ = Double(components[0])
+			green_ = Double(components[1])
+			blue_ = Double(components[2])
+			opacity_ = Double(components[3])
+		} else {
+			red_ = 0.0
+			green_ = 1.0
+			blue_ = 0.0
+			opacity_ = 0.5
+		}
 		
 		// one more thing: items associated with this location may want to know about
 		// (some of) these changes.  reason: items rely on knowing some computed

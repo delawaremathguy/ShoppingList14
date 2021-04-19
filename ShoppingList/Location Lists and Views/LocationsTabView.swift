@@ -47,7 +47,7 @@ struct LocationsTabView: View {
 			Form {
 				Section(header: Text("Locations Listed: \(locations.count)").sectionHeader()) {
 					ForEach(locations) { location in
-						NavigationLink(destination: AddorModifyLocationView(editableLocation: location)) {
+						NavigationLink(destination: AddorModifyLocationView(location: location)) {
 							LocationRowView(rowData: LocationRowData(location: location))
 								.contextMenu { contextMenuButton(for: location) }
 						} // end of NavigationLink
