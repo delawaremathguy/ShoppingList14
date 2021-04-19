@@ -16,6 +16,7 @@ Here are recent updates either of importance (e.g., *bug fixes* or *UI changes*)
 
 * Rescinded UUID-based strategy of 18 April for unhighlighting lists, which was crashing the app in one view.  *I will continue to research the issue*.
 * Fixed title display in Purchased Items tab when searching.
+* Added navigation title to Preferences screen.
 * (*18 Apr*) Implemented a simple UUID-based strategy for lists so highlighting is no longer left in place after having tapped on a NavigationLink.
 * (*18 Apr*) More use of `List` when appropriate (and less use of `Form`).
 * (*18 Apr*) Slight reorganization of HomeView.swift as to how individual tabs in the TabView are enclosed in a NavigationView (*this seems to matter to SwiftUI in ways I do not fully understand*).

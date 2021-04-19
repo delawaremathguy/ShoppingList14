@@ -56,7 +56,7 @@ AddorModifyItemView inside its own NavigationView (so the Picker will work!)
 				}
 				
 				Rectangle()
-					.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
+					.frame(height: 1)
 				
 /* ---------
 2. we display either a "List is Empty" view, a single-section shopping list view
@@ -80,7 +80,7 @@ of the sectioning, so we push it off to a specialized View.
 
 				if itemsToBePurchased.count > 0 {
 					Rectangle()
-						.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
+						.frame(height: 1)
 					
 					SLCenteredButton(title: "Move All Items Off-list", action: {
 						confirmationAlert.trigger(type: .moveAllOffShoppingList)

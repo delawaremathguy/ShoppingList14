@@ -48,10 +48,10 @@ struct PreferencesTabView: View {
 			
 			if kShowDevTools {
 				Rectangle()
-					.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
+					.frame(height: 1)
 				
 				
-				Text("These controls are here so that you can add some sample data and play with it. Presumably, you'll delete the app from a device after doing this, and then reinstall it later to start with a clean slate.")
+				Text("This button will add some sample data so you can test out the app. Presumably, you'll delete the app from a device after doing this, and then reinstall it later to start with a clean slate.")
 					.padding([.leading, .trailing], 10)
 					.padding(.bottom, 20)
 				
@@ -90,6 +90,7 @@ struct PreferencesTabView: View {
 			Spacer()
 		} // end of VStack
 		.navigationViewStyle(StackNavigationViewStyle())
+		.navigationBarTitle("Preferences")
 		.onAppear { logAppear(title: "Preferences") }
 		.onDisappear { logDisappear(title: "Preferences") }
 	} // end of body

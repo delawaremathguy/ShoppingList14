@@ -71,7 +71,7 @@ struct PurchasedItemsTabView: View {
 				}
 				
 				Rectangle()
-					.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
+					.frame(height: 1)
 				
 				/* ---------
 				2. we display either a "List is Empty" view, or the sectioned list of purchased

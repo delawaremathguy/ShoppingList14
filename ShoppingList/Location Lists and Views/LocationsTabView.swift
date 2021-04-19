@@ -13,7 +13,7 @@ struct LocationsTabView: View {
 	// this is the @FetchRequest that ties this view to CoreData Locations
 	@FetchRequest(fetchRequest: Location.fetchAllLocations())
 	private var locations: FetchedResults<Location>
-		
+	
 	// local state to trigger a sheet to appear to add a new location
 	@State private var isAddNewLocationSheetShowing = false
 	
@@ -26,49 +26,49 @@ struct LocationsTabView: View {
 	@State private var listDisplayID = UUID()
 	
 	var body: some View {
-			VStack(spacing: 0) {
-				
-				// 1. add new location "button" is at top.  note that this will put up the
-				// AddorModifyLocationView inside its own NavigationView (so the Picker will work!)
-				Button(action: { isAddNewLocationSheetShowing = true }) {
-					Text("Add New Location")
-						.foregroundColor(Color.blue)
-						.padding(10)
-				}
-				.sheet(isPresented: $isAddNewLocationSheetShowing) {
-					NavigationView { AddorModifyLocationView() }
-				}
-				
-				Rectangle()
-					.frame(minWidth: 0, maxWidth: .infinity, minHeight: 1, idealHeight: 1, maxHeight: 1)
-
-				
-				// 2. then the list of locations
-				Form {
-					Section(header: Text("Locations Listed: \(locations.count)").sectionHeader()) {
-						ForEach(locations) { location in
-							NavigationLink(destination: AddorModifyLocationView(editableLocation: location)) {
-								LocationRowView(rowData: LocationRowData(location: location))
-									.contextMenu { contextMenuButton(for: location) }
-							} // end of NavigationLink
-						} // end of ForEach
-					} // end of Section
-				} // end of Form
-//				.id(listDisplayID)
-				
-			} // end of VStack
-			.navigationBarTitle("Locations")
-			.toolbar { ToolbarItem(placement: .navigationBarTrailing, content: addNewButton) }
-			.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
-			.onAppear {
-				logAppear(title: "LocationsTabView")
-				handleOnAppear()
+		VStack(spacing: 0) {
+			
+			// 1. add new location "button" is at top.  note that this will put up the
+			// AddorModifyLocationView inside its own NavigationView (so the Picker will work!)
+			Button(action: { isAddNewLocationSheetShowing = true }) {
+				Text("Add New Location")
+					.foregroundColor(Color.blue)
+					.padding(10)
 			}
-			.onDisappear() {
-				logDisappear(title: "LocationsTabView")
-				PersistentStore.shared.saveContext()
+			.sheet(isPresented: $isAddNewLocationSheetShowing) {
+				NavigationView { AddorModifyLocationView() }
 			}
-
+			
+			Rectangle()
+				.frame(height: 1)
+			
+			
+			// 2. then the list of locations
+			Form {
+				Section(header: Text("Locations Listed: \(locations.count)").sectionHeader()) {
+					ForEach(locations) { location in
+						NavigationLink(destination: AddorModifyLocationView(editableLocation: location)) {
+							LocationRowView(rowData: LocationRowData(location: location))
+								.contextMenu { contextMenuButton(for: location) }
+						} // end of NavigationLink
+					} // end of ForEach
+				} // end of Section
+			} // end of Form
+			//				.id(listDisplayID)
+			
+		} // end of VStack
+		.navigationBarTitle("Locations")
+		.toolbar { ToolbarItem(placement: .navigationBarTrailing, content: addNewButton) }
+		.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
+		.onAppear {
+			logAppear(title: "LocationsTabView")
+			handleOnAppear()
+		}
+		.onDisappear() {
+			logDisappear(title: "LocationsTabView")
+			PersistentStore.shared.saveContext()
+		}
+		
 	} // end of var body: some View
 	
 	func handleOnAppear() {
@@ -77,7 +77,9 @@ struct LocationsTabView: View {
 		listDisplayID = UUID()
 		// because the unknown location is created lazily, this will make sure that
 		// we'll not be left with an empty screen
-		let _ = Location.unknownLocation()
+		if locations.count == 0 {
+			let _ = Location.unknownLocation()
+		}
 	}
 	
 	// defines the usual "+" button to add a Location
@@ -101,5 +103,5 @@ struct LocationsTabView: View {
 			Image(systemName: location.isUnknownLocation ? "trash.slash" : "trash")
 		}
 	}
-		
+	
 }
