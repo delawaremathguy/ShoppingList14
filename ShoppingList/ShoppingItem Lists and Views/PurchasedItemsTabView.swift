@@ -169,7 +169,7 @@ struct PurchasedItemsTabView: View {
 	}
 	
 	// the idea of this function is to break out the purchased Items into
-	// 2 sections: those purchased today, and everything else
+	// 2 sections: those purchased today (within the last N days), and everything else
 	func sectionData() -> [SectionData] {
 		// reduce items by search criteria
 		let searchQualifiedItems = purchasedItems.filter({ searchText.appearsIn($0.name) })
@@ -197,8 +197,12 @@ struct PurchasedItemsTabView: View {
 		}
 		
 		// return two sections only
-		return [SectionData(title: section1Title(searchText: searchText, historyMarker: historyMarker, count: recentItems.count), items: recentItems),
-						SectionData(title: section2Title,items: allOlderItems)
+		return [SectionData(title: section1Title(searchText: searchText,
+																						 historyMarker: historyMarker,
+																						 count: recentItems.count),
+												items: recentItems),
+						SectionData(title: section2Title,
+												items: allOlderItems)
 		]
 	}
 	
@@ -210,7 +214,7 @@ struct PurchasedItemsTabView: View {
 			title += "in the last \(historyMarker) days "
 		}
 		if !searchText.isEmpty {
-			title = "containing \"\(searchText)\" "
+			title += "containing \"\(searchText)\" "
 		}
 		title += "(\(count) items)"
 		return title
