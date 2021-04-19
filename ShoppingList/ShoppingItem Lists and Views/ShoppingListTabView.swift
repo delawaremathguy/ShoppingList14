@@ -70,7 +70,7 @@ of the sectioning, so we push it off to a specialized View.
 				//} else {
 					ShoppingListDisplay(multiSectionDisplay: $multiSectionDisplay,
 															confirmationAlert: $confirmationAlert)
-						.id(listDisplayID)
+//						.id(listDisplayID)
 
 				}
 				

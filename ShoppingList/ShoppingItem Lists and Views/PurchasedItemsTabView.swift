@@ -105,7 +105,7 @@ struct PurchasedItemsTabView: View {
 						} // end of ForEach						
 					}  // end of List
 					.listStyle(InsetGroupedListStyle())
-					.id(listDisplayID)
+//					.id(listDisplayID)
 
 				} // end of if-else
 			} // end of VStack

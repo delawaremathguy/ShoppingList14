@@ -26,7 +26,6 @@ struct LocationsTabView: View {
 	@State private var listDisplayID = UUID()
 	
 	var body: some View {
-//		NavigationView {
 			VStack(spacing: 0) {
 				
 				// 1. add new location "button" is at top.  note that this will put up the
@@ -55,7 +54,7 @@ struct LocationsTabView: View {
 						} // end of ForEach
 					} // end of Section
 				} // end of Form
-				.id(listDisplayID)
+//				.id(listDisplayID)
 				
 			} // end of VStack
 			.navigationBarTitle("Locations")
@@ -70,8 +69,6 @@ struct LocationsTabView: View {
 				PersistentStore.shared.saveContext()
 			}
 
-//		} // end of NavigationView
-//		.navigationViewStyle(StackNavigationViewStyle())
 	} // end of var body: some View
 	
 	func handleOnAppear() {

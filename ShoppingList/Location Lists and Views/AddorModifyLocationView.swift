@@ -138,7 +138,7 @@ struct SimpleItemsList: View {
 				}
 			}
 		}
-		.id(listDisplayID)
+//		.id(listDisplayID)
 		.onAppear { listDisplayID = UUID() }
 	}
 }

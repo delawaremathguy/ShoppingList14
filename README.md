@@ -12,11 +12,12 @@ Feel free to use this as is, to develop further,  to completely ignore, or even 
 Here are recent updates either of importance (e.g., *bug fixes* or *UI changes*) or of possible coding interest (e.g., *code consolidation or reorganization*).  
 
 
-### Most Recent Update of 18 April, 2021
+### Most Recent Update of 19 April, 2021
 
-* Implemented a simply UUID-based strategy for lists so highlighting is no longer left in place after having tapped on a NavigationLink.
-* More use of `List` when appropriate (and less use of `Form`).
-* Slight reorganization of HomeView.swift as to how individual tabs in the TabView are enclosed in a NavigationView (*this seems to matter to SwiftUI in ways I do not fully understand*).
+* Rescinded UUID-based strategy of 18 April for unhighlighting lists, which was crashing the app in one view.  *I will continue to research the issue*.
+* (*18 Apr*) Implemented a simple UUID-based strategy for lists so highlighting is no longer left in place after having tapped on a NavigationLink.
+* (*18 Apr*) More use of `List` when appropriate (and less use of `Form`).
+* (*18 Apr*) Slight reorganization of HomeView.swift as to how individual tabs in the TabView are enclosed in a NavigationView (*this seems to matter to SwiftUI in ways I do not fully understand*).
 * (*17 Apr*) Fixed an obvious omission in EditableLocationData.swift, apparently left out during a "code cleanup" from 6 February (!)  This caused the AddOrModifyLocationView to show the wrong navigation title and display only the Basic Information section, but to not show the important Location Management and At This Location feature sections of the view.
 * (*17 Apr*) The default install onto a device will now hide the two debugging/development actions on the Preferences tab. (*See Development.swift to change this behaviour*.)
 
