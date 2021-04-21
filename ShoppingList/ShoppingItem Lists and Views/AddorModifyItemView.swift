@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct AddorModifyItemView: View {
+struct AddOrModifyItemView: View {
 	// we use this so we can dismiss ourself (sometimes we're in a Sheet, sometimes
 	// in a NavigationLink)
 	@Environment(\.presentationMode) var presentationMode
@@ -31,7 +31,7 @@ struct AddorModifyItemView: View {
 	// use a @FetchRequest here; the problem is that if this Add/ModifyItem view is open
 	// to add a new item, then we tab over to the Locations tab to add a new location,
 	// we have to be sure the Picker's list of locations is updated.
-	@FetchRequest(fetchRequest: Location.fetchAllLocations())
+	@FetchRequest(fetchRequest: Location.allLocationsFR())
 	private var locations: FetchedResults<Location>
 	
 	// custom init here to set up editableData state
@@ -95,9 +95,9 @@ struct AddorModifyItemView: View {
 			if editableData.representsExistingItem {
 				Section(header: Text("Shopping Item Management").sectionHeader()) {
 					SLCenteredButton(title: "Delete This Shopping Item",
-													 action: { confirmationAlert.trigger(
-														type: .deleteItem(editableData.associatedItem),
-														completion: { presentationMode.wrappedValue.dismiss() })
+													 action: {
+														confirmationAlert.trigger( type: .deleteItem(editableData.associatedItem),
+																											 completion: { presentationMode.wrappedValue.dismiss() })
 													 }
 					)
 						.foregroundColor(Color.red)

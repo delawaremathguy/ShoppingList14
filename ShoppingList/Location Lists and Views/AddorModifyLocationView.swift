@@ -10,13 +10,11 @@ import SwiftUI
 
 // MARK: - View Definition
 
-struct AddorModifyLocationView: View {
+struct AddOrModifyLocationView: View {
 	@Environment(\.presentationMode) var presentationMode
 	
 	// all editableData is packaged here. its initial values are set using
-	// a custom init.  there's also an associated editableColor used here
-	// to mirror values in the editableData, because the ColorPicker want a
-	// to use a Color variable.
+	// a custom init.
 	@State private var editableData: EditableLocationData
 	
 	// parameter to control triggering an Alert and defining what action
@@ -25,6 +23,7 @@ struct AddorModifyLocationView: View {
 	
 	// custom init to set up editable data
 	init(location: Location? = nil) {
+//		print("AddorModifyLocationView initialized")
 		_editableData = State(initialValue: EditableLocationData(location: location))
 	}
 
@@ -53,9 +52,9 @@ struct AddorModifyLocationView: View {
 			if editableData.representsExistingLocation && !editableData.associatedLocation.isUnknownLocation {
 				Section(header: Text("Location Management").sectionHeader()) {
 					SLCenteredButton(title: "Delete This Location",
-													 action: { confirmationAlert.trigger(
-														type: .deleteLocation(editableData.associatedLocation),
-														completion: { presentationMode.wrappedValue.dismiss() })
+													 action: {
+														confirmationAlert.trigger(type: .deleteLocation(editableData.associatedLocation),
+																											completion: { presentationMode.wrappedValue.dismiss() })
 													 }
 					).foregroundColor(Color.red)
 				}
@@ -114,14 +113,14 @@ struct SimpleItemsList: View {
 	@State private var listDisplayID = UUID()
 	
 	init(location: Location) {
-		let request = Item.fetchAllItems(at: location)
+		let request = Item.allItemsFR(at: location)
 		_items = FetchRequest(fetchRequest: request)
 	}
 	
 	var body: some View {
 		Section(header: Text("At this Location: \(items.count) items").sectionHeader()) {
 			ForEach(items) { item in
-				NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
+				NavigationLink(destination: AddOrModifyItemView(editableItem: item)) {
 					Text(item.name)
 				}
 			}

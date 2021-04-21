@@ -45,7 +45,7 @@ struct SelectableItemRowView: View {
 						.foregroundColor(.white)
 						.font(.subheadline)
 				}
-			}
+			} // end of ZStack
 			.animation(Animation.easeInOut(duration: 0.5))
 			.frame(width: 24, height: 24)
 			.onTapGesture { respondToTapOnSelector() }

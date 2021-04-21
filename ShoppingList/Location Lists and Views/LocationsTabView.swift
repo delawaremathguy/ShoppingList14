@@ -11,7 +11,7 @@ import SwiftUI
 struct LocationsTabView: View {
 	
 	// this is the @FetchRequest that ties this view to CoreData Locations
-	@FetchRequest(fetchRequest: Location.fetchAllLocations())
+	@FetchRequest(fetchRequest: Location.allLocationsFR())
 	private var locations: FetchedResults<Location>
 	
 	// local state to trigger a sheet to appear to add a new location
@@ -36,7 +36,7 @@ struct LocationsTabView: View {
 					.padding(10)
 			}
 			.sheet(isPresented: $isAddNewLocationSheetShowing) {
-				NavigationView { AddorModifyLocationView() }
+				NavigationView { AddOrModifyLocationView() }
 			}
 			
 			Rectangle()
@@ -47,7 +47,7 @@ struct LocationsTabView: View {
 			Form {
 				Section(header: Text("Locations Listed: \(locations.count)").sectionHeader()) {
 					ForEach(locations) { location in
-						NavigationLink(destination: AddorModifyLocationView(location: location)) {
+						NavigationLink(destination: AddOrModifyLocationView(location: location)) {
 							LocationRowView(rowData: LocationRowData(location: location))
 								.contextMenu { contextMenuButton(for: location) }
 						} // end of NavigationLink

@@ -17,16 +17,16 @@ import SwiftUI
 // to present the list in sections and requires some preliminary work to perform the
 // sectioning.
 //
-// each item that appears has a NavigationLink to a detail view and a contextMenu
+// each item that appears has a NavigationLink to a detail view and has a contextMenu
 // associated with it; actions from the contextMenu may require bringing up an alert,
 // but we will not do that here in this view.  we will simply set @Binding variables
 // from the parent view appropriately and let the parent deal with it (e.g., because
 // the parent uses the same structure to present an alert already to move all items
-// of the list).
+// off the list).
 struct ShoppingListDisplay: View {
 	
-	// this is the @FetchRequest that ties this view to CoreData Items
-	@FetchRequest(fetchRequest: Item.fetchAllItems(onList: true))
+	// this is the @FetchRequest that ties this view to Core Data Items
+	@FetchRequest(fetchRequest: Item.allItemsFR(onList: true))
 	private var itemsToBePurchased: FetchedResults<Item>
 
 	// display format: one big section of Items, or sectioned by Location?
@@ -55,7 +55,7 @@ struct ShoppingListDisplay: View {
 					// display items in this location
 					ForEach(section.items) { item in
 						// display a single row here for 'item'
-						NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
+						NavigationLink(destination: AddOrModifyItemView(editableItem: item)) {
 							SelectableItemRowView(item: item,
 																		selected: itemsChecked.contains(item),
 																		sfSymbolName: "purchased",
@@ -72,12 +72,6 @@ struct ShoppingListDisplay: View {
 		}  // end of List
 //		.id(listDisplayID)
 		.listStyle(InsetGroupedListStyle())
-//		.onAppear {
-//			logAppear(title: "ShoppingListDisplay")
-//		}
-//		.onDisappear {
-//			logDisappear(title: "ShoppingListDisplay")
-//		}
 	} // end of body: some View
 	
 	// the purpose of this function is to break out the itemsToBePurchased by section,

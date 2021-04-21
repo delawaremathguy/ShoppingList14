@@ -17,7 +17,7 @@ import SwiftUI
 struct PurchasedItemsTabView: View {
 	
 	// this is the @FetchRequest that ties this view to CoreData
-	@FetchRequest(fetchRequest: Item.fetchAllItems(onList: false))
+	@FetchRequest(fetchRequest: Item.allItemsFR(onList: false))
 	private var purchasedItems: FetchedResults<Item>
 	
 	// the usual @State variables to handle the Search field and control
@@ -65,7 +65,7 @@ struct PurchasedItemsTabView: View {
 				}
 				.sheet(isPresented: $isAddNewItemSheetShowing) {
 					NavigationView {
-						AddorModifyItemView(initialItemName: searchText)
+						AddOrModifyItemView(initialItemName: searchText)
 							.environment(\.managedObjectContext, PersistentStore.shared.context)
 					}
 				}
@@ -88,7 +88,7 @@ struct PurchasedItemsTabView: View {
 							Section(header: Text(section.title).sectionHeader()) {
 								ForEach(section.items) { item in
 									// display of a single item
-									NavigationLink(destination: AddorModifyItemView(editableItem: item)) {
+									NavigationLink(destination: AddOrModifyItemView(editableItem: item)) {
 										SelectableItemRowView(item: item,
 																					selected: itemsChecked.contains(item),
 																					sfSymbolName: "cart",

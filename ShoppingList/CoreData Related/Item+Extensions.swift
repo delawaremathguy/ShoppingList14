@@ -31,9 +31,9 @@ extension Item {
 	therefore, i choose to "front" each of them in this file, as well as perhaps provide
 	other computed properties of interest.
 	
-	doing do helps smooth out the awkwardness of nil-coalescing (we don't want SwiftUI views
+	doing so helps smooth out the awkwardness of nil-coalescing (we don't want SwiftUI views
 	continually writing item.name ?? "Unknown" all over the place); and in the case of an
-	item's quantity, "fronting" its quantity_ attribute smooths the transtion from
+	item's quantity, "fronting" its quantity_ attribute smooths the transition from
 	Int32 to Int.  indeed, in SwiftUI views, these Core Data objects should
 	appear just as objects, without any knowledge that they come from Core Data.
 	
@@ -62,7 +62,7 @@ extension Item {
 	
 		items.forEach({ $0.objectWillChange.send() })
 	
-	the same holds true for a view that holds on to (is a subscriber of) an Location as an @ObservedObject.
+	the same holds true for a view that holds on to (is a subscriber of) a Location as an @ObservedObject.
 	if that view displays the number of items for the location, based on the computed property
 	`itemCount`, then when an Item is edited to change its location, the item must tell both its previous
 	and new locations about the change by executing objectWillChange.send() for those locations:
@@ -75,8 +75,8 @@ extension Item {
 	
 	(3) @ObservedObject References to Items
 	
-	only the SelectableItemRowView ever has an @ObservedObject reference to an Item, and in development,
-	this view (or whatever this view was during development) was a serious problem:
+	only the SelectableItemRowView has an @ObservedObject reference to an Item, and in development,
+	this view (or whatever this view was during development) had a serious problem:
 	
 		if a SwiftUI view holds an Item as an @ObservedObject and that object is deleted while the
 		view is still alive, the view is then holding on to a zombie object.  (Core Data does not immediately
@@ -89,8 +89,8 @@ extension Item {
 		
 	anyway, it's something to think about.  in this app, if you show a list of items on the shopping list,
 	navigate to an item's detail view, and press "Delete this Item," the row view for the item in the shopping
-	list is still alive and has a dead reference to the item.  SwiftUI may try to use that; and if you were
-	to reference that item, you should expect that every attribute will be 0 (e.g., 0 for a Date, 0 for an
+	list is still alive and has a dead reference to the item.  SwiftUI may try to use that; and if you had
+	to reference that item, you should expect that every attribute will be 0 (e.g., nil for a Date, 0 for an
 	Integer 32, and nil for every optional attribute).
 	
 	*/
@@ -101,6 +101,7 @@ extension Item {
 	// when no date is available, we'll set the date to ReferenceDate, for purposes of
 	// always having one for comparisons ("today" versus "earlier")
 	var dateLastPurchased: Date { dateLastPurchased_ ?? Date(timeIntervalSinceReferenceDate: 1) }
+	
 	var hasBeenPurchased: Bool { dateLastPurchased_ != nil }
 	
 	// the name.  this fronts a Core Data optional attribute
@@ -132,7 +133,7 @@ extension Item {
 		set { quantity_ = Int32(newValue) }
 	}
 	
-	// an item's associated location.  this fronts a Core Data optional attribute
+	// an item's associated location.  this fronts a Core Data optional attribute.
 	// if you change an item's location, the old and the new Location may want to
 	// know that some of their computed properties could be invalidated
 	var location: Location {
@@ -155,14 +156,14 @@ extension Item {
 	
 	// MARK: - Useful Fetch Requests
 	
-	class func fetchAllItems(at location: Location) -> NSFetchRequest<Item> {
+	class func allItemsFR(at location: Location) -> NSFetchRequest<Item> {
 		let request: NSFetchRequest<Item> = Item.fetchRequest()
 		request.sortDescriptors = [NSSortDescriptor(key: "name_", ascending: true)]
 		request.predicate = NSPredicate(format: "location_ == %@", location)
 		return request
 	}
 	
-	class func fetchAllItems(onList: Bool) -> NSFetchRequest<Item> {
+	class func allItemsFR(onList: Bool) -> NSFetchRequest<Item> {
 		let request: NSFetchRequest<Item> = Item.fetchRequest()
 		request.predicate = NSPredicate(format: "onList_ == %d", onList)
 		request.sortDescriptors = [NSSortDescriptor(key: "name_", ascending: true)]

@@ -11,7 +11,7 @@ import SwiftUI
 struct ShoppingListTabView: View {
 		
 	// this is the @FetchRequest that ties this view to CoreData Items
-	@FetchRequest(fetchRequest: Item.fetchAllItems(onList: true))
+	@FetchRequest(fetchRequest: Item.allItemsFR(onList: true))
 	private var itemsToBePurchased: FetchedResults<Item>
 
 	// local state to trigger showing a sheet to add a new item
@@ -35,7 +35,6 @@ struct ShoppingListTabView: View {
 
 	
 	var body: some View {
-//		NavigationView {
 			VStack(spacing: 0) {
 				
 /* ---------
@@ -50,7 +49,7 @@ AddorModifyItemView inside its own NavigationView (so the Picker will work!)
 				}
 				.sheet(isPresented: $isAddNewItemSheetShowing) {
 					NavigationView {
-						AddorModifyItemView()
+						AddOrModifyItemView()
 							.environment(\.managedObjectContext, PersistentStore.shared.context)
 					}
 				}
@@ -64,14 +63,12 @@ or multi-section shopping list view.  the list display has some complexity to it
 of the sectioning, so we push it off to a specialized View.
 ---------- */
 
-				//if itemsToBePurchased.count == 0 {
-				ZStack {
+				if itemsToBePurchased.count == 0 {
 					EmptyListView(listName: "Shopping")
-				//} else {
+				} else {
 					ShoppingListDisplay(multiSectionDisplay: $multiSectionDisplay,
 															confirmationAlert: $confirmationAlert)
 //						.id(listDisplayID)
-
 				}
 				
 /* ---------
@@ -103,8 +100,6 @@ of the sectioning, so we push it off to a specialized View.
 			}
 			.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 
-//		} // end of NavigationView
-//		.navigationViewStyle(StackNavigationViewStyle())
 		.sheet(isPresented: self.$showMailSheet) {
 			MailView(isShowing: $showMailSheet, mailViewData: mailViewData, resultHandler: mailResultHandler)
 				.safe()
