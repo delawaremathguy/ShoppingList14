@@ -19,7 +19,8 @@ struct AddOrModifyLocationView: View {
 	
 	// parameter to control triggering an Alert and defining what action
 	// to take upon confirmation
-	@State private var confirmationAlert = ConfirmationAlert(type: .none)
+	//@State private var confirmationAlert = ConfirmationAlert(type: .none)
+	@State private var confirmDeleteLocationAlert: ConfirmDeleteLocationAlert?
 	
 	// custom init to set up editable data
 	init(location: Location? = nil) {
@@ -53,8 +54,11 @@ struct AddOrModifyLocationView: View {
 				Section(header: Text("Location Management").sectionHeader()) {
 					SLCenteredButton(title: "Delete This Location",
 													 action: {
-														confirmationAlert.trigger(type: .deleteLocation(editableData.associatedLocation),
-																											completion: { presentationMode.wrappedValue.dismiss() })
+														confirmDeleteLocationAlert = ConfirmDeleteLocationAlert(
+															location: editableData.associatedLocation,
+															destructiveCompletion: { presentationMode.wrappedValue.dismiss() })
+//														confirmationAlert.trigger(type: .deleteLocation(editableData.associatedLocation),
+//																											completion: { presentationMode.wrappedValue.dismiss() })
 													 }
 					).foregroundColor(Color.red)
 				}
@@ -73,7 +77,8 @@ struct AddOrModifyLocationView: View {
 			ToolbarItem(placement: .cancellationAction, content: cancelButton)
 			ToolbarItem(placement: .confirmationAction) { saveButton().disabled(!editableData.canBeSaved) }
 		}
-		.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
+		//.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
+		.alert(item: $confirmDeleteLocationAlert) { item in item.alert() }
 	}
 	
 	func barTitle() -> Text {

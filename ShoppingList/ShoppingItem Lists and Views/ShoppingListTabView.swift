@@ -17,9 +17,8 @@ struct ShoppingListTabView: View {
 	// local state to trigger showing a sheet to add a new item
 	@State private var isAddNewItemSheetShowing = false
 	
-	// parameters to control triggering an Alert and defining what action
-	// to take upon confirmation
-	@State private var confirmationAlert = ConfirmationAlert(type: .none)
+	// alert to move all item off the shopping list
+	@State private var confirmMoveAllItemsOffShoppingListAlert: ConfirmMoveAllItemsOffShoppingListAlert?
 	
 	// local state for are we a multi-section display or not.  the default here is false,
 	// but an eager developer could easily store this default value in UserDefaults (?)
@@ -66,8 +65,7 @@ of the sectioning, so we push it off to a specialized View.
 				if itemsToBePurchased.count == 0 {
 					EmptyListView(listName: "Shopping")
 				} else {
-					ShoppingListDisplay(multiSectionDisplay: $multiSectionDisplay,
-															confirmationAlert: $confirmationAlert)
+					ShoppingListDisplay(multiSectionDisplay: $multiSectionDisplay)
 //						.id(listDisplayID)
 				}
 				
@@ -80,14 +78,17 @@ of the sectioning, so we push it off to a specialized View.
 						.frame(height: 1)
 					
 					SLCenteredButton(title: "Move All Items Off-list", action: {
-						confirmationAlert.trigger(type: .moveAllOffShoppingList)
+						confirmMoveAllItemsOffShoppingListAlert = ConfirmMoveAllItemsOffShoppingListAlert()
+						//confirmationAlert.trigger(type: .moveAllOffShoppingList)
 						})
+					.alert(item: $confirmMoveAllItemsOffShoppingListAlert) { item in item.alert() }
 						.padding([.bottom, .top], 6)
 					
 					if !itemsToBePurchased.allSatisfy({ $0.isAvailable }) {
 						SLCenteredButton(title: "Mark All Items Available",
 														 action: { itemsToBePurchased.forEach({ $0.markAvailable() }) })
 							.padding([.bottom], 6)
+
 						
 					}
 				} //end of if itemsToBePurchased.count > 0
@@ -98,13 +99,10 @@ of the sectioning, so we push it off to a specialized View.
 				ToolbarItem(placement: .navigationBarLeading, content: sectionDisplayButton)
 				ToolbarItem(placement: .navigationBarTrailing, content: trailingButtons)
 			}
-			.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
-
 		.sheet(isPresented: self.$showMailSheet) {
 			MailView(isShowing: $showMailSheet, mailViewData: mailViewData, resultHandler: mailResultHandler)
 				.safe()
 		}
-
 		.onAppear {
 			logAppear(title: "ShoppingListTabView")
 			listDisplayID = UUID()

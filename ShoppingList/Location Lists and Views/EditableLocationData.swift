@@ -34,7 +34,7 @@ struct EditableLocationData {
 	var canBeSaved: Bool { locationName.count > 0 }
 	
 	// useful to know if this is associated with an existing Location
-	var representsExistingLocation: Bool { id != nil }
+	var representsExistingLocation: Bool { id != nil && Location.object(withID: id!) != nil }
 	// useful to know the associated location (which we'll force unwrap, so
 	// be sure you check representsExistingLocation first (!)
 	var associatedLocation: Location { Location.object(withID: id!)! }

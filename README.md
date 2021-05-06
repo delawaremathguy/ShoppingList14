@@ -12,16 +12,17 @@ Feel free to use this as is, to develop further,  to completely ignore, or even 
 Here are recent updates either of importance (e.g., *bug fixes* or *UI changes*) or of possible coding interest (e.g., *code consolidation or reorganization*).  
 
 
-### Most Recent Update of 19 April, 2021
+### Most Recent Update of 6 May, 2021
 
-* Rescinded UUID-based strategy of 18 April for unhighlighting lists, which was crashing the app in one view.  *I will continue to research the issue*.
-* Fixed title display in Purchased Items tab when searching.
-* Added navigation title to Preferences screen.
+* Updated my concept of a strategy of implementing "confirmation alerts" to be more generic and protocol-based, which gives you the luxury of defining how an alert will work all in one place, without having to describe your alert data, messages, and actions as enum cases within a fixed structure. (*Thanks to Sean Allen for steering me toward my implementation, although some testing is still needed!*)
+* Removed use of `processPendingChanges()` and instead I now use a simple `try? context?.save()` call.
+* `EditableLocationData` modified to have a `Color` component, rather than individual RGBA values.
+* (*19 Apr*) Rescinded UUID-based strategy of 18 April for unhighlighting lists, which was crashing the app in one view.  *I will continue to research the issue*.
+* (*19 Apr*) Fixed title display in Purchased Items tab when searching.
+* (*19 Apr*) Added navigation title to Preferences screen.
 * (*18 Apr*) Implemented a simple UUID-based strategy for lists so highlighting is no longer left in place after having tapped on a NavigationLink.
 * (*18 Apr*) More use of `List` when appropriate (and less use of `Form`).
 * (*18 Apr*) Slight reorganization of HomeView.swift as to how individual tabs in the TabView are enclosed in a NavigationView (*this seems to matter to SwiftUI in ways I do not fully understand*).
-* (*17 Apr*) Fixed an obvious omission in EditableLocationData.swift, apparently left out during a "code cleanup" from 6 February (!)  This caused the AddOrModifyLocationView to show the wrong navigation title and display only the Basic Information section, but to not show the important Location Management and At This Location feature sections of the view.
-* (*17 Apr*) The default install onto a device will now hide the two debugging/development actions on the Preferences tab. (*See Development.swift to change this behaviour*.)
 
 For earlier, more detailed changes that could possibly be of interest, please consult the **Changelog** at the end of this document.
 
@@ -172,7 +173,7 @@ Some things I may continue to work on in the future include
 
 * adding CloudKit. It's easy to do - *I have done it in another app* - and it's just a few steps that I have outlined in PersistentStore.swift, but you will need a paid Apple Developer account to start using the cloud.
 
-* examine better support for iPad (since I now have a new iPad Air 4). I won't be taking my iPad to the store any time soon, but it would be convenient to work on the shopping list on the iPad and then, via the cloud, take my phone to the store with the updated list.
+* examine better support for iPad (since I now have a new iPad Air 4). I won't be taking my iPad to the store any time soon, but it would be convenient to work on the shopping list on the iPad at home and then, via the cloud, take my phone to the store with the updated list.
 
 * expanding the database and the app's UI to support multiple "Stores," each of which has many "Locations," and "Items" would then have a many-to-many relationship with "Locations," since one item could be available in many "Stores." I do now shop at several different stores, so as a user, the idea is of *some* interest ... but this is an ambitious project, not so much for the Core Data side, but for the UI side!
 
@@ -205,6 +206,8 @@ Otherwise, just about all of the code is original, and it's yours if you want it
 
 This section contains a more detailed list of changes made to ShoppingList14 prior to the most recent changes of note listed earlier.
 
+* (*17 Apr*) Fixed an obvious omission in EditableLocationData.swift, apparently left out during a "code cleanup" from 6 February (!)  This caused the AddOrModifyLocationView to show the wrong navigation title and display only the Basic Information section, but to not show the important Location Management and At This Location feature sections of the view.
+* (*17 Apr*) The default install onto a device will now hide the two debugging/development actions on the Preferences tab. (*See Development.swift to change this behaviour*.)
 * (7 Apr) Spelling in README.
 * (7 Feb) Fixed an issue: moving an item from the PurchasedItemsTab to the ShoppingListTab was not properly updating ShoppingListTab (the XCode 12.4 & iOS 14.4 simulator worked fine, but an on-device install exhibited the problem).
 * (6 Feb) Added a user preference for sectioning out the PurchasedItemsTab by "in the last N days" and "before that," where N is user-settable in (a somewhat minimal) Preferences tab.  (This is where you will find what were previously called DevTools that were in place only so you could try out the app.)

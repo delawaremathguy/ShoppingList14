@@ -25,8 +25,9 @@ struct AddOrModifyItemView: View {
 
 	// parameters to control triggering an Alert and defining what action
 	// to take upon confirmation
-	@State private var confirmationAlert = ConfirmationAlert(type: .none)
-
+	//@State private var confirmationAlert = ConfirmationAlert(type: .none)
+	@State private var confirmDeleteItemAlert: ConfirmDeleteItemAlert?
+	
 	// we need all locations so we can populate the Picker.  it may be curious that i
 	// use a @FetchRequest here; the problem is that if this Add/ModifyItem view is open
 	// to add a new item, then we tab over to the Locations tab to add a new location,
@@ -96,8 +97,11 @@ struct AddOrModifyItemView: View {
 				Section(header: Text("Shopping Item Management").sectionHeader()) {
 					SLCenteredButton(title: "Delete This Shopping Item",
 													 action: {
-														confirmationAlert.trigger( type: .deleteItem(editableData.associatedItem),
-																											 completion: { presentationMode.wrappedValue.dismiss() })
+														confirmDeleteItemAlert =
+															ConfirmDeleteItemAlert(item: editableData.associatedItem,
+																										 destructiveCompletion: { presentationMode.wrappedValue.dismiss() })
+//														confirmationAlert.trigger( type: .deleteItem(editableData.associatedItem),
+//																											 completion: { presentationMode.wrappedValue.dismiss() })
 													 }
 					)
 						.foregroundColor(Color.red)
@@ -119,7 +123,8 @@ struct AddOrModifyItemView: View {
 			logDisappear(title: "AddOrModifyItemView")
 			PersistentStore.shared.saveContext()
 		}
-		.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
+		//.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
+		.alert(item: $confirmDeleteItemAlert) { item in item.alert() }
 	}
 		
 	func barTitle() -> Text {

@@ -167,10 +167,9 @@ extension Location: Comparable {
 		// this could affect each item's computed properties
 		let theUnknownLocation = Location.unknownLocation()
 		itemsAtThisLocation.forEach({ $0.location = theUnknownLocation })
-		// now finish the deletion and make sure the context gets cleaned up
-		// right now in memory.  then save if requested
+		// now finish the deletion and save
 		context?.delete(location)
-		context?.processPendingChanges()
+		try? context?.save()
 	}
 	
 	class func updateData(using editableData: EditableLocationData) {

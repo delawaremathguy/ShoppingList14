@@ -35,7 +35,7 @@ struct ShoppingListDisplay: View {
 	
 	// state variable to control triggering confirmation of a delete, which is
 	// one of three context menu actions that can be applied to an item
-	@Binding var confirmationAlert: ConfirmationAlert
+	@State var confirmDeleteItemAlert: ConfirmDeleteItemAlert?
 	
 	// this is a temporary holding array for items being moved to the other list.  it's a
 	// @State variable, so if any SelectableItemRowView or a context menu adds an Item
@@ -62,7 +62,7 @@ struct ShoppingListDisplay: View {
 																		respondToTapOnSelector:  { handleItemTapped(item) })
 								.contextMenu {
 									itemContextMenu(item: item, deletionTrigger: {
-										confirmationAlert.trigger(type: .deleteItem(item))
+										confirmDeleteItemAlert = ConfirmDeleteItemAlert(item: item)
 									})
 								} // end of contextMenu
 						} // end of NavigationLink
@@ -72,6 +72,8 @@ struct ShoppingListDisplay: View {
 		}  // end of List
 //		.id(listDisplayID)
 		.listStyle(InsetGroupedListStyle())
+		.alert(item: $confirmDeleteItemAlert) { item in item.alert() }
+
 	} // end of body: some View
 	
 	// the purpose of this function is to break out the itemsToBePurchased by section,
@@ -83,7 +85,7 @@ struct ShoppingListDisplay: View {
 		// and an array of all the items
 		if !multiSectionDisplay {
 			// if you want to change the sorting when this is a single section to "by name"
-			// then comment out the .sorted() qualfier -- itemsToBePurchased is already sorted by name
+			// then comment out the .sorted() qualifier -- itemsToBePurchased is already sorted by name
 			let sortedItems = itemsToBePurchased
 				.sorted(by: { $0.location.visitationOrder < $1.location.visitationOrder })
 			return [SectionData(title: "Items Remaining: \(itemsToBePurchased.count)", items: sortedItems)

@@ -27,7 +27,8 @@ struct PurchasedItemsTabView: View {
 	
 	// parameters to control triggering an Alert and defining what action
 	// to take upon confirmation
-	@State private var confirmationAlert = ConfirmationAlert(type: .none)
+	//@State private var confirmationAlert = ConfirmationAlert(type: .none)
+	@State private var confirmDeleteItemAlert: ConfirmDeleteItemAlert?
 	@State private var isAddNewItemSheetShowing = false
 	
 	// local state for are we a multi-section display or not.  the default here is false,
@@ -96,7 +97,8 @@ struct PurchasedItemsTabView: View {
 											.contextMenu {
 												itemContextMenu(item: item,
 																				deletionTrigger: {
-																					confirmationAlert.trigger(type: .deleteItem(item))
+																					confirmDeleteItemAlert = ConfirmDeleteItemAlert(item: item)
+																					//confirmationAlert.trigger(type: .deleteItem(item))
 																				})
 											} // end of contextMenu
 									} // end of NavigationLink
@@ -122,7 +124,8 @@ struct PurchasedItemsTabView: View {
 				ToolbarItem(placement: .navigationBarLeading, content: sectionDisplayButton)
 				ToolbarItem(placement: .navigationBarTrailing, content: addNewButton)
 			}
-			.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
+			//.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
+			.alert(item: $confirmDeleteItemAlert) { item in item.alert()}
 			
 //		} // end of NavigationView
 //		.navigationViewStyle(StackNavigationViewStyle())

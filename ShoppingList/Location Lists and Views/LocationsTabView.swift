@@ -19,8 +19,9 @@ struct LocationsTabView: View {
 	
 	// parameters to control triggering an Alert and defining what action
 	// to take upon confirmation
-	@State private var confirmationAlert = ConfirmationAlert(type: .none)
-	
+	//@State private var confirmationAlert = ConfirmationAlert(type: .none)
+	@State private var confirmDeleteLocationAlert: ConfirmDeleteLocationAlert?
+
 	// this implements a seemingly well-known strategy to get the list drawn
 	// cleanly without any highlighting
 	@State private var listDisplayID = UUID()
@@ -59,7 +60,8 @@ struct LocationsTabView: View {
 		} // end of VStack
 		.navigationBarTitle("Locations")
 		.toolbar { ToolbarItem(placement: .navigationBarTrailing, content: addNewButton) }
-		.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
+		//.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
+		.alert(item: $confirmDeleteLocationAlert) { item in item.alert() }
 		.onAppear {
 			logAppear(title: "LocationsTabView")
 			handleOnAppear()
@@ -96,7 +98,8 @@ struct LocationsTabView: View {
 	func contextMenuButton(for location: Location) -> some View {
 		Button(action: {
 			if !location.isUnknownLocation {
-				confirmationAlert.trigger(type: .deleteLocation(location))
+				confirmDeleteLocationAlert = ConfirmDeleteLocationAlert(location: location)
+				//confirmationAlert.trigger(type: .deleteLocation(location))
 			}
 		}) {
 			Text(location.isUnknownLocation ? "(Cannot be deleted)" : "Delete This Location")

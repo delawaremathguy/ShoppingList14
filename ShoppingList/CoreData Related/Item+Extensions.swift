@@ -219,8 +219,7 @@ extension Item {
 		// now delete and save
 		let context = item.managedObjectContext
 		context?.delete(item)
-		// processPedningChanges cleans up the in-memory object graph a little more quickly
-		context?.processPendingChanges()
+		try? context?.save()
 	}
 	
 	class func moveAllItemsOffShoppingList() {
