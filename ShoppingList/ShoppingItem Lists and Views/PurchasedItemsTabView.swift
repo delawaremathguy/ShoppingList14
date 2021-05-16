@@ -189,7 +189,7 @@ struct PurchasedItemsTabView: View {
 		}
 		
 		// break these out into (Today + back historyMarker days) and (all the others)
-		let startingMarker = today.start.addingTimeInterval(-Double(historyMarker) * (24*60*60))
+		let startingMarker = Calendar.current.date(byAdding: .day, value: -historyMarker, to: today.start)!
 		let recentItems = searchQualifiedItems.filter({ $0.dateLastPurchased >= startingMarker })
 		let allOlderItems = searchQualifiedItems.filter({ $0.dateLastPurchased < startingMarker })
 		
