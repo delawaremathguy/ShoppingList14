@@ -16,16 +16,19 @@ struct AddOrModifyLocationView: View {
 	// all editableData is packaged here. its initial values are set using
 	// a custom init.
 	@State private var editableData: EditableLocationData
+	var location: Location?
 	
 	// parameter to control triggering an Alert and defining what action
 	// to take upon confirmation
-	//@State private var confirmationAlert = ConfirmationAlert(type: .none)
 	@State private var confirmDeleteLocationAlert: ConfirmDeleteLocationAlert?
+	// trigger for adding a new item at this Location
+	@State private var isAddNewItemSheetShowing = false
 	
 	// custom init to set up editable data
 	init(location: Location? = nil) {
 //		print("AddorModifyLocationView initialized")
 		_editableData = State(initialValue: EditableLocationData(location: location))
+		self.location = location
 	}
 
 	var body: some View {
@@ -66,7 +69,8 @@ struct AddOrModifyLocationView: View {
 			
 			// Section 3: Items assigned to this Location, if we are editing a Location
 			if editableData.representsExistingLocation {
-				SimpleItemsList(location: editableData.associatedLocation)
+				SimpleItemsList(location: editableData.associatedLocation,
+												isAddNewItemSheetShowing: $isAddNewItemSheetShowing)
 			}
 			
 		} // end of Form
@@ -77,8 +81,14 @@ struct AddOrModifyLocationView: View {
 			ToolbarItem(placement: .cancellationAction, content: cancelButton)
 			ToolbarItem(placement: .confirmationAction) { saveButton().disabled(!editableData.canBeSaved) }
 		}
-		//.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 		.alert(item: $confirmDeleteLocationAlert) { item in item.alert() }
+		.sheet(isPresented: $isAddNewItemSheetShowing) {
+			NavigationView {
+				AddOrModifyItemView(location: location)
+					.environment(\.managedObjectContext, PersistentStore.shared.context)
+			}
+		}
+
 	}
 	
 	func barTitle() -> Text {
@@ -116,14 +126,16 @@ struct SimpleItemsList: View {
 	
 	@FetchRequest	private var items: FetchedResults<Item>
 	@State private var listDisplayID = UUID()
+	@Binding var isAddNewItemSheetShowing: Bool
 	
-	init(location: Location) {
+	init(location: Location, isAddNewItemSheetShowing: Binding<Bool>) {
 		let request = Item.allItemsFR(at: location)
 		_items = FetchRequest(fetchRequest: request)
+		_isAddNewItemSheetShowing = isAddNewItemSheetShowing
 	}
 	
 	var body: some View {
-		Section(header: Text("At this Location: \(items.count) items").sectionHeader()) {
+		Section(header: ItemsListHeader()) {
 			ForEach(items) { item in
 				NavigationLink(destination: AddOrModifyItemView(editableItem: item)) {
 					Text(item.name)
@@ -132,5 +144,18 @@ struct SimpleItemsList: View {
 		}
 //		.id(listDisplayID)
 		.onAppear { listDisplayID = UUID() }
+	}
+	
+	func ItemsListHeader() -> some View {
+		HStack {
+			Text("At this Location: \(items.count) items").sectionHeader()
+			Spacer()
+			Button {
+				isAddNewItemSheetShowing = true
+			} label: {
+				Image(systemName: "plus")
+					.font(.title2)
+			}
+		}
 	}
 }

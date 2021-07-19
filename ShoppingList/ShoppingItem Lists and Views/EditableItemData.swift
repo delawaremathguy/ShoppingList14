@@ -47,9 +47,12 @@ struct EditableItemData {
 		}
 	}
 	
-	init(initialItemName: String?) {
+	init(initialItemName: String?, location: Location? = nil) {
 		if let name = initialItemName, name.count > 0 {
 			self.name = name
+		}
+		if let location = location {
+			self.location = location
 		}
 	}
 	

@@ -36,14 +36,14 @@ struct AddOrModifyItemView: View {
 	private var locations: FetchedResults<Location>
 	
 	// custom init here to set up editableData state
-	init(editableItem: Item? = nil, initialItemName: String? = nil) {
+	init(editableItem: Item? = nil, initialItemName: String? = nil, location: Location? = nil) {
 		// initialize the editableData struct for the incoming item, if any; and
 		// also carry in whatever might be a suggested Item name for a new Item
 		if let item = editableItem {
 			_editableData = State(initialValue: EditableItemData(item: item))
 		} else {
 			// here's we'll see if a suggested name for adding a new item was supplied
-			let initialValue = EditableItemData(initialItemName: initialItemName)
+			let initialValue = EditableItemData(initialItemName: initialItemName, location: location)
 			_editableData = State(initialValue: initialValue)
 		}
 	}

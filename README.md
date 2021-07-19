@@ -6,23 +6,12 @@ ShoppingList14 is a simple iOS app to process a shopping list that you can take 
 
 * An [earlier version of this project](https://github.com/delawaremathguy/ShoppingList) is available that works with XCode 11.7/iOS 13.7.  If you have not yet made the move to XCode 12.2 and iOS 14.2, you should use this earlier project instead.
 
-Feel free to use this as is, to develop further,  to completely ignore, or even just to inspect and then send me a note or Post an Issue to tell me I am doing this all wrong.  
+Feel free to use this as is, to develop further,  to completely ignore, or even just to inspect and then send me a note or Open an Issue to tell me I am doing this all wrong.  
 
 
-Here are recent updates either of importance (e.g., *bug fixes* or *UI changes*) or of possible coding interest (e.g., *code consolidation or reorganization*).  
+### Most Recent Update of 19 July, 2021
 
-
-### Most Recent Update of 6 May, 2021
-
-* Updated my concept of a strategy of implementing "confirmation alerts" to be more generic and protocol-based, which gives you the luxury of defining how an alert will work all in one place, without having to describe your alert data, messages, and actions as enum cases within a fixed structure. (*Thanks to Sean Allen for steering me toward my implementation, although some testing is still needed!*)
-* Removed use of `processPendingChanges()` and instead I now use a simple `try? context?.save()` call.
-* `EditableLocationData` modified to have a `Color` component, rather than individual RGBA values.
-* (*19 Apr*) Rescinded UUID-based strategy of 18 April for unhighlighting lists, which was crashing the app in one view.  *I will continue to research the issue*.
-* (*19 Apr*) Fixed title display in Purchased Items tab when searching.
-* (*19 Apr*) Added navigation title to Preferences screen.
-* (*18 Apr*) Implemented a simple UUID-based strategy for lists so highlighting is no longer left in place after having tapped on a NavigationLink.
-* (*18 Apr*) More use of `List` when appropriate (and less use of `Form`).
-* (*18 Apr*) Slight reorganization of HomeView.swift as to how individual tabs in the TabView are enclosed in a NavigationView (*this seems to matter to SwiftUI in ways I do not fully understand*).
+* When the AddOrModifyLocation view appears for an existing location, you can now add a new item directly to its list of associated items.  When the AddOrModifyItemView appears to add the new item, the item's location will default to the existing location.  *Some testing may still be required*.
 
 For earlier, more detailed changes that could possibly be of interest, please consult the **Changelog** at the end of this document.
 
@@ -206,6 +195,12 @@ Otherwise, just about all of the code is original, and it's yours if you want it
 
 This section contains a more detailed list of changes made to ShoppingList14 prior to the most recent changes of note listed earlier.
 
+* (*19 Apr*) Rescinded UUID-based strategy of 18 April for unhighlighting lists, which was crashing the app in one view.  *I will continue to research the issue*.
+* (*19 Apr*) Fixed title display in Purchased Items tab when searching.
+* (*19 Apr*) Added navigation title to Preferences screen.
+* (*18 Apr*) Implemented a simple UUID-based strategy for lists so highlighting is no longer left in place after having tapped on a NavigationLink.
+* (*18 Apr*) More use of `List` when appropriate (and less use of `Form`).
+* (*18 Apr*) Slight reorganization of HomeView.swift as to how individual tabs in the TabView are enclosed in a NavigationView (*this seems to matter to SwiftUI in ways I do not fully understand*).
 * (*17 Apr*) Fixed an obvious omission in EditableLocationData.swift, apparently left out during a "code cleanup" from 6 February (!)  This caused the AddOrModifyLocationView to show the wrong navigation title and display only the Basic Information section, but to not show the important Location Management and At This Location feature sections of the view.
 * (*17 Apr*) The default install onto a device will now hide the two debugging/development actions on the Preferences tab. (*See Development.swift to change this behaviour*.)
 * (7 Apr) Spelling in README.
