@@ -45,7 +45,7 @@ struct LocationsTabView: View {
 			
 			
 			// 2. then the list of locations
-			Form {
+			List {
 				Section(header: Text("Locations Listed: \(locations.count)").sectionHeader()) {
 					ForEach(locations) { location in
 						NavigationLink(destination: AddOrModifyLocationView(location: location)) {
@@ -54,9 +54,10 @@ struct LocationsTabView: View {
 						} // end of NavigationLink
 					} // end of ForEach
 				} // end of Section
-			} // end of Form
-			//				.id(listDisplayID)
+			} // end of List
+			.listStyle(InsetGroupedListStyle())
 			
+			Divider()
 		} // end of VStack
 		.navigationBarTitle("Locations")
 		.toolbar { ToolbarItem(placement: .navigationBarTrailing, content: addNewButton) }

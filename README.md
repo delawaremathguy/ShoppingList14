@@ -9,9 +9,9 @@ ShoppingList14 is a simple iOS app to process a shopping list that you can take 
 Feel free to use this as is, to develop further,  to completely ignore, or even just to inspect and then send me a note or Open an Issue to tell me I am doing this all wrong.  
 
 
-### Most Recent Update of 19 July, 2021
+### Most Recent Update of 20 November, 2021
 
-* When the AddOrModifyLocation view appears for an existing location, you can now add a new item directly to its list of associated items.  When the AddOrModifyItemView appears to add the new item, the item's location will default to the existing location.  *Some testing may still be required*.
+* When running on iOS 15, the PurchasedItemsTabView and the LocationsTabView overrun the TabBar, apparently due to an Apple design change in tab bars.  By adding a `Divider()` view as the last element of the VStacks that define the PurchasedItemsTabView and the LocationsTabView, there is no longer an overrun (because the list is not the last view of the VStack).
 
 For earlier, more detailed changes that could possibly be of interest, please consult the **Changelog** at the end of this document.
 
@@ -195,6 +195,7 @@ Otherwise, just about all of the code is original, and it's yours if you want it
 
 This section contains a more detailed list of changes made to ShoppingList14 prior to the most recent changes of note listed earlier.
 
+* (*19 Jul*) When the AddOrModifyLocation view appears for an existing location, you can now add a new item directly to its list of associated items.  When the AddOrModifyItemView appears to add the new item, the item's location will default to the existing location.  *Some testing may still be required*.
 * (*19 Apr*) Rescinded UUID-based strategy of 18 April for unhighlighting lists, which was crashing the app in one view.  *I will continue to research the issue*.
 * (*19 Apr*) Fixed title display in Purchased Items tab when searching.
 * (*19 Apr*) Added navigation title to Preferences screen.

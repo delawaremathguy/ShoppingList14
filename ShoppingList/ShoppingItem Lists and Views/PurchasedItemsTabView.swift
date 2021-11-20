@@ -110,6 +110,8 @@ struct PurchasedItemsTabView: View {
 //					.id(listDisplayID)
 
 				} // end of if-else
+				
+				Divider()
 			} // end of VStack
 			.onAppear {
 				logAppear(title: "PurchasedTabView")
@@ -124,11 +126,8 @@ struct PurchasedItemsTabView: View {
 				ToolbarItem(placement: .navigationBarLeading, content: sectionDisplayButton)
 				ToolbarItem(placement: .navigationBarTrailing, content: addNewButton)
 			}
-			//.alert(isPresented: $confirmationAlert.isShowing) { confirmationAlert.alert() }
 			.alert(item: $confirmDeleteItemAlert) { item in item.alert()}
 			
-//		} // end of NavigationView
-//		.navigationViewStyle(StackNavigationViewStyle())
 	}
 	
 	func handleOnAppear() {

@@ -93,6 +93,8 @@ of the sectioning, so we push it off to a specialized View.
 					}
 				} //end of if itemsToBePurchased.count > 0
 
+				Divider()
+
 			} // end of VStack
 			.navigationBarTitle("Shopping List")
 			.toolbar {
