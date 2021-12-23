@@ -9,9 +9,9 @@ ShoppingList14 is a simple iOS app to process a shopping list that you can take 
 Feel free to use this as is, to develop further,  to completely ignore, or even just to inspect and then send me a note or Open an Issue to tell me I am doing this all wrong.  
 
 
-### Most Recent Update of 10 December, 2021
+### Most Recent Update of 23 December, 2021
 
-* This project will now no longer be updated.  I hope to soon make available ShoppingList15, which not only continues my exploration into SwiftUI and programming style (yes, things have changed in the last 6-12 months), but also begins to take advantage of "SwiftUI 3" features available in iOS 15 (e.g., `.searchable()`).
+* This project will now no longer be updated.  However, I am happy to now announce that ]ShoppingList15 is available](https://github.com/delawaremathguy/ShoppingList15), as of 23 December, 2021.
 
 For earlier, more detailed changes that could possibly be of interest, please consult the **Changelog** at the end of this document.
 
