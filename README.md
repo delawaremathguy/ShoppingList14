@@ -11,7 +11,7 @@ Feel free to use this as is, to develop further,  to completely ignore, or even 
 
 ### Most Recent Update of 23 December, 2021
 
-* This project will now no longer be updated.  However, I am happy to now announce that ]ShoppingList15 is available](https://github.com/delawaremathguy/ShoppingList15), as of 23 December, 2021.
+* This project will now no longer be updated.  However, I am happy to now announce that [ShoppingList15 is available](https://github.com/delawaremathguy/ShoppingList15), as of 23 December, 2021.
 
 For earlier, more detailed changes that could possibly be of interest, please consult the **Changelog** at the end of this document.
 
